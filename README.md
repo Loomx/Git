@@ -1,3 +1,3 @@
 Slackware
 =========
-Configs, scripts and code for Linux, specifically Slackware, but generally portable...
+Configs, scripts and code for Slackware Linux, but generally portable..
