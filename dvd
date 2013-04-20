@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# /usr/local/bin/dvd
+
+# Only one mplayer running at a time:
+pgrep mplayer >/dev/null && killall mplayer
+
+exec mplayer dvd://1
