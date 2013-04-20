@@ -22,7 +22,7 @@
 #define TRACK_STR       "%s| "
 #define MEM_STR         "%ldMB | "
 #define VOL_STR         "%ddB | "
-#define BATT_STR        "¬±%ld%% | "
+#define BATT_STR        "±%ld%% | "
 #define TIME_STR        "%H:%M"
 
 int
