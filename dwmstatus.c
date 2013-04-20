@@ -86,8 +86,8 @@ main(void) {
         strcat(status, statnext);
 
     /* Set root name */
-  XStoreName(dpy, DefaultRootWindow(dpy), status);
-	XSync(dpy, False);
+    XStoreName(dpy, DefaultRootWindow(dpy), status);
+    XSync(dpy, False);
     }
 
 /* NEXT LINES SHOULD NEVER EXECUTE */
