@@ -27,12 +27,12 @@ static const float mfact      = 0.5; /* factor of master area size [0.05..0.95] 
 static const int nmaster      = 1;    /* number of clients in master area */
 static const Bool resizehints = False; /* True means respect size hints in tiled resizals */
 
-/* #include "bstack.c" */
+// #include "bstack.c"
 static const Layout layouts[] = {
     /* symbol     arrange function */
     { "[ ]",      monocle },    /* first entry is default */
     { "[]=",      tile },
-/*  { "[-]",      bstack }, */
+//  { "[-]",      bstack },
 };
 
 /* key definitions */
