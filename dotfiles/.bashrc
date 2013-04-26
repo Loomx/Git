@@ -44,11 +44,7 @@ sdout () {
     [[ "$PWD" == ~/SD* ]] && cd ~
     umount ~/SD && rmdir ~/SD
 }
-wifi () {
-    su -c "nm-applet 2>/dev/null &
-    stalonetray --geometry=2x1-0-0 2>/dev/null
-    killall nm-applet"
-}
 tao () {
     awk -v verse=$( echo $[RANDOM%80+2] ) 'RS=""; NR==verse' ~/Documents/tao.txt
 }
+
