@@ -55,6 +55,7 @@ static const char *stopcmd[]      = { "music", "stop", NULL };
 static const char *prevcmd[]      = { "music", "prev", NULL };
 static const char *nextcmd[]      = { "music", "next", NULL };
 static const char *ejectcmd[]     = { "eject", NULL };
+static const char *mutecmd[]      = { "amixer", "-q", "set", "Master", "toggle", NULL };
 
 static Key keys[] = {
     /* modifier            key                        function        argument */
@@ -65,9 +66,9 @@ static Key keys[] = {
     { 0,                   XF86XK_AudioPrev,          spawn,          {.v = prevcmd } },
     { 0,                   XF86XK_AudioNext,          spawn,          {.v = nextcmd } },
     { 0,                   XF86XK_Eject,              spawn,          {.v = ejectcmd } },
-    { 0,                   XF86XK_AudioMute,          spawn,          SHCMD("amixer -q set Master toggle") },
-    { 0,                   XF86XK_AudioLowerVolume,   spawn,          SHCMD("amixer set Master 2\%- unmute | awk -F \"[][]\" 'END { print $2 }' >/tmp/alsa_volume") },
-    { 0,                   XF86XK_AudioRaiseVolume,   spawn,          SHCMD("amixer set Master 2\%+ unmute | awk -F \"[][]\" 'END { print $2 }' >/tmp/alsa_volume") },
+    { 0,                   XF86XK_AudioMute,          spawn,          {.v = mutecmd } },
+    { 0,                   XF86XK_AudioLowerVolume,   spawn,          SHCMD("amixer set Master 4- unmute | awk -F [][] 'END { print $2 }' >/tmp/alsa_volume") },
+    { 0,                   XF86XK_AudioRaiseVolume,   spawn,          SHCMD("amixer set Master 4+ unmute | awk -F [][] 'END { print $2 }' >/tmp/alsa_volume") },
     { 0,                   XF86XK_MonBrightnessDown,  spawn,          SHCMD("echo 8 >~/.mon_brightness") },
     { 0,                   XF86XK_MonBrightnessUp,    spawn,          SHCMD("echo 15 >~/.mon_brightness") },
     { 0,                   XF86XK_KbdBrightnessDown,  spawn,          SHCMD("echo 0 >~/.kbd_brightness") },
@@ -95,3 +96,4 @@ static Button buttons[] = {
     { ClkTagBar,            0,              Button3,        tag,            {0} },
     { ClkTagBar,            ControlMask,    Button3,        toggletag,      {0} },
 };
+
