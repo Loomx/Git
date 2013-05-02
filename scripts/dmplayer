@@ -1,21 +1,8 @@
 #!/bin/sh
 #
-# /usr/local/bin/music 
+# /usr/local/bin/dmplayer
 #
-# Depends: mplayer, dmenu
-
-# If mplayer is already running, echo commands to mp_pipe
-if pgrep mplayer >/dev/null; then
-    case "$1" in
-        stop)   echo stop >~/.mplayer/mp_pipe && exit ;;
-        prev)   echo pt_step -1 >~/.mplayer/mp_pipe && exit ;;
-        next)   echo pt_step 1 >~/.mplayer/mp_pipe && exit ;;
-        *)      echo pause >~/.mplayer/mp_pipe && exit ;;
-    esac
-fi
-
-# Don't run if stop|prev|next key was pressed
-[ "$1" ] && exit
+# Depends: dmenu, mplayer
 
 # Cache files:
 AlbumCache=~/.mplayer/album_cache
