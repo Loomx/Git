@@ -4,13 +4,14 @@
 #
 # Depends: dmenu, mplayer
 
+
 # Cache files:
 AlbumCache=~/.mplayer/album_cache
 TrackCache=~/.mplayer/track_cache
 
 if stest -dlq -n "$AlbumCache" ~/Music; then
     # Update caches if anything has changed:
-    echo Jukebox >"$AlbumCache"
+    printf "Jukebox\nDVD" >"$AlbumCache"
     stest -dl ~/Music | sort >>"$AlbumCache"
     stest -f ~/Music/*/* >"$TrackCache"
 fi
@@ -18,36 +19,44 @@ fi
 # Select an album:
 Album=$( cat "$AlbumCache" | dmenu -i -l 40 ) || exit
 
-if [ "$Album" = Jukebox ]; then
-    # Prompt for filters:
-    Filters=$( printf "" | dmenu -p Filters? ) || exit
+case "$Album" in
+    Jukebox)
+        # Prompt for filters:
+        Filters=$( printf "" | dmenu -p Filters? ) || exit
 
-    if [ "$Filters" ]; then
-        # Apply filters and shuffle tracks:
-        set $( echo "$Filters" ) 
-        while [ "$1" ]; do 
-            grep -Fi "$1" "$TrackCache"
-            shift
-        done | mplayer -playlist - -shuffle -identify >/tmp/mp_tracklist &
+        if [ "$Filters" ]; then
+            # Apply filters and shuffle tracks:
+            set $( echo "$Filters" ) 
+            while [ "$1" ]; do 
+                grep -Fi "$1" "$TrackCache"
+                shift
+            done | mplayer -playlist - -shuffle -identify >/tmp/mp_tracklist &
 
-    else
-        # No filters, so shuffle all tracks:
-        mplayer -playlist "$TrackCache" -shuffle -identify >/tmp/mp_tracklist &
-    fi
+        else
+            # No filters, so shuffle all tracks:
+            mplayer -playlist "$TrackCache" -shuffle -identify >/tmp/mp_tracklist &
+        fi
+    ;;
 
-else
-    # Album is selected, prompt to play or shuffle:
-    Mode=$( printf "Play\nShuffle" | dmenu -i -l 2 ) || exit
+    DVD)
+        exec mplayer dvd://1
+    ;;
 
-    if [ "$Mode" = Shuffle ]; then
-        # Shuffle album tracks:
-        mplayer ~/Music/"$Album"/* -shuffle -identify >/tmp/mp_tracklist &
+    *)
+        # Album is selected, prompt to play or shuffle:
+        Mode=$( printf "Play\nShuffle" | dmenu -i -l 2 ) || exit
 
-    else
-        # Play album in order:
-        mplayer ~/Music/"$Album"/* -identify >/tmp/mp_tracklist &
-    fi
-fi
+        if [ "$Mode" = Shuffle ]; then
+            # Shuffle album tracks:
+            mplayer ~/Music/"$Album"/* -shuffle -identify >/tmp/mp_tracklist &
+
+        else
+            # Play album in order:
+            mplayer ~/Music/"$Album"/* -identify >/tmp/mp_tracklist &
+        fi
+    ;;
+
+esac
 
 # Pause while mplayer starts:
 sleep 1
@@ -63,3 +72,4 @@ done
 # Clean up afterwards:
 rm /tmp/mp_track
 rm /tmp/mp_tracklist 
+
