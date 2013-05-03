@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# /usr/local/bin/dmplayer
+# /usr/local/bin/player
 #
 # Depends: dmenu, mplayer
 
