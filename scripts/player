@@ -11,7 +11,7 @@ TrackCache=~/.mplayer/track_cache
 
 if stest -dlq -n "$AlbumCache" ~/Music; then
     # Update caches if anything has changed:
-    printf "Jukebox\nDVD" >"$AlbumCache"
+    printf "Jukebox\nDVD\n" >"$AlbumCache"
     stest -dl ~/Music | sort >>"$AlbumCache"
     stest -f ~/Music/*/* >"$TrackCache"
 fi
