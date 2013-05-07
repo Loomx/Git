@@ -5,11 +5,11 @@ if [ -d "$cachedir" ]; then
 else
 	cache=$HOME/.dmenu_cache # if no xdg dir, fall back to dotfile in ~
 fi
-(
+exec $(
 	IFS=:
 	if stest -dqr -n "$cache" $PATH; then
 		stest -flx $PATH | sort -u | tee "$cache" | dmenu "$@"
 	else
 		dmenu "$@" < "$cache"
 	fi
-) | /bin/sh &
+)
