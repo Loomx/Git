@@ -52,6 +52,7 @@ static const char *dmenucmd[]     = { "dmenu_run", NULL };
 static const char *termcmd[]      = { "xterm", NULL };
 static const char *mutecmd[]      = { "amixer", "-q", "set", "Master", "toggle", NULL };
 static const char *ejectcmd[]     = { "eject", NULL };
+static const char *sleepcmd[]     = { "sudo", "/usr/sbin/pm-suspend", NULL };
 
 static Key keys[] = {
     /* modifier            key                        function        argument */
@@ -65,6 +66,7 @@ static Key keys[] = {
     { 0,                   XF86XK_AudioRaiseVolume,   spawn,          SHCMD("amixer set Master 4+ unmute | awk -F [][] 'END { print $2 }' >/tmp/alsa_volume") },
     { 0,                   XF86XK_AudioMute,          spawn,          {.v = mutecmd } },
     { 0,                   XF86XK_Eject,              spawn,          {.v = ejectcmd } },
+    { 0,                   XF86XK_Sleep,              spawn,          {.v = sleepcmd } },
 //    { 0,                   XF86XK_MonBrightnessDown,  spawn,          SHCMD("echo 8 >~/.mon_brightness") },
 //    { 0,                   XF86XK_MonBrightnessUp,    spawn,          SHCMD("echo 15 >~/.mon_brightness") },
 //    { 0,                   XF86XK_KbdBrightnessDown,  spawn,          SHCMD("echo 0 >~/.kbd_brightness") },
