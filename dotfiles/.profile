@@ -2,4 +2,4 @@
 
 . ~/.bashrc
 
-[ $(tty) = /dev/tty1 ] && startx
+[ $(tty) = /dev/tty1 ] && exec startx
