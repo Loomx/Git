@@ -47,7 +47,7 @@ sdout () {
 backup () {
     rsync -av --delete --exclude=Git/ --exclude=Music/ \
     --exclude=USB/ --exclude=PHONE/ --exclude=SD/ \
-    /home/jonny/ ~/USB/backup/
+    ~/ ~/USB/backup/
 }
 tao () {
     awk -v verse=$( echo $[RANDOM%80+2] ) 'RS=""; NR==verse' ~/Documents/tao.txt
