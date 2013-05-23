@@ -45,7 +45,7 @@ sdout () {
     umount ~/SD && rmdir ~/SD
 }
 backup () {
-    cd ~ && rsync -a --specials --delete \
+    cd ~ && rsync -a --delete \
     --exclude=Git/ --exclude=Music/ --exclude=.mozilla/ \
     --exclude=USB/ --exclude=PHONE/ --exclude=SD/ \
     ~/ ~/USB/backup/
