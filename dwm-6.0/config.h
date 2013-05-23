@@ -58,7 +58,7 @@ static Key keys[] = {
     /* modifier            key                        function        argument */
     { 0,                   XF86XK_Launch1,            spawn,          {.v = dmenucmd } },
     { 0,                   XF86XK_Launch2,            spawn,          {.v = termcmd } },
-    { 0,                   XF86XK_AudioPlay,          spawn,          SHCMD("pgrep mplayer >/dev/null && echo pause >~/.mplayer/mp_pipe || player") },
+    { 0,                   XF86XK_AudioPlay,          spawn,          SHCMD("pgrep mplayer >/dev/null && echo pause >~/.mplayer/mp_pipe || exec player") },
     { 0,                   XF86XK_AudioStop,          spawn,          SHCMD("pgrep mplayer >/dev/null && echo stop >~/.mplayer/mp_pipe") },
     { 0,                   XF86XK_AudioPrev,          spawn,          SHCMD("pgrep mplayer >/dev/null && echo pt_step -1 >~/.mplayer/mp_pipe") },
     { 0,                   XF86XK_AudioNext,          spawn,          SHCMD("pgrep mplayer >/dev/null && echo pt_step 1 >~/.mplayer/mp_pipe") },
