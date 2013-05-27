@@ -46,7 +46,7 @@ sdout () {
 }
 backup () {
     cd ~ && rsync -a --delete \
-    --exclude=Git/ --exclude=Music/ --exclude=.mozilla/ \
+    --exclude=Git/ --exclude=Music/ --exclude=.cache/ \
     --exclude=USB/ --exclude=PHONE/ --exclude=SD/ \
     ~/ ~/USB/backup/
 }
