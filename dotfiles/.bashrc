@@ -1,7 +1,7 @@
 #### ~/.bashrc ####
 
 [ -z "$PS1" ] && return
-
+[ "$UID" = 0 ] && . /etc/profile
 . /usr/share/bash-completion/bash_completion
 CDPATH=".:..:~:/"
 shopt -s autocd cdspell checkwinsize histappend
@@ -21,7 +21,7 @@ la () { ls -A --color $*; }
 ll () { ls -oh --color $*; }
 lla () { ls -ohA --color $*; }
 usbin () {
-    [ -d ~/USB ] || mkdir ~/USB
+    mkdir ~/USB 2>/dev/null
     mount ~/USB && cd ~/USB || rmdir ~/USB
 }
 usbout () {
@@ -29,7 +29,7 @@ usbout () {
     umount ~/USB && rmdir ~/USB
 }
 phonein () {
-    [ -d ~/PHONE ] || mkdir ~/PHONE
+    mkdir ~/PHONE 2>/dev/null
     mount ~/PHONE && cd ~/PHONE || rmdir ~/PHONE
 }
 phoneout () {
@@ -37,7 +37,7 @@ phoneout () {
     umount ~/PHONE && rmdir ~/PHONE
 }
 sdin () {
-    [ -d ~/SD ] || mkdir ~/SD
+    mkdir ~/SD 2>/dev/null
     mount ~/SD && cd ~/SD || rmdir ~/SD
 }
 sdout () {
@@ -46,8 +46,8 @@ sdout () {
 }
 backup () {
     cd ~ && rsync -a --delete \
-    --exclude=Git/ --exclude=Music/ --exclude=.cache/ \
     --exclude=USB/ --exclude=PHONE/ --exclude=SD/ \
+    --exclude=Git/ --exclude=Music/ --exclude=.cache/ \
     ~/ ~/USB/backup/
 }
 tao () {
