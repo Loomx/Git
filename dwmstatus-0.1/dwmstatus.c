@@ -19,7 +19,7 @@
 #define BATT_FULL       "/sys/class/power_supply/BAT0/energy_full"
 
 /* Display format strings: */
-#define TRACK_STR       "%s| "
+#define TRACK_STR       "%s | "
 #define MEM_STR         "%ldMB | "
 #define VOL_STR         "%ddB | "
 #define BATT_STR        "±%ld%% | "
@@ -46,8 +46,9 @@ main(void) {
 
     /* Track */
         if ((fp = fopen(TRACK_FILE, "r"))) {
-            fgets(track, sizeof(track), fp);
-            track[strlen(track)-1] = ' ';
+            //fgets(track, sizeof(track), fp);
+            //track[strlen(track)-1] = ' ';
+            fscanf(fp, "%28[^.]", track);
             fclose(fp);
             sprintf(statnext, TRACK_STR, track);
             strcat(status, statnext);
