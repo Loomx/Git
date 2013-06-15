@@ -30,7 +30,7 @@ main(void) {
     Display *dpy;
     int num;
     long lnum1, lnum2, lnum3, lnum4;
-    char track[30], statnext[30], status[100];
+    char track[50], statnext[50], status[100];
     time_t current;
     FILE *fp;
 
@@ -48,7 +48,7 @@ main(void) {
         if ((fp = fopen(TRACK_FILE, "r"))) {
             //fgets(track, sizeof(track), fp);
             //track[strlen(track)-1] = ' ';
-            fscanf(fp, "%28[^.]", track);
+            fscanf(fp, "%48[^.]", track);
             fclose(fp);
             sprintf(statnext, TRACK_STR, track);
             strcat(status, statnext);

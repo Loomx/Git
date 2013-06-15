@@ -64,7 +64,7 @@ sleep 1
 # Loop while playing to store current track name:
 while pgrep mplayer >/dev/null; do
     if [ ! /tmp/mp_tracklist -ot /tmp/mp_track ]; then
-        tail -20 /tmp/mp_tracklist | awk -F "/" '/FILENAME/ { print $NF }' >/tmp/mp_track
+        tail -20 /tmp/mp_tracklist | awk -F "/" '/FILENAME/ { print $NF } { ORS="\0" }' >/tmp/mp_track
     fi
     sleep 1
 done
