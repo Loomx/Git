@@ -39,7 +39,7 @@ case "$Album" in
     ;;
 
     DVD)
-        exec mplayer dvd://1
+        exec mplayer dvd://
     ;;
 
     *)

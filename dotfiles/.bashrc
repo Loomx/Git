@@ -26,7 +26,7 @@ usbin () {
 }
 usbout () {
     [[ "$PWD" == ~/USB* ]] && cd ~
-    umount ~/USB && rmdir ~/USB
+    umount ~/USB; rmdir ~/USB
 }
 phonein () {
     mkdir ~/PHONE 2>/dev/null
@@ -34,7 +34,7 @@ phonein () {
 }
 phoneout () {
     [[ "$PWD" == ~/PHONE* ]] && cd ~
-    umount ~/PHONE && rmdir ~/PHONE
+    umount ~/PHONE; rmdir ~/PHONE
 }
 sdin () {
     mkdir ~/SD 2>/dev/null
@@ -42,7 +42,7 @@ sdin () {
 }
 sdout () {
     [[ "$PWD" == ~/SD* ]] && cd ~
-    umount ~/SD && rmdir ~/SD
+    umount ~/SD; rmdir ~/SD
 }
 backup () {
     cd ~ && rsync -a --delete \
