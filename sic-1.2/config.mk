@@ -5,7 +5,7 @@ VERSION = 1.2
 
 # paths
 PREFIX = /usr/local
-MANPREFIX = ${PREFIX}/share/man
+MANPREFIX = ${PREFIX}/man
 
 # includes and libs
 INCS = -I. -I/usr/include
