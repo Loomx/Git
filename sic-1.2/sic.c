@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 static char *host = "irc.oftc.net";
-static char *port = "ircd";
+static char *port = "6667";
 static char *password;
 static char nick[32];
 static char bufin[4096];
@@ -157,7 +157,7 @@ main(int argc, char *argv[]) {
 			if(++i < argc) password = argv[i];
 			break;
 		case 'v':
-			eprint("sic-"VERSION", © 2005-2009 Kris Maglione, Anselm R. Garbe, Nico Golde\n");
+			eprint("sic-"VERSION", © 2005-2013 Kris Maglione, Anselm R. Garbe, Nico Golde\n");
 		default:
 			eprint("usage: sic [-h host] [-p port] [-n nick] [-k keyword] [-v]\n");
 		}
@@ -205,4 +205,3 @@ main(int argc, char *argv[]) {
 	}
 	return 0;
 }
-
