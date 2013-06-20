@@ -1,7 +1,7 @@
 #### ~/.bashrc ####
 
 [ -z "$PS1" ] && return
-[ "$UID" = 0 ] && . /etc/profile
+[ "$USER" = "root" ] && . /etc/profile
 . /etc/profile.d/bash_completion.sh
 CDPATH=".:..:~:/"
 shopt -s autocd cdspell checkwinsize histappend
