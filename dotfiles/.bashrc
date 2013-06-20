@@ -2,7 +2,7 @@
 
 [ -z "$PS1" ] && return
 [ "$UID" = 0 ] && . /etc/profile
-. /usr/share/bash-completion/bash_completion
+. /etc/profile.d/bash_completion.sh
 CDPATH=".:..:~:/"
 shopt -s autocd cdspell checkwinsize histappend
 HISTCONTROL=erasedups
