@@ -1,4 +1,4 @@
-colorscheme desert
+colorscheme slate
 set wrap
 set number
 set splitbelow
