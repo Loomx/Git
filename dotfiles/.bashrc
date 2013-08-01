@@ -62,3 +62,4 @@ backup () {
 tao () {
     awk -v verse=$( echo $[RANDOM%80+2] ) 'RS=""; NR==verse' ~/Documents/tao.txt
 }
+
