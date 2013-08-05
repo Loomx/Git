@@ -3,7 +3,7 @@
 # Bind to `Menu' key to launch?
 
 # Select a word
-cat /usr/share/dict/words | dmenu -l 10 | xclip
+cat /usr/share/dict/words | dmenu | xclip
 #cat /usr/share/dict/words | dmenu -l 10 | xclip -selection clip
 
 # Paste it in
