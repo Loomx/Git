@@ -17,12 +17,12 @@ if stest -dlq -n "$AlbumCache" ~/Music; then
 fi
 
 # Select an album:
-Album=$( cat "$AlbumCache" | dmenu -i -l 40 ) || exit
+Album=$( dmenu <"$AlbumCache" -i -l 40 ) || exit
 
 case "$Album" in
     Jukebox)
         # Prompt for filters:
-        Filters=$( printf "" | dmenu -p Filters? ) || exit
+        Filters=$( dmenu </dev/null -p "Filters?" ) || exit
 
         if [ "$Filters" ]; then
             # Apply filters and shuffle tracks:
