@@ -3,10 +3,13 @@
 # Bind to `Menu' key to launch?
 
 # Select a word
-dmenu </usr/share/dict/words | xclip
+#dmenu </usr/share/dict/words | xclip
 #cat /usr/share/dict/words | dmenu -l 10 | xclip -selection clip
 
 # Paste it in
 #xclip -o
-xdotool type $(xclip -o)  # one of these?
+#xdotool type $(xclip -o)  # one of these?
 #xdotool type $(xsel)  #
+
+# ...or in one line :)
+xdotool type $( dmenu </usr/share/dict/words )
