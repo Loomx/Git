@@ -13,3 +13,4 @@
 
 # ...or in one line :)
 xdotool type $( dmenu </usr/share/dict/words )
+
