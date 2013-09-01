@@ -1,5 +1,6 @@
 colorscheme slate
 set wrap
+set linebreak
 set number
 set splitbelow
 set splitright
