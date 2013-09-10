@@ -28,7 +28,7 @@ bind '"\C-e":end-of-line'
 l () { ls --color $*; }
 la () { ls -A --color $*; }
 ll () { ls -lh --color $*; }
-lla () { ls -lhA --color $*; }
+lla () { ls -lha --color $*; }
 usbin () {
     mkdir ~/USB 2>/dev/null
     mount ~/USB && cd ~/USB || rmdir ~/USB
