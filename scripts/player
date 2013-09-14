@@ -27,9 +27,8 @@ case "$Album" in
         if [ "$Filters" ]; then
             # Apply filters and shuffle tracks:
             set $( echo "$Filters" ) 
-            while [ "$1" ]; do 
+            for i; do 
                 grep -Fi "$1" "$TrackCache"
-                shift
             done | mplayer -playlist - -shuffle -identify >/tmp/mp_tracklist &
 
         else
