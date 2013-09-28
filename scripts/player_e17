@@ -5,21 +5,44 @@
 # Depends: dmenu, mplayer
 
 
-# If mplayer is already running, send it a command down the pipe:
-case $1 in
-    prev)   pgrep mplayer >/dev/null && echo pt_step -1 >~/.mplayer/mp_pipe
-            exit
-            ;;
-    next)   pgrep mplayer >/dev/null && echo pt_step 1 >~/.mplayer/mp_pipe
-            exit
-            ;;
-    stop)   pgrep mplayer >/dev/null && echo stop >~/.mplayer/mp_pipe
-            exit
-            ;;
-    *)      pgrep mplayer >/dev/null && echo pause >~/.mplayer/mp_pipe \
-            && exit
-            ;;
-esac
+# If audacious is running, send it a command:
+if pgrep audacious >/dev/null; then
+    case $1 in
+        prev)   audacious --rew
+                exit
+                ;;
+        next)   audacious --fwd
+                exit
+                ;;
+        stop)   audacious --stop
+                exit
+                ;;
+        *)      audacious --play-pause
+                exit
+                ;;
+    esac
+fi
+
+# If mplayer is running, send it a command down the pipe:
+if pgrep mplayer >/dev/null; then
+    case $1 in
+        prev)   echo pt_step -1 >~/.mplayer/mp_pipe
+                exit
+                ;;
+        next)   echo pt_step 1 >~/.mplayer/mp_pipe
+                exit
+                ;;
+        stop)   echo stop >~/.mplayer/mp_pipe
+                exit
+                ;;
+        *)      echo pause >~/.mplayer/mp_pipe
+                exit
+                ;;
+    esac
+fi
+
+# Only continue if `player' was invoked with no arguments
+[ "$1" ] && exit
 
 # Cache files:
 AlbumCache=~/.mplayer/album_cache
