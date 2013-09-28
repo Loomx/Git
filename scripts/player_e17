@@ -1,0 +1,14 @@
+case $1 in
+    prev)   pgrep mplayer >/dev/null && echo pt_step -1 >~/.mplayer/mp_pipe
+            exit
+            ;;
+    next)   pgrep mplayer >/dev/null && echo pt_step 1 >~/.mplayer/mp_pipe
+            exit
+            ;;
+    stop)   pgrep mplayer >/dev/null && echo stop >~/.mplayer/mp_pipe
+            exit
+            ;;
+    *)      pgrep mplayer >/dev/null && pause >~/.mplayer/mp_pipe \
+            && exit
+            ;;
+esac
