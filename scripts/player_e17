@@ -41,7 +41,7 @@ if pgrep mplayer >/dev/null; then
     esac
 fi
 
-# Only continue if `player' was invoked with no arguments
+# Only continue if script was invoked with no arguments
 [ "$1" ] && exit
 
 # Cache files:
