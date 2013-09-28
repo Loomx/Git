@@ -1,3 +1,11 @@
+#!/bin/sh
+#
+# /usr/local/bin/player
+#
+# Depends: dmenu, mplayer
+
+
+# If mplayer is already running, send it a command down the pipe:
 case $1 in
     prev)   pgrep mplayer >/dev/null && echo pt_step -1 >~/.mplayer/mp_pipe
             exit
@@ -8,7 +16,59 @@ case $1 in
     stop)   pgrep mplayer >/dev/null && echo stop >~/.mplayer/mp_pipe
             exit
             ;;
-    *)      pgrep mplayer >/dev/null && pause >~/.mplayer/mp_pipe \
+    *)      pgrep mplayer >/dev/null && echo pause >~/.mplayer/mp_pipe \
             && exit
             ;;
+esac
+
+# Cache files:
+AlbumCache=~/.mplayer/album_cache
+TrackCache=~/.mplayer/track_cache
+
+if stest -dlq -n "$AlbumCache" ~/Music; then
+    # Update caches if anything has changed:
+    printf "Jukebox\nDVD\n" >"$AlbumCache"
+    stest -dl ~/Music | sort >>"$AlbumCache"
+    stest -f ~/Music/*/* >"$TrackCache"
+fi
+
+# Select an album:
+Album=$( dmenu <"$AlbumCache" -i -l 40 ) || exit
+
+case "$Album" in
+    Jukebox)
+        # Prompt for filters:
+        Filters=$( dmenu </dev/null -p "Filters?" ) || exit
+
+if [ "$Filters" ]; then
+            # Apply filters and shuffle tracks:
+            set $( echo "$Filters" )
+            for i; do
+            grep -Fi "$1" "$TrackCache"
+            done | exec mplayer -playlist - -shuffle
+
+        else
+            # No filters, so shuffle all tracks:
+            exec mplayer -playlist "$TrackCache" -shuffle
+        fi
+    ;;
+
+    DVD)
+        exec mplayer dvd://
+    ;;
+
+    *)
+        # Album is selected, prompt to play or shuffle:
+        Mode=$( printf "Play\nShuffle" | dmenu -i -l 2 ) || exit
+
+if [ "$Mode" = Shuffle ]; then
+            # Shuffle album tracks:
+            exec mplayer ~/Music/"$Album"/* -shuffle
+
+        else
+            # Play album in order:
+            exec mplayer ~/Music/"$Album"/*
+        fi
+    ;;
+
 esac
