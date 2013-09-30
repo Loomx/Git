@@ -63,11 +63,11 @@ case "$Album" in
         # Prompt for filters:
         Filters=$( dmenu </dev/null -p "Filters?" ) || exit
 
-if [ "$Filters" ]; then
+        if [ "$Filters" ]; then
             # Apply filters and shuffle tracks:
             set $( echo "$Filters" )
             for i; do
-            grep -Fi "$1" "$TrackCache"
+            grep -Fi "$i" "$TrackCache"
             done | exec mplayer -playlist - -shuffle
 
         else
@@ -84,7 +84,7 @@ if [ "$Filters" ]; then
         # Album is selected, prompt to play or shuffle:
         Mode=$( printf "Play\nShuffle" | dmenu -i -l 2 ) || exit
 
-if [ "$Mode" = Shuffle ]; then
+        if [ "$Mode" = Shuffle ]; then
             # Shuffle album tracks:
             exec mplayer ~/Music/"$Album"/* -shuffle
 
