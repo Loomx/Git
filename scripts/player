@@ -28,7 +28,7 @@ case "$Album" in
             # Apply filters and shuffle tracks:
             set $( echo "$Filters" ) 
             for i; do 
-                grep -Fi "$1" "$TrackCache"
+                grep -Fi "$i" "$TrackCache"
             done | mplayer -playlist - -shuffle -identify >/tmp/mp_tracklist &
 
         else
