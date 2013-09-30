@@ -47,7 +47,7 @@ fi
 # Select an option:
 Option=$( printf "Music\nDVD" | dmenu -i -l 2 ) || exit
 
-case "Option" in
+case "$Option" in
     Music)  exec audacious
             ;;
     DVD)    exec mplayer dvd://
