@@ -51,7 +51,7 @@ static const Layout layouts[] = {
 static const char *dmenucmd[]     = { "dmenu_run", NULL };
 static const char *termcmd[]      = { "xterm", NULL };
 static const char *mutecmd[]      = { "amixer", "-q", "set", "Master", "toggle", NULL };
-static const char *ejectcmd[]     = { "sudo", "/usr/bin/eject", NULL };
+static const char *ejectcmd[]     = { "eject", NULL };
 static const char *sleepcmd[]     = { "sudo", "/usr/sbin/pm-suspend", NULL };
 
 static Key keys[] = {
