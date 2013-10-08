@@ -74,6 +74,8 @@ static Key keys[] = {
     { MODKEY,              XK_Tab,                    focusstack,     {.i = +1 } },
     { MODKEY,              XK_space,                  setlayout,      {0} },
     { MODKEY,              XK_z,                      zoom,           {0} },
+    { MODKEY,              XK_bracketleft,            setmfact,       {.f = -0.05 } },
+    { MODKEY,              XK_bracketright,           setmfact,       {.f = +0.05 } },
     { MODKEY,              XK_q,                      killclient,     {0} },
     TAGKEYS(               XK_comma,                                  0)
     TAGKEYS(               XK_period,                                 1)
