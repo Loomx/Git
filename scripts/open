@@ -32,3 +32,5 @@ elif grep -q Document "$File"; then
     exec libreoffice "$1"
 fi
 
+# then add `shift' to process more arguments?..
+
