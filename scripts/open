@@ -5,18 +5,30 @@
 # Depends: xpdf geeqie libreoffice
 
 
-case "$1" in
-    *.pdf|*.PDF)
-        xpdf "$1"
-    ;;
+#case "$1" in
+#    *.pdf|*.PDF)
+#        xpdf "$1"
+#    ;;
+#
+#    *.jpg|*.JPG|*.png|*.PNG|*.tiff|*.TIFF)
+#        geeqie "$1"
+#    ;;
+#
+#    *.doc|*.DOC|*.docx|*.DOCX|*.xls|*.XLS|*.ppt|*.PPT)
+#        libreoffice "$1"
+#    ;;
+#
+#easc
 
-    *.jpg|*.JPG|*.png|*.PNG|*.tiff|*.TIFF)
-        geeqie "$1"
-    ;;
+###### or ######
 
-    *.doc|*.DOC|*.docx|*.DOCX|*.xls|*.XLS|*.ppt|*.PPT)
-        libreoffice "$1"
-    ;;
+File=$(file "$1")
 
-easc
+if grep -q PDF "$File"; then
+    exec xpdf "$1"
+elif grep -q image "$File"; then
+    exec geeqie "$1"
+elif grep -q Document "$File"; then
+    exec libreoffice "$1"
+fi
 
