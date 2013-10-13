@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# /usr/local/bin/player
+#
+# Depends: xpdf geeqie libreoffice
+
+
+case "$1" in
+    *.pdf|*.PDF)
+        xpdf "$1"
+    ;;
+
+    *.jpg|*.JPG|*.png|*.PNG|*.tiff|*.TIFF)
+        geeqie "$1"
+    ;;
+
+    *.doc|*.DOC|*.docx|*.DOCX|*.xls|*.XLS|*.ppt|*.PPT)
+        libreoffice "$1"
+    ;;
+
+easc
+
