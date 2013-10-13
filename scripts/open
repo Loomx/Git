@@ -34,7 +34,7 @@
 
 ###### or ######
 
-while [ "$1"]; do
+while [ "$1" ]; do
     echo $(file "$1") | \
         if grep -Fq PDF; then
             exec xpdf "$1"
