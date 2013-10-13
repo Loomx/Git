@@ -38,7 +38,7 @@ PDFviewer=xpdf
 Imageviewer=geeqie
 Documentviewer=libreoffice
 
-while [ "$1" ]; do
+#while [ "$1" ]; do
     echo $(file "$1") | \
         if grep -Fq PDF; then
             exec "$PDFviewer" "$1"
@@ -47,6 +47,6 @@ while [ "$1" ]; do
         elif grep -Fq Document; then
             exec "$Documentviewer" "$1"
         fi
-    shift
-done
+#    shift
+#done
 
