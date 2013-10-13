@@ -22,15 +22,29 @@
 
 ###### or ######
 
-File=$(file "$1")
+#File=$(file "$1")
+#
+#if echo "$File" | grep -Fq PDF; then
+#    exec xpdf "$1"
+#elif echo "$File" | grep -Fq image; then
+#    exec geeqie "$1"
+#elif echo "$File" | grep -Fq Document; then
+#    exec libreoffice "$1"
+#fi
 
-if grep -q PDF "$File"; then
-    exec xpdf "$1"
-elif grep -q image "$File"; then
-    exec geeqie "$1"
-elif grep -q Document "$File"; then
-    exec libreoffice "$1"
-fi
+###### or ######
+
+while [ "$1"]; do
+    echo $(file "$1") | \
+        if grep -Fq PDF; then
+            exec xpdf "$1"
+        elif grep -Fq image; then
+            exec geeqie "$1"
+        elif grep -Fq Document; then
+            exec libreoffice "$1"
+        fi
+    shift
+done
 
 # then add `shift' to process more arguments?..
 
