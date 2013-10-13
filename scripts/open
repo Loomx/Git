@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# /usr/local/bin/player
+# /usr/local/bin/open
 #
 # Depends: xpdf geeqie libreoffice
 
