@@ -34,14 +34,18 @@
 
 ###### or ######
 
+PDFviewer=xpdf
+Imageviewer=geeqie
+Documentviewer=libreoffice
+
 while [ "$1" ]; do
     echo $(file "$1") | \
         if grep -Fq PDF; then
-            exec xpdf "$1"
+            exec "$PDFviewer" "$1"
         elif grep -Fq image; then
-            exec geeqie "$1"
+            exec "$Imageviewer" "$1"
         elif grep -Fq Document; then
-            exec libreoffice "$1"
+            exec "$Documentviewer" "$1"
         fi
     shift
 done
