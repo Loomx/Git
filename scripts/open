@@ -22,31 +22,19 @@
 
 ###### or ######
 
-#File=$(file "$1")
-#
-#if echo "$File" | grep -Fq PDF; then
-#    exec xpdf "$1"
-#elif echo "$File" | grep -Fq image; then
-#    exec geeqie "$1"
-#elif echo "$File" | grep -Fq Document; then
-#    exec libreoffice "$1"
-#fi
+File=$(file "$1")
 
-###### or ######
-
-PDFviewer=xpdf
-Imageviewer=geeqie
-Documentviewer=libreoffice
-
-#while [ "$1" ]; do
-    echo $(file "$1") | \
-        if grep -Fq PDF; then
-            exec "$PDFviewer" "$1"
-        elif grep -Fq image; then
-            exec "$Imageviewer" "$1"
-        elif grep -Fq Document; then
-            exec "$Documentviewer" "$1"
-        fi
-#    shift
-#done
+if echo "$File" | grep -Fq PDF; then
+    echo opening...
+    xpdf "$1" &
+elif echo "$File" | grep -Fq image; then
+    echo opening...
+    geeqie "$1" &
+elif echo "$File" | grep -Fq Document; then
+    echo opening...
+    libreoffice "$1" &
+elif echo "$File" | grep -Fq Rich; then
+    echo opening...
+    libreoffice "$1" &
+fi
 
