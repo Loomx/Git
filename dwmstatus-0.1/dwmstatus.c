@@ -20,12 +20,9 @@
 
 /* Display format strings: */
 #define TRACK_STR       "%s | "
-#define MEM_STR         "%ldMB | "
-//#define MEM_STR         "Mem:%ld | "
-#define VOL_STR         "%ddB | "
-//#define VOL_STR         "Vol:%d | "
-#define BATT_STR        "±%ld%% | "
-//#define BATT_STR        "Bat:%ld | "
+#define MEM_STR         "Mem:%ld | "    //  "%ldMB | "
+#define VOL_STR         "Vol:%d | "     //  "%ddB | "
+#define BATT_STR        "Bat:%ld | "    //  "±%ld%% | "
 #define TIME_STR        "%H:%M"
 
 int
