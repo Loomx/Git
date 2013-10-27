@@ -8,9 +8,10 @@
 CDPATH=".:..:~:/"
 shopt -s autocd cdspell checkwinsize histappend
 HISTCONTROL=erasedups
+unset HISTFILESIZE
 set -o vi
 
-PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color; Prev="$PWD"'
+PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color; Prev="$PWD"; history -a'
 
 if [ "$USER" = "root" ]; then
     PS1='\[\033[0;31m\]\u \[\033[0;33m\]\w \[\033[m\]'
@@ -61,5 +62,8 @@ backup () {
 }
 tao () {
     awk -v verse=$( echo $[RANDOM%80+2] ) 'RS=""; NR==verse' ~/Documents/tao.txt
+}
+histfix () {
+    tac ~/.bash_history | awk '!a[$0]++' | tac >/tmp/hist && mv /tmp/hist ~/.bash_history
 }
 
