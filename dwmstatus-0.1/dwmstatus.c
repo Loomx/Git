@@ -21,8 +21,11 @@
 /* Display format strings: */
 #define TRACK_STR       "%s | "
 #define MEM_STR         "%ldMB | "
+//#define MEM_STR         "Mem:%ld | "
 #define VOL_STR         "%ddB | "
+//#define VOL_STR         "Vol:%d | "
 #define BATT_STR        "±%ld%% | "
+//#define BATT_STR        "Bat:%ld | "
 #define TIME_STR        "%H:%M"
 
 int
@@ -59,6 +62,7 @@ main(void) {
             fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nBuffers: %ld kB\nCached: %ld kB\n", &lnum1, &lnum2, &lnum3, &lnum4);
             fclose(fp);
             sprintf(statnext, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/1024);
+            //sprintf(statnext, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));
             strcat(status, statnext);
         }
 
