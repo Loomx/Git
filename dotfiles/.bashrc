@@ -11,9 +11,6 @@ HISTCONTROL=erasedups
 unset HISTFILESIZE
 set -o vi
 
-# Remove duplicates from ~/.bash_history
-tac ~/.bash_history | awk '!a[$0]++' | tac >/tmp/hist && mv /tmp/hist ~/.bash_history
-
 PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color; Prev="$PWD"; history -a'
 
 if [ "$USER" = "root" ]; then
@@ -66,4 +63,8 @@ backup () {
 tao () {
     awk -v verse=$( echo $[RANDOM%80+2] ) 'RS=""; NR==verse' ~/Documents/tao.txt
 }
+histfix () {
+    tac ~/.bash_history | awk '!x[$0]++' | tac >/tmp/hist && mv /tmp/hist ~/.bash_history
+}
+trap histfix EXIT
 
