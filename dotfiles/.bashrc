@@ -6,12 +6,11 @@
 
 . /etc/profile.d/bash_completion.sh
 CDPATH=".:..:~:/"
-HISTFILESIZE=2500
+shopt -s autocd cdspell checkwinsize #histappend
 HISTCONTROL=erasedups
-shopt -s autocd cdspell checkwinsize histappend
 set -o vi
 
-PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color; Prev="$PWD"; history -a'
+PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color; Prev="$PWD"'
 
 if [ "$USER" = "root" ]; then
     PS1='\[\033[0;31m\]\u \[\033[0;33m\]\w \[\033[m\]'
