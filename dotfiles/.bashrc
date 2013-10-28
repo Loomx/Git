@@ -6,9 +6,9 @@
 
 . /etc/profile.d/bash_completion.sh
 CDPATH=".:..:~:/"
-shopt -s autocd cdspell checkwinsize histappend
+HISTFILESIZE=2500
 HISTCONTROL=erasedups
-unset HISTFILESIZE
+shopt -s autocd cdspell checkwinsize histappend
 set -o vi
 
 PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color; Prev="$PWD"; history -a'
