@@ -2,4 +2,6 @@
 
 . ~/.bashrc
 
-[ $(tty) = /dev/tty1 ] && exec xinit
+if [ -z "$DISPLAY" ] && [ $(tty) = /dev/tty1 ]; then
+    exec xinit
+fi
