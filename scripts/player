@@ -9,13 +9,17 @@
 AlbumCache=~/.mplayer/album_cache
 TrackCache=~/.mplayer/track_cache
 
-# Check music folders
+# Check music folders:
 if stest -dlq -n "$AlbumCache" ~/Music; then
     # Update caches if anything has changed:
     printf "Jukebox\nDVD\n" >"$AlbumCache"
     stest -dl ~/Music | sort >>"$AlbumCache"
     stest -f ~/Music/*/* >"$TrackCache"
 fi
+
+# Set trap to clean up afterwards:
+clean_up () { rm /tmp/mp_track /tmp/mp_tracklist; }
+trap 'clean_up' EXIT
 
 # Select an album:
 Album=$( dmenu <"$AlbumCache" -i -l 40 ) || exit
@@ -57,10 +61,6 @@ case "$Album" in
     ;;
 
 esac
-
-# Set trap to clean up afterwards
-clean_up () { rm /tmp/mp_track /tmp/mp_tracklist; }
-trap 'clean_up' EXIT
 
 # Pause while mplayer starts:
 sleep 1
