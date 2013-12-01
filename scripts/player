@@ -72,3 +72,4 @@ while pgrep mplayer >/dev/null; do
     fi
     sleep 1
 done
+
