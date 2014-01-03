@@ -9,8 +9,8 @@ set tabstop=4
 set shiftwidth=4
 set nohlsearch
 set nobackup
-map <C-j> <C-w>j
-map <C-k> <C-w>k
-map <C-h> <C-w>h
-map <C-l> <C-w>l
-map Y y$
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-h> <C-w>h
+noremap <C-l> <C-w>l
+noremap Y y$
