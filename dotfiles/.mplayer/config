@@ -3,8 +3,8 @@
 ao=alsa
 fs=1
 framedrop=1
-prefer-ipv4=1
 stop-xscreensaver=1
+prefer-ipv4=1
 really-quiet=1
 nolirc=1
 input=file=/home/jonny/.mplayer/mp_pipe
