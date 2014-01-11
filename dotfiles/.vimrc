@@ -9,8 +9,8 @@ set splitright
 set expandtab
 set tabstop=4
 set shiftwidth=4
-set nohlsearch
 set nobackup
+set nohlsearch
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-h> <C-w>h
