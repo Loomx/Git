@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+# ~/.xinitrc
 
 xrdb -merge ~/.Xresources
 
