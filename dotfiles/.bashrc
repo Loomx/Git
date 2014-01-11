@@ -13,10 +13,8 @@ set -o vi
 PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color; Prev="$PWD"'
 
 if [ "$USER" = "root" ]; then
-    #PS1='\[\033[0;31m\]\u \[\033[0;33m\]\w \[\033[m\]'
     PS1='\[\e[0;31m\][ \w ]\n\[\e[0;31m\]\$ \[\e[m\]'
 else
-    #PS1='\[\033[0;34m\]\u \[\033[0;33m\]\w \[\033[m\]'
     PS1='\[\e[0;33m\][ \w ]\n\[\e[0;33m\]\$ \[\e[m\]'
 fi
 
