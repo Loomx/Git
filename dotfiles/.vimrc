@@ -1,3 +1,5 @@
+! ~/.vimrc
+
 colorscheme slate
 set wrap
 set linebreak

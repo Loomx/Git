@@ -64,8 +64,14 @@ backup () {
 tao () {
     awk -v verse=$( echo $[RANDOM%80+2] ) 'RS=""; NR==verse' ~/Documents/tao.txt
 }
+hdmiin () {
+    xrandr --auto --output HDMI1 --mode 1280x800
+    cp ~/.asoundrc-hdmi ~/.asoundrc
+}
+hdmiout () {
+    rm ~/.asoundrc
+}
 histfix () {
     tac ~/.bash_history | awk '!x[$0]++' | tac >/tmp/hist && mv /tmp/hist ~/.bash_history
 }
 trap histfix EXIT
-
