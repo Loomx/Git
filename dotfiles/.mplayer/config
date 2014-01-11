@@ -1,5 +1,4 @@
 # ~/.mplayer/config
-
 ao=alsa
 fs=1
 framedrop=1
