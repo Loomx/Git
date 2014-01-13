@@ -1,4 +1,4 @@
-! ~/.vimrc
+" ~/.vimrc
 
 colorscheme slate
 set wrap
