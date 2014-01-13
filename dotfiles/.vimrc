@@ -16,3 +16,4 @@ noremap <C-k> <C-w>k
 noremap <C-h> <C-w>h
 noremap <C-l> <C-w>l
 noremap Y y$
+noremap Q @q
