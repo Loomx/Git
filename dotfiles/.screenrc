@@ -6,7 +6,9 @@
 # password ODSJQf.4IJN7E    # "1234"
 
 # no annoying audible bell, please
-vbell on
+vbell off
+vbell_msg ""
+msgwait 0
 
 # detach on hangup
 autodetach on
@@ -140,6 +142,7 @@ bind ^] paste [.]
 # screen -t 40 2 rlogin server
 
 # caption always "%3n %t%? @%u%?%? [%h]%?%=%c"
+caption always " %H %-w%{= BW}%50>%n %t%{-}%+w%>"
 # hardstatus alwaysignore
 # hardstatus alwayslastline "%Lw"
 
@@ -151,9 +154,3 @@ bind ^] paste [.]
 # defnonblock 1
 # blankerprg rain -d 100
 # idle 30 blanker
-#
-################
-
-msgwait 0
-vbell_msg ""
-caption always " %H %-w%{= BW}%50>%n %t%{-}%+w%>"
