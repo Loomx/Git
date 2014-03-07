@@ -21,7 +21,6 @@ fi
 bind '"\t":menu-complete'
 bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
-bind '"\C-l":clear-screen'
 bind '"\C-a":beginning-of-line'
 bind '"\C-e":end-of-line'
 
@@ -29,6 +28,7 @@ l () { ls --color $*; }
 la () { ls -A --color $*; }
 ll () { ls -lh --color $*; }
 lla () { ls -lha --color $*; }
+cl () { clear; ls --color $*; }
 usbin () {
     mkdir ~/USB 2>/dev/null
     mount ~/USB && cd ~/USB || rmdir ~/USB
