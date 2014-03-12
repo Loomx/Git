@@ -19,7 +19,7 @@ static const char *tags[] = { "Here", "There" };
 
 static const Rule rules[] = {
     /* class      instance    title       tags mask     isfloating   monitor */
-    {  NULL,      NULL,       "xv",       0,            True,        -1 },
+    {  NULL,      "xv",       NULL,       0,            True,        -1 },
 };
 
 /* layout(s) */
