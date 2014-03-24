@@ -10,7 +10,7 @@ shopt -s autocd cdspell checkwinsize #histappend
 HISTCONTROL=erasedups
 set -o vi
 
-PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color; Prev="$PWD"'
+PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; Prev="$PWD"'
 
 if [ "$USER" = "root" ]; then
     PS1='\[\e[0;31m\][ \w ]\n\[\e[0;31m\]\$ \[\e[m\]'
@@ -23,12 +23,12 @@ bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
 bind '"\C-a":beginning-of-line'
 bind '"\C-e":end-of-line'
-bind '"\C-l":"clear; ls --color\n"'
+bind '"\C-l":"clear; ls --color --group-directories-first\n"'
 
-l () { ls --color $*; }
-la () { ls -A --color $*; }
-ll () { ls -lh --color $*; }
-lla () { ls -lha --color $*; }
+l () { ls --color --group-directories-first $*; }
+la () { ls -A --color --group-directories-first $*; }
+ll () { ls -lh --color --group-directories-first $*; }
+lla () { ls -lha --color --group-directories-first $*; }
 usbin () {
     mkdir ~/USB 2>/dev/null
     mount ~/USB && cd ~/USB || rmdir ~/USB
