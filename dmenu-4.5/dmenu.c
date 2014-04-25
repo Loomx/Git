@@ -47,8 +47,8 @@ static const char *font = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";
 static const char *prompt = NULL;
 static const char *normbgcolor = "#222222";
 static const char *normfgcolor = "#bbbbbb";
-static const char *selbgcolor  = "#222222";    //#005577";
-static const char *selfgcolor  = "#429eee":    //#eeeeee";
+static const char *selbgcolor  = "#222222";    /* "#005577"; */
+static const char *selfgcolor  = "#429eee":    /* "#eeeeee"; */
 static unsigned int lines = 0;
 static unsigned long normcol[ColLast];
 static unsigned long selcol[ColLast];
