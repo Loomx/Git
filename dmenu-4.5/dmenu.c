@@ -48,7 +48,7 @@ static const char *prompt = NULL;
 static const char *normbgcolor = "#222222";
 static const char *normfgcolor = "#bbbbbb";
 static const char *selbgcolor  = "#222222";    // #005577
-static const char *selfgcolor  = "#22bbee";    // #eeeeee
+static const char *selfgcolor  = "#429eee";    // #eeeeee
 static unsigned int lines = 0;
 static unsigned long normcol[ColLast];
 static unsigned long selcol[ColLast];
@@ -584,4 +584,24 @@ setup(void) {
 	swa.override_redirect = True;
 	swa.background_pixel = normcol[ColBG];
 	swa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask;
-	win = X
+	win = XCreateWindow(dc->dpy, root, x, y, mw, mh, 0,
+	                    DefaultDepth(dc->dpy, screen), CopyFromParent,
+	                    DefaultVisual(dc->dpy, screen),
+	                    CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
+
+	/* open input methods */
+	xim = XOpenIM(dc->dpy, NULL, NULL, NULL);
+	xic = XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
+	                XNClientWindow, win, XNFocusWindow, win, NULL);
+
+	XMapRaised(dc->dpy, win);
+	resizedc(dc, mw, mh);
+	drawmenu();
+}
+
+void
+usage(void) {
+	fputs("usage: dmenu [-b] [-f] [-i] [-l lines] [-p prompt] [-fn font]\n"
+	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-v]\n", stderr);
+	exit(EXIT_FAILURE);
+}
