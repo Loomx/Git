@@ -142,7 +142,7 @@ bind ^] paste [.]
 # screen -t 40 2 rlogin server
 
 # caption always "%3n %t%? @%u%?%? [%h]%?%=%c"
-caption always " %H %-w%{= BW}%50>%n %t%{-}%+w%>"
+caption always "%{= bw} %H %-w%{= BW}%50>%n %t%{-}%+w%>"
 # hardstatus alwaysignore
 # hardstatus alwayslastline "%Lw"
 
