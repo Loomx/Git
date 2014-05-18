@@ -2,21 +2,20 @@
 
 [ -z "$PS1" ] && return
 
-[ "$USER" = "root" ] && . /etc/profile
+if [ "$USER" = "root" ]; then
+    . /etc/profile
+    PS1='\[\e[0;31m\][ \w ]\n\[\e[0;31m\]\$ \[\e[m\]'
+else
+    PS1='\[\e[0;33m\][ \w ]\n\[\e[0;33m\]\$ \[\e[m\]'
+fi
+
+PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; Prev="$PWD"'
 
 . /etc/profile.d/bash_completion.sh
 CDPATH=".:..:~:/"
 shopt -s autocd cdspell checkwinsize #histappend
 HISTCONTROL=erasedups
 set -o vi
-
-PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; Prev="$PWD"'
-
-if [ "$USER" = "root" ]; then
-    PS1='\[\e[0;31m\][ \w ]\n\[\e[0;31m\]\$ \[\e[m\]'
-else
-    PS1='\[\e[0;33m\][ \w ]\n\[\e[0;33m\]\$ \[\e[m\]'
-fi
 
 bind '"\t":menu-complete'
 bind '"\e[A":history-search-backward'
