@@ -1,13 +1,24 @@
 dwmstatus
 =========
-
 dwmstatus is a simple statusbar for dwm.
 
 It displays the following:
 
-string from /tmp/mp_track | memory usage | int from /tmp/alsa_volume | battery charge | time
+string from /tmp/mp_track | memory usage | int from /tmp/alsa_volume \
+| battery charge | time
 
 If any of the files don't exist, it will silently omit them.
 
 See ../scripts/dmplayer for /tmp/mp_track
 See ../dwm-6.0/config.h for /tmp/alsa_volume
+
+
+Installation
+------------
+Edit `Makefile' to match your local setup (dwmstatus is installed
+into the /usr/local namespace by default).
+
+Afterwards enter the following command to build and install dwmstatus
+(if necessary as root):
+
+    make install clean
