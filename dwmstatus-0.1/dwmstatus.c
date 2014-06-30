@@ -1,8 +1,6 @@
-/* Jonny's dwmstatus
- *
- * Compile with:
- * gcc -Wall -pedantic -std=c99 -lX11 dwmstatus.c -o dwmstatus
- */
+/* Jonny's dwmstatus            */
+/* based on one by Trilby White */
+/* MIT Licence                  */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -20,9 +18,9 @@
 
 /* Display format strings: */
 #define TRACK_STR       "%s | "
-#define MEM_STR         "Mem:%ld | "    //  "%ldMB | "
-#define VOL_STR         "Vol:%d | "     //  "%ddB | "
-#define BATT_STR        "Bat:%ld | "    //  "±%ld%% | "
+#define MEM_STR         "Mem:%ld | "
+#define VOL_STR         "Vol:%d | "
+#define BATT_STR        "Bat:%ld | "
 #define TIME_STR        "%H:%M"
 
 int
