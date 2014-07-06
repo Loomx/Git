@@ -2,9 +2,8 @@
 #
 # /usr/local/bin/wifi
 #
-# Add '$USER ALL=NOPASSWD: /usr/bin/nm-applet, /bin/killall' to /etc/sudoers
+# Add '$USER ALL=NOPASSWD: /usr/bin/nm-applet, /bin/killall nm-applet' to /etc/sudoers
 
 sudo nm-applet 2>/dev/null &
 stalonetray --geometry=2x1-0-0 2>/dev/null
 sudo killall nm-applet
-
