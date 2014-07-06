@@ -1,6 +1,7 @@
-/* Jonny's dwmstatus            */
-/* based on one by Trilby White */
-/* MIT Licence                  */
+/* dwmstatus
+ * based on one by Trilby White
+ * GPL Licence
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -9,18 +10,16 @@
 #include <time.h>
 #include <X11/Xlib.h>
 
-/* Files read for system info: */
 #define TRACK_FILE      "/tmp/mp_track"
 #define MEM_FILE        "/proc/meminfo"
 #define VOL_FILE        "/tmp/alsa_volume"
-#define BATT_NOW        "/sys/class/power_supply/BAT0/energy_now"
-#define BATT_FULL       "/sys/class/power_supply/BAT0/energy_full"
+#define BAT_NOW         "/sys/class/power_supply/BAT0/energy_now"
+#define BAT_FULL        "/sys/class/power_supply/BAT0/energy_full"
 
-/* Display format strings: */
 #define TRACK_STR       "%s | "
 #define MEM_STR         "Mem:%ld | "
 #define VOL_STR         "Vol:%d | "
-#define BATT_STR        "Bat:%ld | "
+#define BAT_STR         "Bat:%ld | "
 #define TIME_STR        "%H:%M"
 
 int
@@ -32,17 +31,15 @@ main(void) {
     time_t current;
     FILE *fp;
 
-    /* Setup X display */
     if (!(dpy = XOpenDisplay(NULL))) {
         fprintf(stderr, "ERROR: could not open display\n");
         exit(1);
     }
 
-/* MAIN LOOP STARTS HERE: */
     for (;;sleep(1)) {
         status[0]='\0';
 
-    /* Track */
+        /* Track */
         if ((fp = fopen(TRACK_FILE, "r"))) {
             //fgets(track, sizeof(track), fp);
             //track[strlen(track)-1] = ' ';
@@ -52,7 +49,7 @@ main(void) {
             strcat(status, statnext);
         }
 
-    /* Memory */
+        /* Memory */
         if ((fp = fopen(MEM_FILE, "r"))) {
             fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nBuffers: %ld kB\nCached: %ld kB\n", &lnum1, &lnum2, &lnum3, &lnum4);
             fclose(fp);
@@ -60,7 +57,7 @@ main(void) {
             strcat(status, statnext);
         }
 
-    /* Volume */
+        /* Volume */
         if ((fp = fopen(VOL_FILE, "r"))) {
             fscanf(fp, "%d", &num);
             fclose(fp);
@@ -68,28 +65,26 @@ main(void) {
             strcat(status, statnext);
         }
 
-    /* Battery */
-        if ((fp = fopen(BATT_NOW, "r"))) {
+        /* Battery */
+        if ((fp = fopen(BAT_NOW, "r"))) {
             fscanf(fp, "%ld\n", &lnum1);
             fclose(fp);
-            fp = fopen(BATT_FULL, "r");
+            fp = fopen(BAT_FULL, "r");
             fscanf(fp, "%ld\n", &lnum2);
             fclose(fp);
-            sprintf(statnext, BATT_STR, (lnum1/(lnum2/100)));
+            sprintf(statnext, BAT_STR, (lnum1/(lnum2/100)));
             strcat(status, statnext);
         }
 
-    /* Time */
+        /* Time */
         time(&current);
         strftime(statnext, 38, TIME_STR, localtime(&current));
         strcat(status, statnext);
 
-    /* Set root name */
     XStoreName(dpy, DefaultRootWindow(dpy), status);
     XSync(dpy, False);
     }
 
-/* NEXT LINES SHOULD NEVER EXECUTE */
     XCloseDisplay(dpy);
     return 0;
 }
