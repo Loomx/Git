@@ -40,11 +40,11 @@ case "$Album" in
             # No filters, so shuffle all tracks:
             mplayer -playlist "$TrackCache" -shuffle -identify >/tmp/mp_tracklist &
         fi
-    ;;
+        ;;
 
     DVD)
         exec mplayer dvd://
-    ;;
+        ;;
 
     *)
         # Album is selected, prompt to play or shuffle:
@@ -58,8 +58,7 @@ case "$Album" in
             # Play album in order:
             mplayer ~/Music/"$Album"/* -identify >/tmp/mp_tracklist &
         fi
-    ;;
-
+        ;;
 esac
 
 # Pause while mplayer starts:
@@ -72,4 +71,3 @@ while pgrep mplayer >/dev/null; do
     fi
     sleep 1
 done
-
