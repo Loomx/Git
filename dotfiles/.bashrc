@@ -29,6 +29,7 @@ l () { ls --color --group-directories-first $*; }
 la () { ls -A --color --group-directories-first $*; }
 ll () { ls -lh --color --group-directories-first $*; }
 lla () { ls -lha --color --group-directories-first $*; }
+
 usbin () {
     mkdir ~/USB 2>/dev/null
     mount ~/USB && cd ~/USB || rmdir ~/USB
@@ -54,10 +55,12 @@ sdout () {
     umount ~/SD; rmdir ~/SD
 }
 backup () {
-    cd ~ && rsync -a --delete \
-    --exclude=USB/ --exclude=PHONE/ --exclude=SD/ \
-    --exclude=Git/ --exclude=Music/ --exclude=.cache/ \
-    ~/ ~/PHONE/Linux/.backup/
+    if [ -d ~/PHONE/Linux/.backup ]; then
+        rsync -a --delete \
+        --exclude=USB/ --exclude=PHONE/ --exclude=SD/ \
+        --exclude=Git/ --exclude=Music/ --exclude=.cache/ \
+        ~/ ~/PHONE/Linux/.backup/
+    fi
 }
 tao () {
     awk -v verse=$( echo $[RANDOM%80+2] ) 'RS=""; NR==verse' ~/Documents/tao.txt
