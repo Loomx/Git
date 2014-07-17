@@ -18,6 +18,7 @@ HISTCONTROL=erasedups
 set -o vi
 
 bind '"\t":menu-complete'
+bind '"\e[Z":menu-complete-backward'
 bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
 bind '"\C-a":beginning-of-line'
