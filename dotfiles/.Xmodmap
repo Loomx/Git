@@ -1,7 +1,5 @@
 ! ~/.Xmodmap
 
-keycode 133 = XF86Launch1
-keycode 134 = XF86Launch2
 clear lock
 keycode 66 = Control_R
 add Control = Control_R

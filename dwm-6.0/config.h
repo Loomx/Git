@@ -1,4 +1,4 @@
-/* Jonny's config.h for dwm-6.0 */
+/* config.h for dwm-6.0 */
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
@@ -6,11 +6,11 @@ static const char font[]            = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*
 static const char normbordercolor[] = "#000000";
 static const char normbgcolor[]     = "#222222";
 static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#005577";    // #cccccc
+static const char selbordercolor[]  = "#005577";
 static const char selbgcolor[]      = "#222222";
-static const char selfgcolor[]      = "#22bbee";    // #ffffff
+static const char selfgcolor[]      = "#22bbee";
 static const unsigned int borderpx  = 1;         /* border pixel of windows */
-static const unsigned int snap      = 32;        /* snap pixel */
+static const unsigned int snap      = 16;        /* snap pixel */
 static const Bool showbar           = True;      /* False means no bar */
 static const Bool topbar            = True;      /* False means bottom bar */
 
@@ -42,7 +42,6 @@ static const Layout layouts[] = {
     { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
     { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
     { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
-#include <X11/XF86keysym.h>
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
@@ -56,21 +55,21 @@ static const char *sleepcmd[]     = { "sudo", "/usr/sbin/pm-suspend", NULL };
 
 static Key keys[] = {
     /* modifier            key                        function        argument */
-    { 0,                   XF86XK_Launch1,            spawn,          {.v = dmenucmd } },
-    { 0,                   XF86XK_Launch2,            spawn,          {.v = termcmd } },
-    { 0,                   XF86XK_AudioPlay,          spawn,          SHCMD("pgrep mplayer >/dev/null && echo pause >~/.mplayer/mp_pipe || exec player") },
-    { 0,                   XF86XK_AudioStop,          spawn,          SHCMD("pgrep mplayer >/dev/null && echo stop >~/.mplayer/mp_pipe") },
-    { 0,                   XF86XK_AudioPrev,          spawn,          SHCMD("pgrep mplayer >/dev/null && echo pt_step -1 >~/.mplayer/mp_pipe") },
-    { 0,                   XF86XK_AudioNext,          spawn,          SHCMD("pgrep mplayer >/dev/null && echo pt_step 1 >~/.mplayer/mp_pipe") },
-    { 0,                   XF86XK_AudioLowerVolume,   spawn,          SHCMD("amixer set Master 4- unmute | awk -F [][] 'END { print $2 }' >/tmp/alsa_volume") },
-    { 0,                   XF86XK_AudioRaiseVolume,   spawn,          SHCMD("amixer set Master 4+ unmute | awk -F [][] 'END { print $2 }' >/tmp/alsa_volume") },
-    { 0,                   XF86XK_AudioMute,          spawn,          {.v = mutecmd } },
-    { 0,                   XF86XK_Eject,              spawn,          {.v = ejectcmd } },
-    { 0,                   XF86XK_Sleep,              spawn,          {.v = sleepcmd } },
-//    { 0,                   XF86XK_MonBrightnessDown,  spawn,          SHCMD("Mon=$(cat ~/.mon_brightness); echo $((Mon-440)) >~/.mon_brightness") },
-//    { 0,                   XF86XK_MonBrightnessUp,    spawn,          SHCMD("Mon=$(cat ~/.mon_brightness); echo $((Mon+440)) >~/.mon_brightness") },
-//    { 0,                   XF86XK_KbdBrightnessDown,  spawn,          SHCMD("Kbd=$(cat ~/.kbd_brightness); echo $((Kbd-2)) >~/.kbd_brightness") },
-//    { 0,                   XF86XK_KbdBrightnessUp,    spawn,          SHCMD("Kbd=$(cat ~/.kbd_brightness); echo $((Kbd+2)) >~/.kbd_brightness") },
+    { 0,                   0xffeb,                    spawn,          {.v = dmenucmd } },
+    { 0,                   0xffec,                    spawn,          {.v = termcmd } },
+    { 0,                   0x1008ff14,                spawn,          SHCMD("pgrep mplayer >/dev/null && echo pause >~/.mplayer/mp_pipe || exec player") },
+    { 0,                   0x1008ff15,                spawn,          SHCMD("pgrep mplayer >/dev/null && echo stop >~/.mplayer/mp_pipe") },
+    { 0,                   0x1008ff16,                spawn,          SHCMD("pgrep mplayer >/dev/null && echo pt_step -1 >~/.mplayer/mp_pipe") },
+    { 0,                   0x1008ff17,                spawn,          SHCMD("pgrep mplayer >/dev/null && echo pt_step 1 >~/.mplayer/mp_pipe") },
+    { 0,                   0x1008ff11,                spawn,          SHCMD("amixer set Master 4- unmute | awk -F [][] 'END { print $2 }' >/tmp/alsa_volume") },
+    { 0,                   0x1008ff13,                spawn,          SHCMD("amixer set Master 4+ unmute | awk -F [][] 'END { print $2 }' >/tmp/alsa_volume") },
+    { 0,                   0x1008ff12,                spawn,          {.v = mutecmd } },
+    { 0,                   0x1008ff2c,                spawn,          {.v = ejectcmd } },
+    { 0,                   0x1008ff2f,                spawn,          {.v = sleepcmd } },
+//    { 0,                   0x1008ff03,                spawn,          SHCMD("Mon=$(cat ~/.mon_brightness); echo $((Mon-440)) >~/.mon_brightness") },
+//    { 0,                   0x1008ff02,                spawn,          SHCMD("Mon=$(cat ~/.mon_brightness); echo $((Mon+440)) >~/.mon_brightness") },
+//    { 0,                   0x1008ff06,                spawn,          SHCMD("Kbd=$(cat ~/.kbd_brightness); echo $((Kbd-2)) >~/.kbd_brightness") },
+//    { 0,                   0x1008ff05,                spawn,          SHCMD("Kbd=$(cat ~/.kbd_brightness); echo $((Kbd+2)) >~/.kbd_brightness") },
     { MODKEY,              XK_Tab,                    focusstack,     {.i = +1 } },
     { MODKEY,              XK_space,                  setlayout,      {0} },
     { MODKEY,              XK_z,                      zoom,           {0} },
