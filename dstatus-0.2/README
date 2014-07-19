@@ -1,6 +1,6 @@
-dwmstatus
+dstatus
 =========
-dwmstatus is a simple statusbar for dwm.
+dstatus is a simple statusbar for dwm.
 
 It displays the following:
 
@@ -15,10 +15,10 @@ See ../dwm-6.0/config.h for /tmp/alsa_volume
 
 Installation
 ------------
-Edit `Makefile' to match your local setup (dwmstatus is installed
+Edit `Makefile' to match your local setup (dstatus is installed
 into the /usr/local namespace by default).
 
-Afterwards enter the following command to build and install dwmstatus
+Afterwards enter the following command to build and install dstatus
 (if necessary as root):
 
     make install clean

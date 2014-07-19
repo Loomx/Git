@@ -6,6 +6,6 @@ xrdb -merge ~/.Xresources
 
 xmodmap ~/.Xmodmap
 
-dwmstatus &
+dstatus &
 
 exec dwm 2>/dev/null

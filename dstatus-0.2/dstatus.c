@@ -1,4 +1,4 @@
-/* dwmstatus
+/* dstatus
  * based on one by Trilby White
  * GPL Licence
  */
