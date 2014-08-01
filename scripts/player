@@ -17,7 +17,7 @@ if stest -dlq -n "$AlbumCache" ~/Music; then
 fi
 
 # Set trap to clean up afterwards:
-clean_up () { rm /tmp/mp_track /tmp/mp_tracklist; }
+clean_up () { rm /tmp/mp_track /tmp/mp_tracklist /tmp/trackchoice; }
 trap 'clean_up' EXIT
 
 # Select an album:
@@ -46,7 +46,9 @@ case "$Album" in
 
     *)
         # Album is selected, prompt to play, shuffle or choose track:
-        Mode=$( printf "Play\nShuffle\n$(stest -fl ~/Music/$Album)" | dmenu -i -l 40 ) || exit
+        printf "Play\nShuffle\n" >/tmp/trackchoice
+        stest -fl ~/Music/"$Album" | sort >>/tmp/trackchoice
+        Mode=$( dmenu </tmp/trackchoice -i -l 40 ) || exit
 
         case "$Mode" in
             Play)
