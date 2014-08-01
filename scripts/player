@@ -62,7 +62,8 @@ case "$Album" in
             *)
                 mplayer ~/Music/"$Album"/"$Mode" -identify >/tmp/mp_tracklist &
                 ;;
-        esac 
+        esac
+        ;;
 esac
 
 # Pause while mplayer starts:
