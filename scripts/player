@@ -49,6 +49,7 @@ case "$Album" in
         printf "Play\nShuffle\n" >/tmp/trackchoice
         stest -fl ~/Music/"$Album" | sort >>/tmp/trackchoice
         Mode=$( dmenu </tmp/trackchoice -i -l 40 ) || exit
+        rm /tmp/trackchoice
 
         case "$Mode" in
             Play)
