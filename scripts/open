@@ -5,36 +5,38 @@
 # Depends: xpdf geeqie libreoffice
 
 
-#case "$1" in
-#    *.pdf|*.PDF)
-#        xpdf "$1"
-#    ;;
-#
-#    *.jpg|*.JPG|*.png|*.PNG|*.tiff|*.TIFF)
-#        geeqie "$1"
-#    ;;
-#
-#    *.doc|*.DOC|*.docx|*.DOCX|*.xls|*.XLS|*.ppt|*.PPT)
-#        libreoffice "$1"
-#    ;;
-#
-#easc
+case "$1" in
+    *.pdf|*.PDF)
+        xpdf "$1"
+    ;;
+
+    *.jpg|*.JPG|*.png|*.PNG|*.tiff|*.TIFF)
+        geeqie "$1"
+    ;;
+
+    *.doc|*.DOC|*.docx|*.DOCX|*.xls|*.XLS|*.xlsx|*.XLSX|*.dotx|*.DOTX)
+        libreoffice "$1"
+    ;;
+
+    *)
+        echo "No"
+    ;;
+esac
 
 ###### or ######
 
-File=$(file "$1")
-
-if echo "$File" | grep -Fq PDF; then
-    echo opening...
-    xpdf "$1" &
-elif echo "$File" | grep -Fq image; then
-    echo opening...
-    geeqie "$1" &
-elif echo "$File" | grep -Fq Document; then
-    echo opening...
-    libreoffice "$1" &
-elif echo "$File" | grep -Fq Rich; then
-    echo opening...
-    libreoffice "$1" &
-fi
-
+#File=$(file "$1")
+#
+#if echo "$File" | grep -Fq PDF; then
+#    echo opening...
+#    xpdf "$1" &
+#elif echo "$File" | grep -Fq image; then
+#    echo opening...
+#    geeqie "$1" &
+#elif echo "$File" | grep -Fq Document; then
+#    echo opening...
+#    libreoffice "$1" &
+#elif echo "$File" | grep -Fq Rich; then
+#    echo opening...
+#    libreoffice "$1" &
+#fi
