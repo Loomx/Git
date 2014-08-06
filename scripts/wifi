@@ -2,6 +2,11 @@
 #
 # /usr/local/bin/wifi
 #
+# Add '$USER ALL=NOPASSWD: /usr/bin/wpa_gui' to /etc/sudoers
+
+sudo wpa_gui
+
+
 # Add '$USER ALL=NOPASSWD: /usr/bin/nm-applet, /bin/killall nm-applet' to /etc/sudoers
 
 sudo nm-applet 2>/dev/null &
