@@ -8,7 +8,7 @@ sudo wpa_gui
 
 
 # Add '$USER ALL=NOPASSWD: /usr/bin/nm-applet, /bin/killall nm-applet' to /etc/sudoers
-
-sudo nm-applet 2>/dev/null &
-stalonetray --geometry=2x1-0-0 2>/dev/null
-sudo killall nm-applet
+#
+#sudo nm-applet 2>/dev/null &
+#stalonetray --geometry=2x1-0-0 2>/dev/null
+#sudo killall nm-applet
