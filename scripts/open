@@ -8,19 +8,19 @@
 case "$1" in
     *.pdf|*.PDF)
         xpdf "$1"
-    ;;
+        ;;
 
     *.jpg|*.JPG|*.png|*.PNG|*.tiff|*.TIFF)
         geeqie "$1"
-    ;;
+        ;;
 
     *.doc|*.DOC|*.docx|*.DOCX|*.xls|*.XLS|*.xlsx|*.XLSX|*.dotx|*.DOTX)
         libreoffice "$1"
-    ;;
+        ;;
 
     *)
         echo "No"
-    ;;
+        ;;
 esac
 
 ###### or ######
