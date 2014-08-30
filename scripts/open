@@ -14,7 +14,7 @@ case "$1" in
         geeqie "$1"
         ;;
 
-    *.doc|*.DOC|*.docx|*.DOCX|*.xls|*.XLS|*.xlsx|*.XLSX|*.dotx|*.DOTX)
+    *.doc|*.DOC|*.docx|*.DOCX|*.xls|*.XLS|*.xlsx|*.XLSX|*.dotx|*.DOTX|*.ppt|*.PPT|*.pptx|*.PPTX)
         libreoffice "$1"
         ;;
 
