@@ -32,7 +32,6 @@ case "$Album" in
             for i; do 
                 grep -Fi "$i" "$TrackCache"
             done | mplayer -playlist - -shuffle -identify >/tmp/mp_tracklist &
-
         else
             # No filters, so shuffle all tracks:
             mplayer -playlist "$TrackCache" -shuffle -identify >/tmp/mp_tracklist &
