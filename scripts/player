@@ -48,10 +48,10 @@ case "$Album" in
         # Album is selected, prompt to play, shuffle or choose track:
         printf "Play\nShuffle\n" >/tmp/trackchoice
         stest -fl ~/Music/"$Album" | sort >>/tmp/trackchoice
-        Mode=$( dmenu </tmp/trackchoice -i -l 40 ) || exit
+        Track=$( dmenu </tmp/trackchoice -i -l 40 ) || exit
         rm /tmp/trackchoice
 
-        case "$Mode" in
+        case "$Track" in
             Play)
                 mplayer ~/Music/"$Album"/* -identify >/tmp/mp_tracklist &
                 ;;
@@ -61,7 +61,7 @@ case "$Album" in
                 ;;
 
             *)
-                mplayer ~/Music/"$Album"/"$Mode" -identify >/tmp/mp_tracklist &
+                mplayer ~/Music/"$Album"/"$Track" -identify >/tmp/mp_tracklist &
                 ;;
         esac
         ;;
