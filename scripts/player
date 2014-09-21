@@ -11,8 +11,7 @@ TrackCache=~/.mplayer/track_cache
 
 # Update caches if anything has changed:
 if stest -dlq -n "$AlbumCache" ~/Music; then
-    printf "Jukebox\nDVD\n" >"$AlbumCache"
-    stest -dl ~/Music | sort >>"$AlbumCache"
+    stest -dl ~/Music | sort >"$AlbumCache"
     stest -f ~/Music/*/* >"$TrackCache"
 fi
 
@@ -21,7 +20,7 @@ clean_up () { rm /tmp/mp_track /tmp/mp_tracklist; }
 trap 'clean_up' EXIT
 
 # Select an album:
-Album=$( dmenu <"$AlbumCache" -i -l 40 ) || exit
+Album=$( { printf "Jukebox\nDVD\n"; cat "$AlbumCache"; } | dmenu -i -l 40 ) || exit
 
 case "$Album" in
     Jukebox)
@@ -46,7 +45,7 @@ case "$Album" in
 
     *)
         # Album is selected, prompt to play, shuffle or choose track:
-        Track=$( (printf "Play\nShuffle\n"; stest -fl ~/Music/"$Album" | sort) | dmenu -i -l 40 ) || exit
+        Track=$( { printf "Play\nShuffle\n"; stest -fl ~/Music/"$Album" | sort; } | dmenu -i -l 40 ) || exit
 
         case "$Track" in
             Play)
