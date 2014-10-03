@@ -4,7 +4,7 @@
 
 xrdb -merge ~/.Xresources
 
-xmodmap ~/.Xmodmap
+setxkbmap -option caps:escape
 
 dstatus &
 
