@@ -65,11 +65,8 @@ esac
 # Pause while mplayer starts:
 sleep 1
 
-# Store track name:
-tail -20 /tmp/mp_tracklist | awk -F "/" '/FILENAME/ { print $NF } { ORS="\0" }' >/tmp/mp_track
-
-# Loop while playing to update track name:
+# Loop while playing to store current track name:
 while pgrep mplayer >/dev/null; do
-    inotifywait -q -e modify /tmp/mp_tracklist >/dev/null
     tail -20 /tmp/mp_tracklist | awk -F "/" '/FILENAME/ { print $NF } { ORS="\0" }' >/tmp/mp_track
+    inotifywait -q -e modify /tmp/mp_tracklist >/dev/null
 done
