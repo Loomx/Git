@@ -2,6 +2,6 @@
 
 . ~/.bashrc
 
-if [ -z "$DISPLAY" ] && [ $(tty) = /dev/tty1 ]; then
+if [ -z "$DISPLAY" -a $(tty) = /dev/tty1 ]; then
     exec xinit -- -nolisten tcp
 fi
