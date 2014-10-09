@@ -19,6 +19,8 @@ set -o vi
 
 bind '"\t":menu-complete'
 bind '"\e[Z":menu-complete-backward'
+bind -m vi-command '"k":history-search-backward'
+bind -m vi-command '"j":history-search-forward'
 bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
 bind '"\C-a":beginning-of-line'
