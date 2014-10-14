@@ -4,9 +4,9 @@
 
 if [ "$USER" = "root" ]; then
     . /etc/profile
-    PS1='\[\e[0;31m\][ \w ]\n\[\e[0;31m\]\$ \[\e[m\]'
+    PS1='\[\e[0;31m\][ \w ]\n\[\e[0;31m\]\h\$ \[\e[m\]'
 else
-    PS1='\[\e[0;33m\][ \w ]\n\[\e[0;33m\]\$ \[\e[m\]'
+    PS1='\[\e[0;33m\][ \w ]\n\[\e[0;33m\]\h\$ \[\e[m\]'
 fi
 
 PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; Prev="$PWD"'
