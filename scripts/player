@@ -16,7 +16,7 @@ if stest -dlq -n "$AlbumCache" ~/Music; then
 fi
 
 # Set trap to clean up afterwards:
-clean_up () { rm /tmp/mp_track /tmp/mp_tracklist; }
+clean_up () { rm /tmp/dmessage /tmp/mp_output; }
 trap 'clean_up' EXIT
 
 # Select an album:
@@ -31,10 +31,10 @@ case "$Album" in
             set $( echo "$Filters" ) 
             for i; do 
                 grep -Fi "$i" "$TrackCache"
-            done | mplayer -playlist - -shuffle -identify >/tmp/mp_tracklist &
+            done | mplayer -playlist - -shuffle -identify >/tmp/mp_output &
         else
             # No filters, so shuffle all tracks:
-            mplayer -playlist "$TrackCache" -shuffle -identify >/tmp/mp_tracklist &
+            mplayer -playlist "$TrackCache" -shuffle -identify >/tmp/mp_output &
         fi
         ;;
 
@@ -48,15 +48,15 @@ case "$Album" in
 
         case "$Track" in
             Play)
-                mplayer ~/Music/"$Album"/* -identify >/tmp/mp_tracklist &
+                mplayer ~/Music/"$Album"/* -identify >/tmp/mp_output &
                 ;;
 
             Shuffle)
-                mplayer ~/Music/"$Album"/* -shuffle -identify >/tmp/mp_tracklist &
+                mplayer ~/Music/"$Album"/* -shuffle -identify >/tmp/mp_output &
                 ;;
 
             *)
-                mplayer ~/Music/"$Album"/"$Track" -identify >/tmp/mp_tracklist &
+                mplayer ~/Music/"$Album"/"$Track" -identify >/tmp/mp_output &
                 ;;
         esac
         ;;
@@ -67,6 +67,6 @@ sleep 1
 
 # Loop while playing to store current track name:
 while pgrep mplayer >/dev/null; do
-    tail -20 /tmp/mp_tracklist | awk -F "/" '/FILENAME/ { print $NF }' >/tmp/mp_track
-    inotifywait -q -e modify /tmp/mp_tracklist >/dev/null
+    tail -20 /tmp/mp_output | awk -F "/" '/FILENAME/ { print $NF }' >/tmp/dmessage
+    inotifywait -q -e modify /tmp/mp_output >/dev/null
 done
