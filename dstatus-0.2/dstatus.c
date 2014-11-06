@@ -43,7 +43,7 @@ main(void) {
         if ((fp = fopen(TRACK_FILE, "r"))) {
             //fgets(track, sizeof(track), fp);
             //track[strlen(track)-1] = ' ';
-            fscanf(fp, "%48[^.]", track);
+            fscanf(fp, "%48[^.\n]", track);
             fclose(fp);
             sprintf(statnext, TRACK_STR, track);
             strcat(status, statnext);
