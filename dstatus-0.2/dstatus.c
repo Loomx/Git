@@ -10,7 +10,7 @@
 #include <time.h>
 #include <X11/Xlib.h>
 
-#define TRACK_FILE      "/tmp/dmessage"
+#define TRACK_FILE      "/tmp/status_msg"
 #define MEM_FILE        "/proc/meminfo"
 #define VOL_FILE        "/tmp/alsa_volume"
 #define BAT_NOW         "/sys/class/power_supply/BAT0/energy_now"

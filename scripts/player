@@ -16,7 +16,7 @@ if stest -dlq -n "$AlbumCache" ~/Music; then
 fi
 
 # Set trap to clean up afterwards:
-clean_up () { rm /tmp/dmessage /tmp/mp_output; }
+clean_up () { rm /tmp/mp_output /tmp/status_msg; }
 trap 'clean_up' EXIT
 
 # Select an album:
@@ -67,6 +67,6 @@ sleep 1
 
 # Loop while playing to store current track name:
 while pgrep mplayer >/dev/null; do
-    tail -20 /tmp/mp_output | awk -F "/" '/FILENAME/ { print $NF }' >/tmp/dmessage
+    tail -20 /tmp/mp_output | awk -F "/" '/FILENAME/ { print $NF }' >/tmp/status_msg
     inotifywait -q -e modify /tmp/mp_output >/dev/null
 done
