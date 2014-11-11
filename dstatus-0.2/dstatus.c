@@ -51,9 +51,10 @@ main(void) {
 
         /* Memory */
         if ((fp = fopen(MEM_FILE, "r"))) {
-            fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nBuffers: %ld kB\nCached: %ld kB\n", &lnum1, &lnum2, &lnum3, &lnum4);
+            fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nBuffers: %ld kB\n
+                        Cached: %ld kB\n", &lnum1, &lnum2, &lnum3, &lnum4);
             fclose(fp);
-            sprintf(statnext, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));    // or divide by 1024 for MB
+            sprintf(statnext, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));
             strcat(status, statnext);
         }
 
