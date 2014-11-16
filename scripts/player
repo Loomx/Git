@@ -6,8 +6,8 @@
 
 
 # Cache files:
-AlbumCache="~/.mplayer/album_cache"
-TrackCache="~/.mplayer/track_cache"
+AlbumCache=~/.mplayer/album_cache
+TrackCache=~/.mplayer/track_cache
 
 # Update caches if anything has changed:
 if stest -dlq -n "$AlbumCache" ~/Music; then
