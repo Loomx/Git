@@ -514,8 +514,11 @@ readstdin(void) {
 	size_t i, max = 0, size = 0;
 	FILE *cache;
 
+    if(dmenurun)
+        cache = fopen(CACHE, "r");
+
 	/* read each line from stdin and add it to the item list */
-	for(i = 0; fgets(buf, sizeof buf, (dmenurun) ? (cache = fopen(CACHE, "r")) : stdin); i++) {
+	for(i = 0; fgets(buf, sizeof buf, (dmenurun) ? cache : stdin); i++) {
 		if(i+1 >= size / sizeof *items)
 			if(!(items = realloc(items, (size += BUFSIZ))))
 				eprintf("cannot realloc %u bytes:", size);
