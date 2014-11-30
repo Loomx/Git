@@ -1,4 +1,8 @@
 #include <dirent.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
 
 #define CACHE  ".dmenu_cache"
@@ -13,15 +17,18 @@ static const char *HOME, *PATH;
 static size_t count = 0;
 
 int
-updatecache(void) {
+main(void) {
 	if(!(HOME = getenv("HOME")))
 		die("no $HOME");
 	if(!(PATH = getenv("PATH")))
 		die("no $PATH");
 	if(chdir(HOME) < 0)
 		die("chdir failed");
-	if(uptodate() == 0)
-		scan();
+	if(uptodate()) {
+		execlp("cat", "cat", CACHE, NULL);
+		die("exec failed");
+	}
+	scan();
 	return EXIT_SUCCESS;
 }
 
@@ -54,20 +61,21 @@ scan(void) {
 			snprintf(buf, sizeof buf, "%s/%s", dir, ent->d_name);
 			if(ent->d_name[0] == '.' || access(buf, X_OK) < 0)
 				continue;
-			if(!(tokens = realloc(tokens, ++count * sizeof *tokens)))
+			if(!(items = realloc(items, ++count * sizeof *items)))
 				die("malloc failed");
-			if(!(tokens[count-1] = strdup(ent->d_name)))
+			if(!(items[count-1] = strdup(ent->d_name)))
 				die("strdup failed");
 		}
 		closedir(dp);
 	}
-	qsort(tokens, count, sizeof *tokens, qstrcmp);
+	qsort(items, count, sizeof *items, qstrcmp);
 	if(!(cache = fopen(CACHE, "w")))
 		die("open failed");
 	for(i = 0; i < count; i++) {
-		if(i > 0 && !strcmp(tokens[i], tokens[i-1]))
+		if(i > 0 && !strcmp(items[i], items[i-1]))
 			continue;
-		fprintf(cache,  "%s\n", tokens[i]);
+		fprintf(cache,  "%s\n", items[i]);
+		fprintf(stdout, "%s\n", items[i]);
 	}
 	fclose(cache);
 	free(path);
