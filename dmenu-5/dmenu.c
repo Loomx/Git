@@ -14,7 +14,6 @@
 #include <X11/extensions/Xinerama.h>
 #endif
 #include "draw.h"
-#include "dmenu_run.h"
 
 #define INTERSECT(x,y,w,h,r)  (MAX(0, MIN((x)+(w),(r).x_org+(r).width)  - MAX((x),(r).x_org)) \
                              * MAX(0, MIN((y)+(h),(r).y_org+(r).height) - MAX((y),(r).y_org)))
@@ -44,6 +43,7 @@ static void readstdin(void);
 static void run(void);
 static void scan(void);
 static void setup(void);
+static void updatecache(void);
 static int uptodate(void);
 static void usage(void);
 
@@ -60,6 +60,7 @@ static Item *items = NULL;
 static Item *matches, *matchend;
 static Item *prev, *curr, *next, *sel;
 static char **tokens = NULL;
+static Bool dmenurun = False;
 static const char *HOME, *PATH;
 static size_t count = 0;
 static Window win;
@@ -74,10 +75,9 @@ static char *(*fstrstr)(const char *, const char *) = strstr;
 int
 main(int argc, char *argv[]) {
 	Bool fast = False;
-    Bool dmenurun = False;
 	int i;
 
-    if(argv[0] == "dmenu_run") {          /* called as `dmenu_run' */
+    if(strcmp(argv[0], "dmenu_run") == 0) {          /* called as `dmenu_run' */
         dmenurun = True;
         updatecache();
 		readstdin();                      /* read .dmenu_cache file */
@@ -395,8 +395,8 @@ keypress(XKeyEvent *ev) {
 		break;
 	case XK_Return:
 	case XK_KP_Enter:
-        if(dmenurun == True)
-            exec sel->text;             /* dmenu_run */
+        if(dmenurun)
+            execlp(sel->text, sel->text, NULL);             /* dmenu_run */
 		puts((sel && !(ev->state & ShiftMask)) ? sel->text : text);
 		if(!(ev->state & ControlMask))
 			exit(EXIT_SUCCESS);
@@ -519,7 +519,7 @@ readstdin(void) {
 	FILE *cache;
 
 	/* read each line from stdin and add it to the item list */
-	for(i = 0; fgets(buf, sizeof buf, dmenurun == True ? cache = fopen(CACHE, "r") : stdin); i++) {
+	for(i = 0; fgets(buf, sizeof buf, (dmenurun) ? cache = fopen(CACHE, "r") : stdin); i++) {
 		if(i+1 >= size / sizeof *items)
 			if(!(items = realloc(items, (size += BUFSIZ))))
 				eprintf("cannot realloc %u bytes:", size);
@@ -536,7 +536,7 @@ readstdin(void) {
 	inputw = maxstr ? textw(dc, maxstr) : 0;
 	lines = MIN(lines, i);
 
-    if(dmenurun == True) fclose(cache);
+    if(cache) fclose(cache);
 }
 
 void
@@ -569,7 +569,7 @@ run(void) {
 void
 scan(void) {
 	char buf[PATH_MAX];
-	char *dir, *path;
+	char *dir, *path, *PATH;
 	size_t i;
 	struct dirent *ent;
 	DIR *dp;
@@ -693,7 +693,7 @@ setup(void) {
 	drawmenu();
 }
 
-int
+void
 updatecache(void) {
 	if(!(HOME = getenv("HOME")))
 		die("no $HOME");
