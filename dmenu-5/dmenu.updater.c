@@ -30,7 +30,7 @@ struct Item {
 static void appenditem(Item *item, Item **list, Item **last);
 static void calcoffsets(void);
 static char *cistrstr(const char *s, const char *sub);
-/* static void die(const char *s); */
+static void die(const char *s);
 static void drawmenu(void);
 static void grabkeyboard(void);
 static void insert(const char *str, ssize_t n);
@@ -38,13 +38,13 @@ static void keypress(XKeyEvent *ev);
 static void match(void);
 static size_t nextrune(int inc);
 static void paste(void);
-/* static int qstrcmp(const void *a, const void *b); */
+static int qstrcmp(const void *a, const void *b);
 static void readstdin(void);
 static void run(void);
-/* static void scan(void); */
+static void scan(void);
 static void setup(void);
-/* static void updatecache(void); */
-/* static int uptodate(void); */
+static void updatecache(void);
+static int uptodate(void);
 static void usage(void);
 
 static char text[BUFSIZ] = "";
@@ -59,10 +59,10 @@ static DC *dc;
 static Item *items = NULL;
 static Item *matches, *matchend;
 static Item *prev, *curr, *next, *sel;
-/* static char **tokens = NULL; */
+static char **tokens = NULL;
 static Bool dmenurun = False;
-/* static const char *HOME, *PATH; */
-/* static size_t count = 0; */
+static const char *HOME, *PATH;
+static size_t count = 0;
 static Window win;
 static XIC xic;
 static int mon = -1;
@@ -77,8 +77,10 @@ main(int argc, char *argv[]) {
 	Bool fast = False;
 	int i;
 
-    if(strcmp(argv[0], "dmenu_run") == 0) /* called as `dmenu_run' */
+    if(strcmp(argv[0], "dmenu_run") == 0) {  /* called as `dmenu_run' */
         dmenurun = True;
+        updatecache();
+    }
 
 	for(i = 1; i < argc; i++)
 		/* these options take no arguments */
@@ -172,13 +174,11 @@ cistrstr(const char *s, const char *sub) {
 	return NULL;
 }
 
-/*
 void
 die(const char *s) {
 	fprintf(stderr, "dmenu_path: %s\n", s);
 	exit(EXIT_FAILURE);
 }
-*/
 
 void
 drawmenu(void) {
@@ -501,12 +501,10 @@ paste(void) {
 	drawmenu();
 }
 
-/*
 int
 qstrcmp(const void *a, const void *b) {
 	return strcmp(*(const char **)a, *(const char **)b);
 }
-*/
 
 void
 readstdin(void) {
@@ -517,11 +515,7 @@ readstdin(void) {
     if(dmenurun)
         cache = fopen(CACHE, "r");
 
-<<<<<<< HEAD
-	/* read each line from stdin and add it to the item list */
-=======
 	/* read each line from stdin or dmenu_cache and add it to the item list */
->>>>>>> 470079e53aaab68de259ba2e86bca2191a8e78ef
 	for(i = 0; fgets(buf, sizeof buf, (dmenurun) ? cache : stdin); i++) {
 		if(i+1 >= size / sizeof *items)
 			if(!(items = realloc(items, (size += BUFSIZ))))
@@ -539,11 +533,7 @@ readstdin(void) {
 	inputw = maxstr ? textw(dc, maxstr) : 0;
 	lines = MIN(lines, i);
 
-<<<<<<< HEAD
-    if(cache) fclose(cache);
-=======
     if(dmenurun) fclose(cache);
->>>>>>> 470079e53aaab68de259ba2e86bca2191a8e78ef
 }
 
 void
@@ -572,7 +562,7 @@ run(void) {
 		}
 	}
 }
-/*
+
 void
 scan(void) {
 	char buf[PATH_MAX];
@@ -609,7 +599,6 @@ scan(void) {
 	fclose(cache);
 	free(path);
 }
-*/
 
 void
 setup(void) {
@@ -701,7 +690,6 @@ setup(void) {
 	drawmenu();
 }
 
-/*
 void
 updatecache(void) {
 	if(!(HOME = getenv("HOME")))
@@ -731,7 +719,6 @@ uptodate(void) {
 	free(path);
 	return 1;
 }
-*/
 
 void
 usage(void) {
