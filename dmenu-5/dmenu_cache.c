@@ -12,7 +12,7 @@ static void die(const char *s);
 static void scan(void);
 static int uptodate(void);
 
-static char **items = NULL;
+static char **bins = NULL;
 static const char *HOME, *PATH;
 static size_t count = 0;
 
@@ -58,20 +58,20 @@ scan(void) {
 			snprintf(buf, sizeof buf, "%s/%s", dir, ent->d_name);
 			if(ent->d_name[0] == '.' || access(buf, X_OK) < 0)
 				continue;
-			if(!(items = realloc(items, ++count * sizeof *items)))
+			if(!(bins = realloc(bins, ++count * sizeof *bins)))
 				die("malloc failed");
-			if(!(items[count-1] = strdup(ent->d_name)))
+			if(!(bins[count-1] = strdup(ent->d_name)))
 				die("strdup failed");
 		}
 		closedir(dp);
 	}
-	qsort(items, count, sizeof *items, qstrcmp);
+	qsort(bins, count, sizeof *bins, qstrcmp);
 	if(!(cache = fopen(CACHE, "w")))
 		die("open failed");
 	for(i = 0; i < count; i++) {
-		if(i > 0 && !strcmp(items[i], items[i-1]))
+		if(i > 0 && !strcmp(bins[i], bins[i-1]))
 			continue;
-		fprintf(cache,  "%s\n", items[i]);
+		fprintf(cache,  "%s\n", bins[i]);
 	}
 	fclose(cache);
 	free(path);
