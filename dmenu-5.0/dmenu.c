@@ -389,7 +389,7 @@ keypress(XKeyEvent *ev) {
 	case XK_Return:
 	case XK_KP_Enter:
         if(dmenurun)
-            execlp(sel->text, sel->text, NULL);             /* dmenu_run */
+            execlp(sel->text, sel->text, NULL);     /* dmenu_run */
 		puts((sel && !(ev->state & ShiftMask)) ? sel->text : text);
 		if(!(ev->state & ControlMask))
 			exit(EXIT_SUCCESS);
