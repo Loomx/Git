@@ -3,7 +3,7 @@
  */
 /* Default settings; can be overriden by command line. */
 
-#define CACHE  "/home/jonny/.cache/dmenu_run"
+#define CACHE  ".cache/dmenu_run"
 
 static Bool topbar = True;
 static const char *font = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";

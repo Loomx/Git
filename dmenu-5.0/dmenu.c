@@ -30,7 +30,6 @@ struct Item {
 static void appenditem(Item *item, Item **list, Item **last);
 static void calcoffsets(void);
 static char *cistrstr(const char *s, const char *sub);
-/* static void die(const char *s); */
 static void drawmenu(void);
 static void grabkeyboard(void);
 static void insert(const char *str, ssize_t n);
@@ -38,13 +37,13 @@ static void keypress(XKeyEvent *ev);
 static void match(void);
 static size_t nextrune(int inc);
 static void paste(void);
-/* static int qstrcmp(const void *a, const void *b); */
+static int qstrcmp(const void *a, const void *b);
 static void readstdin(void);
 static void run(void);
-/* static void scan(void); */
+static void scan(void);
 static void setup(void);
-/* static void updatecache(void); */
-/* static int uptodate(void); */
+static void updatecache(void);
+static int uptodate(void);
 static void usage(void);
 
 static char text[BUFSIZ] = "";
@@ -59,10 +58,8 @@ static DC *dc;
 static Item *items = NULL;
 static Item *matches, *matchend;
 static Item *prev, *curr, *next, *sel;
-/* static char **tokens = NULL; */
 static Bool dmenurun = False;
-/* static const char *HOME, *PATH; */
-/* static size_t count = 0; */
+static const char *HOME, *PATH;
 static Window win;
 static XIC xic;
 static int mon = -1;
@@ -77,8 +74,10 @@ main(int argc, char *argv[]) {
 	Bool fast = False;
 	int i;
 
-    if(strcmp(argv[0], "dmenu_run") == 0) /* called as `dmenu_run' */
+    if(strcmp(argv[0], "dmenu_run") == 0) {
         dmenurun = True;
+        updatecache();
+    }
 
 	for(i = 1; i < argc; i++)
 		/* these options take no arguments */
@@ -501,12 +500,10 @@ paste(void) {
 	drawmenu();
 }
 
-/*
 int
 qstrcmp(const void *a, const void *b) {
 	return strcmp(*(const char **)a, *(const char **)b);
 }
-*/
 
 void
 readstdin(void) {
@@ -515,7 +512,8 @@ readstdin(void) {
 	FILE *cache;
 
     if(dmenurun)
-        cache = fopen(CACHE, "r");
+        if(!(cache = fopen(CACHE, "r")))
+            eprintf("open failed");
 
 	/* read each line from stdin or dmenu_cache and add it to the item list */
 	for(i = 0; fgets(buf, sizeof buf, (dmenurun) ? cache : stdin); i++) {
@@ -535,7 +533,8 @@ readstdin(void) {
 	inputw = maxstr ? textw(dc, maxstr) : 0;
 	lines = MIN(lines, i);
 
-    if(dmenurun) fclose(cache);
+    if(dmenurun)
+        fclose(cache);
 }
 
 void
@@ -564,18 +563,18 @@ run(void) {
 		}
 	}
 }
-/*
+
 void
 scan(void) {
 	char buf[PATH_MAX];
-	char *dir, *path, *PATH;
-	size_t i;
+	char *dir, *path, **bins = NULL;
+	size_t i, count = 0;
 	struct dirent *ent;
 	DIR *dp;
 	FILE *cache;
 
 	if(!(path = strdup(PATH)))
-		die("strdup failed");
+		eprintf("strdup failed");
 	for(dir = strtok(path, ":"); dir; dir = strtok(NULL, ":")) {
 		if(!(dp = opendir(dir)))
 			continue;
@@ -583,25 +582,24 @@ scan(void) {
 			snprintf(buf, sizeof buf, "%s/%s", dir, ent->d_name);
 			if(ent->d_name[0] == '.' || access(buf, X_OK) < 0)
 				continue;
-			if(!(tokens = realloc(tokens, ++count * sizeof *tokens)))
-				die("malloc failed");
-			if(!(tokens[count-1] = strdup(ent->d_name)))
-				die("strdup failed");
+			if(!(bins = realloc(bins, ++count * sizeof *bins)))
+				eprintf("malloc failed");
+			if(!(bins[count-1] = strdup(ent->d_name)))
+				eprintf("strdup failed");
 		}
 		closedir(dp);
 	}
-	qsort(tokens, count, sizeof *tokens, qstrcmp);
+	qsort(bins, count, sizeof *bins, qstrcmp);
 	if(!(cache = fopen(CACHE, "w")))
-		die("open failed");
+		eprintf("open failed");
 	for(i = 0; i < count; i++) {
-		if(i > 0 && !strcmp(tokens[i], tokens[i-1]))
+		if(i > 0 && !strcmp(bins[i], bins[i-1]))
 			continue;
-		fprintf(cache,  "%s\n", tokens[i]);
+		fprintf(cache, "%s\n", bins[i]);
 	}
 	fclose(cache);
 	free(path);
 }
-*/
 
 void
 setup(void) {
@@ -693,17 +691,16 @@ setup(void) {
 	drawmenu();
 }
 
-/*
 void
 updatecache(void) {
 	if(!(HOME = getenv("HOME")))
-		die("no $HOME");
+		eprintf("no $HOME");
 	if(!(PATH = getenv("PATH")))
-		die("no $PATH");
+		eprintf("no $PATH");
 	if(chdir(HOME) < 0)
-		die("chdir failed");
-	if(uptodate() == 0)
-		scan();
+		eprintf("chdir failed");
+	if(!(uptodate()))
+	    scan();
 }
 
 int
@@ -716,14 +713,13 @@ uptodate(void) {
 		return 0;
 	mtime = st.st_mtime;
 	if(!(path = strdup(PATH)))
-		die("strdup failed");
+		eprintf("strdup failed");
 	for(dir = strtok(path, ":"); dir; dir = strtok(NULL, ":"))
 		if(!stat(dir, &st) && st.st_mtime > mtime)
 			return 0;
 	free(path);
 	return 1;
 }
-*/
 
 void
 usage(void) {

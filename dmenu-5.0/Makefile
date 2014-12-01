@@ -49,7 +49,7 @@ install: all
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
 	@cp -f dmenu stest ${DESTDIR}${PREFIX}/bin
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/dmenu
-	@ln -sf ${DESTDIR}${PREFIX}/bin/dmenu ${DESTDIR}${PREFIX}/bin/dmenu_run 
+	@(cd ${DESTDIR}${PREFIX}/bin && ln -sf dmenu dmenu_run)
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/stest
 	@echo installing manual pages to ${DESTDIR}${MANPREFIX}/man1
 	@mkdir -p ${DESTDIR}${MANPREFIX}/man1
