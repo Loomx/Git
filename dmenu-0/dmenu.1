@@ -7,6 +7,8 @@ dmenu \- dynamic menu
 .RB [ \-f ]
 .RB [ \-i ]
 .RB [ \-l
+.RB [ \-m
+.IR monitor ]
 .IR lines ]
 .RB [ \-p
 .IR prompt ]
@@ -49,6 +51,9 @@ dmenu matches menu items case insensitively.
 .BI \-l " lines"
 dmenu lists items vertically, with the given number of lines.
 .TP
+.BI \-m " monitor"
+dmenu is displayed on the monitor supplied.
+.TP
 .BI \-p " prompt"
 defines the prompt to be displayed to the left of the input field.
 .TP
@@ -83,6 +88,9 @@ Copy the selected item to the input field.
 Confirm selection.  Prints the selected item to stdout and exits, returning
 success.
 .TP
+.B Ctrl-Return
+Confirm selection.  Prints the selected item to stdout and continues.
+.TP
 .B Shift\-Return
 Confirm input.  Prints the input text to stdout and exits, returning success.
 .TP
@@ -107,6 +115,9 @@ End
 C\-f
 Right
 .TP
+C\-g
+Escape
+.TP
 C\-h
 Backspace
 .TP
@@ -124,6 +135,9 @@ Delete line right
 .TP
 C\-m
 Return
+.TP
+C\-M
+Shift-Return
 .TP
 C\-n
 Down

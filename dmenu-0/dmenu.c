@@ -1,9 +1,11 @@
 /* See LICENSE file for copyright and license details. */
 #include <ctype.h>
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -22,11 +24,13 @@ typedef struct Item Item;
 struct Item {
 	char *text;
 	Item *left, *right;
+	Bool out;
 };
 
 static void appenditem(Item *item, Item **list, Item **last);
 static void calcoffsets(void);
 static char *cistrstr(const char *s, const char *sub);
+/* static void die(const char *s); */
 static void drawmenu(void);
 static void grabkeyboard(void);
 static void insert(const char *str, ssize_t n);
@@ -34,32 +38,36 @@ static void keypress(XKeyEvent *ev);
 static void match(void);
 static size_t nextrune(int inc);
 static void paste(void);
+/* static int qstrcmp(const void *a, const void *b); */
 static void readstdin(void);
 static void run(void);
+/* static void scan(void); */
 static void setup(void);
+/* static void updatecache(void); */
+/* static int uptodate(void); */
 static void usage(void);
 
 static char text[BUFSIZ] = "";
 static int bh, mw, mh;
 static int inputw, promptw;
 static size_t cursor = 0;
-static const char *font = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";
-static const char *prompt = NULL;
-static const char *normbgcolor = "#222222";
-static const char *normfgcolor = "#bbbbbb";
-static const char *selbgcolor  = "#222222";    // #005577
-static const char *selfgcolor  = "#22bbee";    // #eeeeee
-static unsigned int lines = 0;
 static unsigned long normcol[ColLast];
 static unsigned long selcol[ColLast];
+static unsigned long outcol[ColLast];
 static Atom clip, utf8;
-static Bool topbar = True;
 static DC *dc;
 static Item *items = NULL;
 static Item *matches, *matchend;
 static Item *prev, *curr, *next, *sel;
+/* static char **tokens = NULL; */
+static Bool dmenurun = False;
+/* static const char *HOME, *PATH; */
+/* static size_t count = 0; */
 static Window win;
 static XIC xic;
+static int mon = -1;
+
+#include "config.h"
 
 static int (*fstrncmp)(const char *, const char *, size_t) = strncmp;
 static char *(*fstrstr)(const char *, const char *) = strstr;
@@ -69,10 +77,13 @@ main(int argc, char *argv[]) {
 	Bool fast = False;
 	int i;
 
+    if(strcmp(argv[0], "dmenu_run") == 0) /* called as `dmenu_run' */
+        dmenurun = True;
+
 	for(i = 1; i < argc; i++)
 		/* these options take no arguments */
 		if(!strcmp(argv[i], "-v")) {      /* prints version information */
-			puts("dmenu-"VERSION", © 2006-2012 dmenu engineers, see LICENSE for details");
+			puts("dmenu-"VERSION", © 2006-2014 dmenu engineers, see LICENSE for details");
 			exit(EXIT_SUCCESS);
 		}
 		else if(!strcmp(argv[i], "-b"))   /* appears at the bottom of the screen */
@@ -88,6 +99,8 @@ main(int argc, char *argv[]) {
 		/* these options take one argument */
 		else if(!strcmp(argv[i], "-l"))   /* number of lines in vertical list */
 			lines = atoi(argv[++i]);
+		else if(!strcmp(argv[i], "-m"))
+			mon = atoi(argv[++i]);
 		else if(!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
 			prompt = argv[++i];
 		else if(!strcmp(argv[i], "-fn"))  /* font or font set */
@@ -159,6 +172,14 @@ cistrstr(const char *s, const char *sub) {
 	return NULL;
 }
 
+/*
+void
+die(const char *s) {
+	fprintf(stderr, "dmenu_path: %s\n", s);
+	exit(EXIT_FAILURE);
+}
+*/
+
 void
 drawmenu(void) {
 	int curpos;
@@ -169,7 +190,7 @@ drawmenu(void) {
 	dc->h = bh;
 	drawrect(dc, 0, 0, mw, mh, True, BG(dc, normcol));
 
-	if(prompt) {
+	if(prompt && *prompt) {
 		dc->w = promptw;
 		drawtext(dc, prompt, selcol);
 		dc->x = dc->w;
@@ -185,7 +206,8 @@ drawmenu(void) {
 		dc->w = mw - dc->x;
 		for(item = curr; item != next; item = item->right) {
 			dc->y += dc->h;
-			drawtext(dc, item->text, (item == sel) ? selcol : normcol);
+			drawtext(dc, item->text, (item == sel) ? selcol :
+			                         (item->out)   ? outcol : normcol);
 		}
 	}
 	else if(matches) {
@@ -197,7 +219,8 @@ drawmenu(void) {
 		for(item = curr; item != next; item = item->right) {
 			dc->x += dc->w;
 			dc->w = MIN(textw(dc, item->text), mw - dc->x - textw(dc, ">"));
-			drawtext(dc, item->text, (item == sel) ? selcol : normcol);
+			drawtext(dc, item->text, (item == sel) ? selcol :
+			                         (item->out)   ? outcol : normcol);
 		}
 		dc->w = textw(dc, ">");
 		dc->x = mw - dc->w;
@@ -251,10 +274,13 @@ keypress(XKeyEvent *ev) {
 		case XK_d: ksym = XK_Delete;    break;
 		case XK_e: ksym = XK_End;       break;
 		case XK_f: ksym = XK_Right;     break;
+		case XK_g: ksym = XK_Escape;    break;
 		case XK_h: ksym = XK_BackSpace; break;
 		case XK_i: ksym = XK_Tab;       break;
-		case XK_j: ksym = XK_Return;    break;
-		case XK_m: ksym = XK_Return;    break;
+		case XK_j: /* fallthrough */
+		case XK_J: /* fallthrough */
+		case XK_m: /* fallthrough */
+		case XK_M: ksym = XK_Return; ev->state &= ~ControlMask; break;
 		case XK_n: ksym = XK_Down;      break;
 		case XK_p: ksym = XK_Up;        break;
 
@@ -275,6 +301,11 @@ keypress(XKeyEvent *ev) {
 			XConvertSelection(dc->dpy, (ev->state & ShiftMask) ? clip : XA_PRIMARY,
 			                  utf8, utf8, win, CurrentTime);
 			return;
+		case XK_Return:
+		case XK_KP_Enter:
+			break;
+		case XK_bracketleft:
+			exit(EXIT_FAILURE);
 		default:
 			return;
 		}
@@ -358,8 +389,14 @@ keypress(XKeyEvent *ev) {
 		break;
 	case XK_Return:
 	case XK_KP_Enter:
+        if(dmenurun)
+            execlp(sel->text, sel->text, NULL);             /* dmenu_run */
 		puts((sel && !(ev->state & ShiftMask)) ? sel->text : text);
-		exit(EXIT_SUCCESS);
+		if(!(ev->state & ControlMask))
+			exit(EXIT_SUCCESS);
+		if(sel)
+			sel->out = True;
+		break;
 	case XK_Right:
 		if(text[cursor] != '\0') {
 			cursor = nextrune(+1);
@@ -377,7 +414,8 @@ keypress(XKeyEvent *ev) {
 	case XK_Tab:
 		if(!sel)
 			return;
-		strncpy(text, sel->text, sizeof text);
+		strncpy(text, sel->text, sizeof text - 1);
+		text[sizeof text - 1] = '\0';
 		cursor = strlen(text);
 		match();
 		break;
@@ -463,13 +501,24 @@ paste(void) {
 	drawmenu();
 }
 
+/*
+int
+qstrcmp(const void *a, const void *b) {
+	return strcmp(*(const char **)a, *(const char **)b);
+}
+*/
+
 void
 readstdin(void) {
 	char buf[sizeof text], *p, *maxstr = NULL;
 	size_t i, max = 0, size = 0;
+	FILE *cache;
 
-	/* read each line from stdin and add it to the item list */
-	for(i = 0; fgets(buf, sizeof buf, stdin); i++) {
+    if(dmenurun)
+        cache = fopen(CACHE, "r");
+
+	/* read each line from stdin or dmenu_cache and add it to the item list */
+	for(i = 0; fgets(buf, sizeof buf, (dmenurun) ? cache : stdin); i++) {
 		if(i+1 >= size / sizeof *items)
 			if(!(items = realloc(items, (size += BUFSIZ))))
 				eprintf("cannot realloc %u bytes:", size);
@@ -477,6 +526,7 @@ readstdin(void) {
 			*p = '\0';
 		if(!(items[i].text = strdup(buf)))
 			eprintf("cannot strdup %u bytes:", strlen(buf)+1);
+		items[i].out = False;
 		if(strlen(items[i].text) > max)
 			max = strlen(maxstr = items[i].text);
 	}
@@ -484,6 +534,8 @@ readstdin(void) {
 		items[i].text = NULL;
 	inputw = maxstr ? textw(dc, maxstr) : 0;
 	lines = MIN(lines, i);
+
+    if(dmenurun) fclose(cache);
 }
 
 void
@@ -512,6 +564,44 @@ run(void) {
 		}
 	}
 }
+/*
+void
+scan(void) {
+	char buf[PATH_MAX];
+	char *dir, *path, *PATH;
+	size_t i;
+	struct dirent *ent;
+	DIR *dp;
+	FILE *cache;
+
+	if(!(path = strdup(PATH)))
+		die("strdup failed");
+	for(dir = strtok(path, ":"); dir; dir = strtok(NULL, ":")) {
+		if(!(dp = opendir(dir)))
+			continue;
+		while((ent = readdir(dp))) {
+			snprintf(buf, sizeof buf, "%s/%s", dir, ent->d_name);
+			if(ent->d_name[0] == '.' || access(buf, X_OK) < 0)
+				continue;
+			if(!(tokens = realloc(tokens, ++count * sizeof *tokens)))
+				die("malloc failed");
+			if(!(tokens[count-1] = strdup(ent->d_name)))
+				die("strdup failed");
+		}
+		closedir(dp);
+	}
+	qsort(tokens, count, sizeof *tokens, qstrcmp);
+	if(!(cache = fopen(CACHE, "w")))
+		die("open failed");
+	for(i = 0; i < count; i++) {
+		if(i > 0 && !strcmp(tokens[i], tokens[i-1]))
+			continue;
+		fprintf(cache,  "%s\n", tokens[i]);
+	}
+	fclose(cache);
+	free(path);
+}
+*/
 
 void
 setup(void) {
@@ -528,6 +618,8 @@ setup(void) {
 	normcol[ColFG] = getcolor(dc, normfgcolor);
 	selcol[ColBG]  = getcolor(dc, selbgcolor);
 	selcol[ColFG]  = getcolor(dc, selfgcolor);
+	outcol[ColBG]  = getcolor(dc, outbgcolor);
+	outcol[ColFG]  = getcolor(dc, outfgcolor);
 
 	clip = XInternAtom(dc->dpy, "CLIPBOARD",   False);
 	utf8 = XInternAtom(dc->dpy, "UTF8_STRING", False);
@@ -544,7 +636,9 @@ setup(void) {
 		XWindowAttributes wa;
 
 		XGetInputFocus(dc->dpy, &w, &di);
-		if(w != root && w != PointerRoot && w != None) {
+		if(mon != -1 && mon < n)
+			i = mon;
+		if(!i && w != root && w != PointerRoot && w != None) {
 			/* find top-level window containing current input focus */
 			do {
 				if(XQueryTree(dc->dpy, (pw = w), &dw, &w, &dws, &du) && dws)
@@ -559,7 +653,7 @@ setup(void) {
 					}
 		}
 		/* no focused window is on screen, so use pointer location instead */
-		if(!area && XQueryPointer(dc->dpy, root, &dw, &dw, &x, &y, &di, &di, &du))
+		if(mon == -1 && !area && XQueryPointer(dc->dpy, root, &dw, &dw, &x, &y, &di, &di, &du))
 			for(i = 0; i < n; i++)
 				if(INTERSECT(x, y, 1, 1, info[i]))
 					break;
@@ -576,7 +670,7 @@ setup(void) {
 		y = topbar ? 0 : DisplayHeight(dc->dpy, screen) - mh;
 		mw = DisplayWidth(dc->dpy, screen);
 	}
-	promptw = prompt ? textw(dc, prompt) : 0;
+	promptw = (prompt && *prompt) ? textw(dc, prompt) : 0;
 	inputw = MIN(inputw, mw/3);
 	match();
 
@@ -599,9 +693,41 @@ setup(void) {
 	drawmenu();
 }
 
+/*
+void
+updatecache(void) {
+	if(!(HOME = getenv("HOME")))
+		die("no $HOME");
+	if(!(PATH = getenv("PATH")))
+		die("no $PATH");
+	if(chdir(HOME) < 0)
+		die("chdir failed");
+	if(uptodate() == 0)
+		scan();
+}
+
+int
+uptodate(void) {
+	char *dir, *path;
+	time_t mtime;
+	struct stat st;
+
+	if(stat(CACHE, &st) < 0)
+		return 0;
+	mtime = st.st_mtime;
+	if(!(path = strdup(PATH)))
+		die("strdup failed");
+	for(dir = strtok(path, ":"); dir; dir = strtok(NULL, ":"))
+		if(!stat(dir, &st) && st.st_mtime > mtime)
+			return 0;
+	free(path);
+	return 1;
+}
+*/
+
 void
 usage(void) {
-	fputs("usage: dmenu [-b] [-f] [-i] [-l lines] [-p prompt] [-fn font]\n"
+	fputs("usage: dmenu [-b] [-f] [-i] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
 	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-v]\n", stderr);
 	exit(EXIT_FAILURE);
 }

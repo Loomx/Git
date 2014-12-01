@@ -18,7 +18,11 @@ options:
 	@echo CC -c $<
 	@${CC} -c $< ${CFLAGS}
 
-${OBJ}: config.mk draw.h
+config.h:
+	@echo creating $@ from config.def.h
+	@cp config.def.h $@
+
+${OBJ}: config.h config.mk draw.h
 
 dmenu: dmenu.o draw.o
 	@echo CC -o $@
@@ -35,7 +39,7 @@ clean:
 dist: clean
 	@echo creating dist tarball
 	@mkdir -p dmenu-${VERSION}
-	@cp LICENSE Makefile README config.mk dmenu.1 draw.h dmenu_run stest.1 ${SRC} dmenu-${VERSION}
+	@cp LICENSE Makefile README config.mk dmenu.1 draw.h stest.1 ${SRC} dmenu-${VERSION}
 	@tar -cf dmenu-${VERSION}.tar dmenu-${VERSION}
 	@gzip dmenu-${VERSION}.tar
 	@rm -rf dmenu-${VERSION}
@@ -43,9 +47,9 @@ dist: clean
 install: all
 	@echo installing executables to ${DESTDIR}${PREFIX}/bin
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
-	@cp -f dmenu dmenu_run stest ${DESTDIR}${PREFIX}/bin
+	@cp -f dmenu stest ${DESTDIR}${PREFIX}/bin
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/dmenu
-	@chmod 755 ${DESTDIR}${PREFIX}/bin/dmenu_run
+	@ln -sf ${DESTDIR}${PREFIX}/bin/dmenu ${DESTDIR}${PREFIX}/bin/dmenu_run 
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/stest
 	@echo installing manual pages to ${DESTDIR}${MANPREFIX}/man1
 	@mkdir -p ${DESTDIR}${MANPREFIX}/man1
