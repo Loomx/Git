@@ -11,7 +11,7 @@ static const char *prompt = NULL;
 static const char *normbgcolor = "#222222";
 static const char *normfgcolor = "#bbbbbb";
 static const char *selbgcolor  = "#222222";
-static const char *selfgcolor  = "#22bbee";
+static const char *selfgcolor  = "#2288ee";
 static const char *outbgcolor  = "#00ffff";
 static const char *outfgcolor  = "#000000";
 /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
