@@ -507,7 +507,7 @@ readstdin(void) {
         if(!(cache = fopen(CACHE, "r")))
             eprintf("open failed");
 
-	/* read each line from stdin or dmenu_cache and add it to the item list */
+	/* read each line from stdin or cache and add it to the item list */
 	for(i = 0; fgets(buf, sizeof buf, (dmenurun) ? cache : stdin); i++) {
 		if(i+1 >= size / sizeof *items)
 			if(!(items = realloc(items, (size += BUFSIZ))))
