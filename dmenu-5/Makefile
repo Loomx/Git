@@ -49,10 +49,7 @@ install: all
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
 	@cp -f dmenu stest ${DESTDIR}${PREFIX}/bin
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/dmenu
-<<<<<<< HEAD
-=======
 	@ln -sf ${DESTDIR}${PREFIX}/bin/dmenu ${DESTDIR}${PREFIX}/bin/dmenu_run 
->>>>>>> 470079e53aaab68de259ba2e86bca2191a8e78ef
 	@chmod 755 ${DESTDIR}${PREFIX}/bin/stest
 	@echo installing manual pages to ${DESTDIR}${MANPREFIX}/man1
 	@mkdir -p ${DESTDIR}${MANPREFIX}/man1
@@ -64,10 +61,7 @@ install: all
 uninstall:
 	@echo removing executables from ${DESTDIR}${PREFIX}/bin
 	@rm -f ${DESTDIR}${PREFIX}/bin/dmenu
-<<<<<<< HEAD
-=======
 	@rm -f ${DESTDIR}${PREFIX}/bin/dmenu_run
->>>>>>> 470079e53aaab68de259ba2e86bca2191a8e78ef
 	@rm -f ${DESTDIR}${PREFIX}/bin/stest
 	@echo removing manual page from ${DESTDIR}${MANPREFIX}/man1
 	@rm -f ${DESTDIR}${MANPREFIX}/man1/dmenu.1

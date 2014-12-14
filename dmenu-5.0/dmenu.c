@@ -171,14 +171,6 @@ cistrstr(const char *s, const char *sub) {
 	return NULL;
 }
 
-/*
-void
-die(const char *s) {
-	fprintf(stderr, "dmenu_path: %s\n", s);
-	exit(EXIT_FAILURE);
-}
-*/
-
 void
 drawmenu(void) {
 	int curpos;

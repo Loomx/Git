@@ -517,11 +517,7 @@ readstdin(void) {
     if(dmenurun)
         cache = fopen(CACHE, "r");
 
-<<<<<<< HEAD
-	/* read each line from stdin and add it to the item list */
-=======
 	/* read each line from stdin or dmenu_cache and add it to the item list */
->>>>>>> 470079e53aaab68de259ba2e86bca2191a8e78ef
 	for(i = 0; fgets(buf, sizeof buf, (dmenurun) ? cache : stdin); i++) {
 		if(i+1 >= size / sizeof *items)
 			if(!(items = realloc(items, (size += BUFSIZ))))
@@ -539,11 +535,7 @@ readstdin(void) {
 	inputw = maxstr ? textw(dc, maxstr) : 0;
 	lines = MIN(lines, i);
 
-<<<<<<< HEAD
-    if(cache) fclose(cache);
-=======
     if(dmenurun) fclose(cache);
->>>>>>> 470079e53aaab68de259ba2e86bca2191a8e78ef
 }
 
 void
