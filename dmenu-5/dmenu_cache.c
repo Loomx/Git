@@ -28,13 +28,11 @@ main(void) {
 	return EXIT_SUCCESS;
 }
 
-/*
 void
 eprintf(const char *s) {
 	fprintf(stderr, "dmenu_path: %s\n", s);
 	exit(EXIT_FAILURE);
 }
-*/
 
 int
 qstrcmp(const void *a, const void *b) {
