@@ -16,7 +16,7 @@ main(int argc, char *argv[]) {
 	DIR *dir;
 
 	if((argc > 1) && !strncmp(argv[1], "-v", 3)) {
-		fputs("lsx-"VERSION", (C)opyright MMVI Anselm R. Garbe\n", stdout);
+		fputs("lsx, (C)opyright MMVI Anselm R. Garbe\n", stdout);
 		exit(EXIT_SUCCESS);
 	}
 	for(i = 0; i < argc; i++)
