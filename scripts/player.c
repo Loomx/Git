@@ -28,7 +28,7 @@ main(void) {
 		eprintf("no $HOME");
 	if(chdir(HOME) < 0)
 		eprintf("chdir failed");
-	if(!(uptodate()))
+	if(!uptodate())
 	    //scan();
         printf("scanning...\n");
 
@@ -42,12 +42,6 @@ main(void) {
 
     /* Clean up when mplayer exits */
 
-}
-
-void
-chomp(char *s) {
-    while(*s && *s != '\n') s++;
-        *s = '\0';
 }
 
 void
@@ -110,9 +104,8 @@ uptodate(void) {
 
 	mtime = st.st_mtime;
     while((getline(&line, &len, cache)) != -1) {
-        chomp(line);
+        line[strlen(line) - 1] = '\0';
 		if((stat(line, &st) < 0) || st.st_mtime > mtime) {
-            //printf("Cache outdated\n");
             free(line);
             fclose(cache);
 			return 0;
@@ -120,6 +113,5 @@ uptodate(void) {
     }
     free(line);
     fclose(cache);
-    //printf("Cache up to date!\n");
     return 1;
 }
