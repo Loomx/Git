@@ -59,53 +59,48 @@ qstrcmp(const void *a, const void *b) {
 
 void
 scan(void) {
-	//char buf[PATH_MAX];
-	//char *dir, *path, **token = NULL;
-	char **token = NULL;
+	char buf[PATH_MAX];
+    char path[PATH_MAX];
+	char **album = NULL;
 	size_t i, count = 0;
 	struct dirent *ent;
 	DIR *dp;
-	FILE *cache;
+	FILE *cache, *cache2;
 
     dp = opendir(MUSICDIR);
     while((ent = readdir(dp))) {
-        //snprintf(buf, sizeof buf, "%s/%s/%s", HOME, MUSICDIR, ent->d_name); /* full paths */
-        if(ent->d_name[0] == '.' && ent->d_name[1] == '.')
+        if(ent->d_name[0] == '.')
             continue;
-        if(!(token = realloc(token, ++count * sizeof *token)))
+        if(!(album = realloc(album, ++count * sizeof *album)))
             eprintf("malloc failed");
-        if(!(token[count-1] = strdup(ent->d_name)))
+        if(!(album[count-1] = strdup(ent->d_name)))
             eprintf("strdup failed");
     }
     closedir(dp);
 
-    /*
-	for(dir = strtok(path, ":"); dir; dir = strtok(NULL, ":")) {
-		if(!(dp = opendir(dir)))
-			continue;
-		while((ent = readdir(dp))) {
-			snprintf(buf, sizeof buf, "%s/%s", dir, ent->d_name);
-			if(ent->d_name[0] == '.' || access(buf, X_OK) < 0)
-				continue;
-			if(!(token = realloc(token, ++count * sizeof *token)))
-				eprintf("malloc failed");
-			if(!(token[count-1] = strdup(ent->d_name)))
-				eprintf("strdup failed");
-		}
-		closedir(dp);
-	}
-    */
-
-	qsort(token, count, sizeof *token, qstrcmp);
+	qsort(album, count, sizeof *album, qstrcmp);
 	if(!(cache = fopen(ALBUMCACHE, "w")))
 		eprintf("cache open failed");
+    if(!(cache2 = fopen(TRACKCACHE, "w")))
+        eprintf("cache2 open failed");
 	for(i = 0; i < count; i++) {
-		if(i > 0 && !strcmp(token[i], token[i-1]))
+		if(i > 0 && !strcmp(album[i], album[i-1]))
 			continue;
-		fprintf(cache, "%s\n", token[i]);
+		fprintf(cache, "%s\n", album[i]);
+
+        path[0] = '\0';
+        snprintf(path, sizeof path, "%s/%s/%s", HOME, MUSICDIR, album[i]);
+        dp = opendir(path);
+        while((ent = readdir(dp))) {
+            if(ent->d_name[0] == '.')
+                continue;
+            snprintf(buf, sizeof buf, "%s/%s", path, ent->d_name);
+                fprintf(cache2, "%s\n", buf);
+        }
+        closedir(dp);
 	}
 	fclose(cache);
-	//free(path);
+	fclose(cache2);
 }
 
 int
@@ -122,6 +117,13 @@ uptodate(void) {
 		return 0;
 	mtime = st.st_mtime;
 
+    path[0] = '\0';
+    snprintf(path, sizeof path, "%s/%s", HOME, MUSICDIR);
+    if((stat(path, &st) < 0) || st.st_mtime > mtime) {
+        fclose(cache);
+        return 0;
+    }
+
     while((getline(&line, &len, cache)) != -1) {
         line[strlen(line) - 1] = '\0';
         path[0] = '\0';
@@ -133,6 +135,10 @@ uptodate(void) {
         }
     }
     free(line);
+    fclose(cache);
+
+	if(!(cache = fopen(TRACKCACHE, "r")))
+	    return 0;
     fclose(cache);
     return 1;
 }
