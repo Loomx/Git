@@ -59,7 +59,7 @@ qstrcmp(const void *a, const void *b) {
 
 void
 scan(void) {
-	char buf[PATH_MAX];
+	//char buf[PATH_MAX];
 	//char *dir, *path, **token = NULL;
 	char **token = NULL;
 	size_t i, count = 0;
@@ -69,7 +69,7 @@ scan(void) {
 
     dp = opendir(MUSICDIR);
     while((ent = readdir(dp))) {
-        snprintf(buf, sizeof buf, "%s", ent->d_name);
+        //snprintf(buf, sizeof buf, "%s/%s/%s", HOME, MUSICDIR, ent->d_name); /* full paths */
         if(ent->d_name[0] == '.')
             continue;
         if(!(token = realloc(token, ++count * sizeof *token)))
@@ -110,12 +110,12 @@ scan(void) {
 
 int
 uptodate(void) {
-	char *line = NULL;
+    char *line = NULL;
+	char path[80];
     size_t len = 0;
 	struct stat st;
 	time_t mtime;
     FILE *cache;
-
 
     cache = fopen(ALBUMCACHE, "r");
 	if(stat(ALBUMCACHE, &st) < 0)
@@ -124,7 +124,9 @@ uptodate(void) {
 
     while((getline(&line, &len, cache)) != -1) {
         line[strlen(line) - 1] = '\0';
-		if((stat(line, &st) < 0) || st.st_mtime > mtime) {
+        path[0] = '\0';
+        sprintf(path, "%s/%s/%s", HOME, MUSICDIR, line);
+		if((stat(path, &st) < 0) || st.st_mtime > mtime) {
             free(line);
             fclose(cache);
 			return 0;
