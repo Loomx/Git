@@ -1,4 +1,4 @@
-#include <errno.h>
+//#include <errno.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -111,7 +111,7 @@ scan(void) {
 int
 uptodate(void) {
     char *line = NULL;
-	char path[80];
+	char path[PATH_MAX];
     size_t len = 0;
 	struct stat st;
 	time_t mtime;
@@ -125,7 +125,7 @@ uptodate(void) {
     while((getline(&line, &len, cache)) != -1) {
         line[strlen(line) - 1] = '\0';
         path[0] = '\0';
-        sprintf(path, "%s/%s/%s", HOME, MUSICDIR, line);
+        snprintf(path, sizeof path, "%s/%s/%s", HOME, MUSICDIR, line);
 		if((stat(path, &st) < 0) || st.st_mtime > mtime) {
             free(line);
             fclose(cache);
