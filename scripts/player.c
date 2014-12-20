@@ -70,7 +70,7 @@ scan(void) {
     dp = opendir(MUSICDIR);
     while((ent = readdir(dp))) {
         //snprintf(buf, sizeof buf, "%s/%s/%s", HOME, MUSICDIR, ent->d_name); /* full paths */
-        if(ent->d_name[0] == '.')
+        if(ent->d_name[0] == '.' && ent->d_name[1] == '.')
             continue;
         if(!(token = realloc(token, ++count * sizeof *token)))
             eprintf("malloc failed");
