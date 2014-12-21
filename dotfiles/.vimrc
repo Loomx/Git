@@ -6,7 +6,6 @@ set linebreak
 set number
 set splitbelow
 set splitright
-set expandtab
 set tabstop=4
 set shiftwidth=4
 set nobackup
