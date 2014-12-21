@@ -105,37 +105,27 @@ scan(void) {
 
 int
 uptodate(void) {
-    char *line = NULL;
-	char path[PATH_MAX];
-    size_t len = 0;
+	struct dirent *ent;
 	struct stat st;
 	time_t mtime;
-    FILE *cache;
+	DIR *dp;
 
-    cache = fopen(ALBUMCACHE, "r");
 	if(stat(ALBUMCACHE, &st) < 0)
 		return 0;
 	mtime = st.st_mtime;
 
     if(stat(MUSICDIR, &st) < 0)
        eprintf("opening MUSICDIR failed");
-    if(st.st_mtime > mtime) {
-        fclose(cache);
+    if(st.st_mtime > mtime)
         return 0;
-    }
 
-    while((getline(&line, &len, cache)) != -1) {
-        line[strlen(line) - 1] = '\0';
-        path[0] = '\0';
-        snprintf(path, sizeof path, "%s/%s", MUSICDIR, line);
-		if((stat(path, &st) < 0) || st.st_mtime > mtime) {
-            free(line);
-            fclose(cache);
-			return 0;
-        }
+    dp = opendir(MUSICDIR);
+    while((ent = readdir(dp))) {
+        stat(ent->d_name, &st);
+        if(st.st_mtime > mtime)
+            return 0;
     }
-    free(line);
-    fclose(cache);
+    closedir(dp);
 
     if(stat(TRACKCACHE, &st) < 0)
 	    return 0;
