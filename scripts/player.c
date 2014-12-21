@@ -117,9 +117,9 @@ uptodate(void) {
 		return 0;
 	mtime = st.st_mtime;
 
-    path[0] = '\0';
-    snprintf(path, sizeof path, "%s/%s", HOME, MUSICDIR);
-    if((stat(path, &st) < 0) || st.st_mtime > mtime) {
+    if(stat(MUSICDIR, &st) < 0)
+       eprintf("opening MUSICDIR failed");
+    if(st.st_mtime > mtime) {
         fclose(cache);
         return 0;
     }
@@ -127,7 +127,7 @@ uptodate(void) {
     while((getline(&line, &len, cache)) != -1) {
         line[strlen(line) - 1] = '\0';
         path[0] = '\0';
-        snprintf(path, sizeof path, "%s/%s/%s", HOME, MUSICDIR, line);
+        snprintf(path, sizeof path, "%s/%s", MUSICDIR, line);
 		if((stat(path, &st) < 0) || st.st_mtime > mtime) {
             free(line);
             fclose(cache);
@@ -137,8 +137,8 @@ uptodate(void) {
     free(line);
     fclose(cache);
 
-	if(!(cache = fopen(TRACKCACHE, "r")))
+    if(stat(TRACKCACHE, &st) < 0)
 	    return 0;
-    fclose(cache);
+
     return 1;
 }
