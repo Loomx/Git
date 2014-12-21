@@ -95,7 +95,7 @@ scan(void) {
 			if(ent->d_name[0] == '.')
 				continue;
 			snprintf(buf, sizeof buf, "%s/%s", path, ent->d_name);
-				fprintf(cache2, "%s\n", buf);
+			fprintf(cache2, "%s\n", buf);
 		}
 		closedir(dp);
 	}
@@ -105,6 +105,7 @@ scan(void) {
 
 int
 uptodate(void) {
+	char path[PATH_MAX];
 	struct dirent *ent;
 	struct stat st;
 	time_t mtime;
@@ -121,7 +122,10 @@ uptodate(void) {
 
 	dp = opendir(MUSICDIR);
 	while((ent = readdir(dp))) {
-		stat(ent->d_name, &st);
+		if(ent->d_name[0] == '.')
+			continue;
+		snprintf(path, sizeof path, "%s/%s", MUSICDIR, ent->d_name);
+		stat(path, &st);
 		if(st.st_mtime > mtime) {
 			closedir(dp);
 			return 0;
