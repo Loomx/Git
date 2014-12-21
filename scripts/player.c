@@ -59,13 +59,13 @@ qstrcmp(const void *a, const void *b) {
 
 void
 scan(void) {
+	char **album = NULL;
 	char buf[PATH_MAX];
     char path[PATH_MAX];
-	char **album = NULL;
 	size_t i, count = 0;
 	struct dirent *ent;
-	DIR *dp;
 	FILE *cache, *cache2;
+	DIR *dp;
 
     dp = opendir(MUSICDIR);
     while((ent = readdir(dp))) {
