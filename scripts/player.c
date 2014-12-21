@@ -122,8 +122,10 @@ uptodate(void) {
 	dp = opendir(MUSICDIR);
 	while((ent = readdir(dp))) {
 		stat(ent->d_name, &st);
-		if(st.st_mtime > mtime)
+		if(st.st_mtime > mtime) {
+			closedir(dp);
 			return 0;
+		}
 	}
 	closedir(dp);
 
