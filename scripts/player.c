@@ -6,9 +6,9 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#define ALBUMCACHE ".mplayer/album_cache"
-#define TRACKCACHE ".mplayer/track_cache"
 #define MUSICDIR   "Music"
+#define ALBUMCACHE ".album_cache"
+#define TRACKCACHE ".track_cache"
 #define MPOUTPUT   "/tmp/mp_output"
 #define STATUSMSG  "/tmp/status_msg"
 
@@ -27,6 +27,8 @@ main(void) {
 		eprintf("no $HOME");
 	if(chdir(HOME) < 0)
 		eprintf("chdir failed");
+	if(chdir(MUSICDIR) < 0)
+		eprintf("$MUSICDIR failed");
 
 	if(!uptodate())
 	{
@@ -60,14 +62,13 @@ qstrcmp(const void *a, const void *b) {
 void
 scan(void) {
 	char **album = NULL;
-	char buf[PATH_MAX];
 	char path[PATH_MAX];
 	size_t i, count = 0;
 	struct dirent *ent;
 	FILE *cache, *cache2;
 	DIR *dp;
 
-	dp = opendir(MUSICDIR);
+	dp = opendir(".");
 	while((ent = readdir(dp))) {
 		if(ent->d_name[0] == '.')
 			continue;
@@ -80,22 +81,22 @@ scan(void) {
 
 	qsort(album, count, sizeof *album, qstrcmp);
 	if(!(cache = fopen(ALBUMCACHE, "w")))
-		eprintf("cache open failed");
+		eprintf("fopen failed");
 	if(!(cache2 = fopen(TRACKCACHE, "w")))
-		eprintf("cache2 open failed");
+		eprintf("fopen2 failed");
 	for(i = 0; i < count; i++) {
 		if(i > 0 && !strcmp(album[i], album[i-1]))
 			continue;
 		fprintf(cache, "%s\n", album[i]);
 
-		path[0] = '\0';
-		snprintf(path, sizeof path, "%s/%s/%s", HOME, MUSICDIR, album[i]);
-		dp = opendir(path);
+		dp = opendir(album[i]);
 		while((ent = readdir(dp))) {
 			if(ent->d_name[0] == '.')
 				continue;
-			snprintf(buf, sizeof buf, "%s/%s", path, ent->d_name);
-			fprintf(cache2, "%s\n", buf);
+			path[0] = '\0';
+			//snprintf(path, sizeof path, "%s/%s/%s/%s", HOME, MUSICDIR, album[i], ent->d_name); /* full paths */
+			snprintf(path, sizeof path, "%s/%s", album[i], ent->d_name);
+			fprintf(cache2, "%s\n", path);
 		}
 		closedir(dp);
 	}
@@ -105,7 +106,6 @@ scan(void) {
 
 int
 uptodate(void) {
-	char path[PATH_MAX];
 	struct dirent *ent;
 	struct stat st;
 	time_t mtime;
@@ -115,26 +115,19 @@ uptodate(void) {
 		return 0;
 	mtime = st.st_mtime;
 
-	if(stat(MUSICDIR, &st) < 0)
-		eprintf("opening MUSICDIR failed");
-	if(st.st_mtime > mtime)
+	if(stat(TRACKCACHE, &st) < 0)
 		return 0;
 
-	dp = opendir(MUSICDIR);
+	dp = opendir(".");
 	while((ent = readdir(dp))) {
-		if(ent->d_name[0] == '.')
+		if(!strcmp(ent->d_name, ".."))
 			continue;
-		snprintf(path, sizeof path, "%s/%s", MUSICDIR, ent->d_name);
-		stat(path, &st);
+		stat(ent->d_name, &st);
 		if(st.st_mtime > mtime) {
 			closedir(dp);
 			return 0;
 		}
 	}
 	closedir(dp);
-
-	if(stat(TRACKCACHE, &st) < 0)
-		return 0;
-
 	return 1;
 }
