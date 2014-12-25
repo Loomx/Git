@@ -136,11 +136,12 @@ dmenu(const int m)
 		//dup(out[1]);
 		printf("posting here\n");
 		if (m == 1) {
-			if ((fp = fopen(ALBUMCACHE, "r"))); {
+			if ((fp = fopen(ALBUMCACHE, "r"))) {
 				while (fgets(sel, PATH_MAX, fp))
 					puts(sel);
 			} else {
 			printf("no...");
+			}
 		}
 		//sel[0] = '\0';
 		//if (read(0, &sel, PATH_MAX) > 0)
