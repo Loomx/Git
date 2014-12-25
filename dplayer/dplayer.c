@@ -124,10 +124,12 @@ dmenu(const int m)
 			execl(DMENU, DMENU, "-p", "Filters?", NULL);
 
 	} else {          /* parent */
+		printf("parent here\n");
 		close(0);
 		dup(ret[0]);
 		close(1);
 		dup(out[1]);
+		printf("posting here\n");
 		if (m == 1) {
 			fp = fopen(ALBUMCACHE, "r");
 			while (fgets(sel, PATH_MAX, fp))
