@@ -102,7 +102,7 @@ albumsel(void)
 char *
 dmenu(const int m)
 {
-	char sel[PATH_MAX];
+	static char sel[PATH_MAX];
 	int out[2], ret[2];
 	pid_t cpid;
 	FILE *fp;
@@ -151,6 +151,7 @@ dmenu(const int m)
 		//wait(NULL);
 	}
 	printf("%s\n", sel);
+	return sel;
 }
 
 void
