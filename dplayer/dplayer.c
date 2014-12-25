@@ -113,6 +113,7 @@ dmenu(const int m)
 	if (cpid == -1)
 		eprintf("fork failed");
 
+	printf("forked...");
 	if (cpid == 0) {  /* child execs dmenu */
 		close(0);
 		dup(out[0]);
@@ -140,7 +141,7 @@ dmenu(const int m)
 			sel[strlen(sel)] = '\0';
 		close(ret[0]);
 		close(out[1]);
-		wait(NULL);
+		//wait(NULL);
 	}
 	printf("%s\n", sel);
 }
