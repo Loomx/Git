@@ -115,10 +115,12 @@ dmenu(const int m)
 
 	printf("forked...");
 	if (cpid == 0) {  /* child execs dmenu */
+		dup2(out[0], STDIN_FILENO);
 		close(0);
-		dup(out[0]);
+		//dup(out[0]);
+		dup2(ret[1], STDOUT_FILENO);
 		close(1);
-		dup(ret[1]);
+		//dup(ret[1]);
 		if (m == 1)
 			execl(DMENU, DMENU, "-i", "-l", "40", NULL);
 		else
@@ -126,21 +128,25 @@ dmenu(const int m)
 
 	} else {          /* parent */
 		printf("parent here\n");
+		dup2(ret[0], STDIN_FILENO);
 		close(0);
-		dup(ret[0]);
+		//dup(ret[0]);
+		dup2(out[1], STDOUT_FILENO);
 		close(1);
-		dup(out[1]);
+		//dup(out[1]);
 		printf("posting here\n");
 		if (m == 1) {
-			fp = fopen(ALBUMCACHE, "r");
-			while (fgets(sel, PATH_MAX, fp))
-				puts(sel);
+			if ((fp = fopen(ALBUMCACHE, "r"))); {
+				while (fgets(sel, PATH_MAX, fp))
+					puts(sel);
+			} else {
+			printf("no...");
 		}
-		sel[0] = '\0';
-		if (read(0, &sel, PATH_MAX) > 0)
-			sel[strlen(sel)] = '\0';
-		close(ret[0]);
-		close(out[1]);
+		//sel[0] = '\0';
+		//if (read(0, &sel, PATH_MAX) > 0)
+		//	sel[strlen(sel)] = '\0';
+		//close(ret[0]);
+		//close(out[1]);
 		//wait(NULL);
 	}
 	printf("%s\n", sel);
