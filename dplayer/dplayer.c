@@ -44,6 +44,7 @@ main(void)
 	}
 
 	/* Open dmenu to choose an album */
+	/*
 	sel = dmenu(1);
 	if (!strcmp(sel, NULL))
 		exit(EXIT_SUCCESS);
@@ -54,10 +55,12 @@ main(void)
 	else mode = 1;
 
 	printf("Selection = %s\nMode = %d\n", sel, mode);
+	*/
 
 	/* Open dmenu to prompt for filters | trackname */
 
 	/* Start mplayer with tracklist */
+	execl(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
 
 	/* Set up loop whle mplayer is running to update track name for dstatus */
 
