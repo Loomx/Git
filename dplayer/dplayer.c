@@ -125,7 +125,8 @@ dmenu(const int m)
 		close(out[1]);
 		close(ret[0]);
 		if (m == 1)
-			execl(DMENU, DMENU, "-i", "-l", "40", NULL);
+			//execl(DMENU, DMENU, "-i", "-l", "40", NULL);
+			execl(DMENU, DMENU, "-p", "Filters?", NULL);
 		else
 			execl(DMENU, DMENU, "-p", "Filters?", NULL);
 
