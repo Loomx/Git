@@ -105,6 +105,7 @@ dmenu(const int m)
 	static char sel[PATH_MAX];
 	int out[2], ret[2];
 	pid_t cpid;
+	size_t nread;
 	FILE *fp;
 
 	if (pipe(out) == -1 || pipe(ret) == -1)
@@ -115,40 +116,45 @@ dmenu(const int m)
 
 	printf("forked...");
 	if (cpid == 0) {  /* child execs dmenu */
-		dup2(out[0], STDIN_FILENO);
-		close(0);
+		//dup2(out[0], STDIN_FILENO);
+		//close(0);
 		//dup(out[0]);
-		dup2(ret[1], STDOUT_FILENO);
-		close(1);
+		//dup2(ret[1], STDOUT_FILENO);
+		//close(1);
 		//dup(ret[1]);
+		close(out[1]);
+		close(ret[0]);
 		if (m == 1)
 			execl(DMENU, DMENU, "-i", "-l", "40", NULL);
 		else
 			execl(DMENU, DMENU, "-p", "Filters?", NULL);
 
 	} else {          /* parent */
-		printf("parent here\n");
-		dup2(ret[0], STDIN_FILENO);
-		close(0);
+		//printf("parent here\n");
+		//dup2(ret[0], STDIN_FILENO);
+		//close(0);
 		//dup(ret[0]);
-		dup2(out[1], STDOUT_FILENO);
-		close(1);
+		//dup2(out[1], STDOUT_FILENO);
+		//close(1);
 		//dup(out[1]);
-		printf("posting here\n");
+		close(out[0]);
+		close(ret[1]);
 		if (m == 1) {
-			if ((fp = fopen(ALBUMCACHE, "r"))) {
-				while (fgets(sel, PATH_MAX, fp))
-					puts(sel);
-			} else {
-			printf("no...");
-			}
+			if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
+				eprintf("fopen failed\n");
+			//while (fgets(sel, PATH_MAX, fp))
+			while ((nread = fread(sel, 1, sizeof sel, fp)) > 0)
+				//puts(sel);
+				write(out[1], sel, sizeof sel);
+			write(out[1], "\n", 1);
+			fclose(fp);
 		}
-		//sel[0] = '\0';
-		//if (read(0, &sel, PATH_MAX) > 0)
-		//	sel[strlen(sel)] = '\0';
-		//close(ret[0]);
-		//close(out[1]);
-		//wait(NULL);
+		sel[0] = '\0';
+		if (read(ret[0], sel, sizeof sel) > 0)
+			sel[strlen(sel)] = '\0';
+		close(out[1]);
+		close(ret[0]);
+		wait(NULL);
 	}
 	printf("%s\n", sel);
 	return sel;
