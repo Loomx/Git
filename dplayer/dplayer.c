@@ -27,8 +27,8 @@ int
 main(void)
 {
 	int mode;
-	char *sel;
-	//char sel[PATH_MAX];
+	char *album;
+	//char album[PATH_MAX];
 
 	/* Check cache files and update if needed */
 	if (!(HOME = getenv("HOME")))
@@ -45,16 +45,16 @@ main(void)
 
 	/* Open dmenu to choose an album */
 	/*
-	sel = dmenu(1);
-	if (!strcmp(sel, NULL))
+	album = dmenu(1);
+	if (!strcmp(album, NULL))
 		exit(EXIT_SUCCESS);
-	else if (!strcmp(sel, "DVD"))
+	else if (!strcmp(album, "DVD"))
 		execl(PLAYER, PLAYER, "dvd://", NULL);
-	else if (!strcmp(sel, "Jukebox"))
+	else if (!strcmp(album, "Jukebox"))
 		mode = 0;
 	else mode = 1;
 
-	printf("Selection = %s\nMode = %d\n", sel, mode);
+	printf("Selection = %s\nMode = %d\n", album, mode);
 	*/
 
 	/* Open dmenu to prompt for filters | trackname */
@@ -106,27 +106,25 @@ char *
 dmenu(const int m)
 {
 	static char sel[PATH_MAX];
-	int out[2], ret[2];
+	int pipe1[2], pipe2[2];
 	pid_t cpid;
 	size_t nread;
 	FILE *fp;
 
-	if (pipe(out) == -1 || pipe(ret) == -1)
+	if (pipe(pipe1) == -1 || pipe(pipe2) == -1)
 		eprintf("pipe failed");
 	cpid = fork();
 	if (cpid == -1)
 		eprintf("fork failed");
 
 	printf("forked...");
-	if (cpid == 0) {  /* child execs dmenu */
-		//dup2(out[0], STDIN_FILENO);
-		//close(0);
-		//dup(out[0]);
-		//dup2(ret[1], STDOUT_FILENO);
-		//close(1);
-		//dup(ret[1]);
-		close(out[1]);
-		close(ret[0]);
+	if (cpid == 0) {  /* child */
+		close(pipe1[1]);  /* unused */
+		close(pipe2[0]);  /* unused */
+		dup2(pipe1[0], 0);
+		close(pipe1[0]);  /* dup2ed */
+		dup2(pipe2[1], 1);
+		close(pipe2[1]);  /* dup2ed */
 		if (m == 1)
 			//execl(DMENU, DMENU, "-i", "-l", "40", NULL);
 			execl(DMENU, DMENU, "-p", "Filters?", NULL);
@@ -134,31 +132,29 @@ dmenu(const int m)
 			execl(DMENU, DMENU, "-p", "Filters?", NULL);
 
 	} else {          /* parent */
-		//printf("parent here\n");
-		//dup2(ret[0], STDIN_FILENO);
-		//close(0);
-		//dup(ret[0]);
-		//dup2(out[1], STDOUT_FILENO);
-		//close(1);
-		//dup(out[1]);
-		close(out[0]);
-		close(ret[1]);
+		close(pipe1[0]);  /* unused */
+		close(pipe2[1]);  /* unused */
+		//dup2(pipe2[0], 0);
+		//close(pipe2[0]);  /* dup2ed */
+		//dup2(pipe1[1], 1);
+		//close(pipe1[1]);  /* dup2ed */
 		if (m == 1) {
 			if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
 				eprintf("fopen failed\n");
 			//while (fgets(sel, PATH_MAX, fp))
-			while ((nread = fread(sel, 1, sizeof sel, fp)) > 0)
+			while ((nread = fread(sel, strlen(sel) + 1, 1, fp)) > 0)
 				//puts(sel);
-				write(out[1], sel, sizeof sel);
-			write(out[1], "\n", 1);
+				write(pipe1[1], sel, strlen(sel) + 1);
+			write(pipe1[1], "\n", 1);
 			fclose(fp);
 		}
-		sel[0] = '\0';
-		if (read(ret[0], sel, sizeof sel) > 0)
-			sel[strlen(sel)] = '\0';
-		close(out[1]);
-		close(ret[0]);
 		wait(NULL);
+		sel[0] = '\0';
+		if (read(pipe2[0], sel, strlen(sel) + 1) > 0)
+			sel[strlen(sel) + 1] = '\0';
+		close(pipe1[1]);
+		close(pipe2[0]);
+		//wait(NULL);
 	}
 	printf("%s\n", sel);
 	return sel;
