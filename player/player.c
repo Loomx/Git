@@ -44,7 +44,6 @@ main(void)
 	}
 
 	/* Open dmenu to choose an album */
-	/*
 	album = dmenu(1);
 	if (!strcmp(album, NULL))
 		exit(EXIT_SUCCESS);
@@ -55,12 +54,11 @@ main(void)
 	else mode = 1;
 
 	printf("Selection = %s\nMode = %d\n", album, mode);
-	*/
 
 	/* Open dmenu to prompt for filters | trackname */
 
 	/* Start mplayer with tracklist */
-	execl(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
+	//execl(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
 
 	/* Set up loop whle mplayer is running to update track name for dstatus */
 
@@ -105,6 +103,7 @@ albumsel(void)
 char *
 dmenu(const int m)
 {
+    char line[PATH_MAX];
 	static char sel[PATH_MAX];
 	int pipe1[2], pipe2[2];
 	pid_t cpid;
@@ -117,7 +116,6 @@ dmenu(const int m)
 	if (cpid == -1)
 		eprintf("fork failed");
 
-	printf("forked...");
 	if (cpid == 0) {  /* child */
 		close(pipe1[1]);  /* unused */
 		close(pipe2[0]);  /* unused */
@@ -126,35 +124,28 @@ dmenu(const int m)
 		dup2(pipe2[1], 1);
 		close(pipe2[1]);  /* dup2ed */
 		if (m == 1)
-			//execl(DMENU, DMENU, "-i", "-l", "40", NULL);
-			execl(DMENU, DMENU, "-p", "Filters?", NULL);
+			execl(DMENU, DMENU, "-i", "-l", "40", NULL);
 		else
 			execl(DMENU, DMENU, "-p", "Filters?", NULL);
 
 	} else {          /* parent */
 		close(pipe1[0]);  /* unused */
 		close(pipe2[1]);  /* unused */
-		//dup2(pipe2[0], 0);
-		//close(pipe2[0]);  /* dup2ed */
-		//dup2(pipe1[1], 1);
-		//close(pipe1[1]);  /* dup2ed */
+		dup2(pipe2[0], 0);
+		close(pipe2[0]);  /* dup2ed */
+		dup2(pipe1[1], 1);
+		close(pipe1[1]);  /* dup2ed */
 		if (m == 1) {
 			if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
 				eprintf("fopen failed\n");
-			//while (fgets(sel, PATH_MAX, fp))
-			while ((nread = fread(sel, strlen(sel) + 1, 1, fp)) > 0)
-				//puts(sel);
-				write(pipe1[1], sel, strlen(sel) + 1);
-			write(pipe1[1], "\n", 1);
+			while ((nread = fread(line, 1, PATH_MAX, fp)) > 0)
+				write(1, line, nread);
 			fclose(fp);
 		}
-		wait(NULL);
-		sel[0] = '\0';
-		if (read(pipe2[0], sel, strlen(sel) + 1) > 0)
+        /*
+		if (read(pipe2[0], sel, PATH_MAX) > 0)
 			sel[strlen(sel) + 1] = '\0';
-		close(pipe1[1]);
-		close(pipe2[0]);
-		//wait(NULL);
+        */
 	}
 	printf("%s\n", sel);
 	return sel;
