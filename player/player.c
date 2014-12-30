@@ -105,50 +105,66 @@ dmenu(const int m)
 {
     char line[PATH_MAX];
 	static char sel[PATH_MAX];
-	int pipe1[2], pipe2[2];
+	int pipe1[2], pipe2[2], pipe3[2];
 	pid_t cpid;
 	size_t nread;
 	FILE *fp;
 
-	if (pipe(pipe1) == -1 || pipe(pipe2) == -1)
+	if (pipe(pipe1) == -1 || pipe(pipe2) == -1 || pipe(pipe3) == -1 )
 		eprintf("pipe failed");
 	cpid = fork();
 	if (cpid == -1)
 		eprintf("fork failed");
 
 	if (cpid == 0) {  /* child */
+        cpid = fork();
+        if (cpid == -1)
+            eprintf("inner fork failed");
+        if (cpid == 0) {  /* grandchild */
+            close(pipe1[0]);  /* unused */
+            close(pipe2[1]);  /* unused */
+            close(pipe3[0]);  /* unused */
+            close(pipe3[1]);  /* unused */
+            dup2(pipe2[0], 0);
+            close(pipe2[0]);  /* dup2ed */
+            dup2(pipe1[1], 1);
+            close(pipe1[1]);  /* dup2ed */
+            if (m == 1) {
+                if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
+                    eprintf("fopen failed\n");
+                while ((nread = fread(line, 1, PATH_MAX, fp)) > 0)
+                    write(1, line, nread);
+                fclose(fp);
+            _exit(EXIT_SUCCESS);
+            }
+        } else {  /* child */
 		close(pipe1[1]);  /* unused */
 		close(pipe2[0]);  /* unused */
+        close(pipe2[1]);  /* unused */
+        close(pipe3[0]);  /* unused */
 		dup2(pipe1[0], 0);
 		close(pipe1[0]);  /* dup2ed */
-		dup2(pipe2[1], 1);
-		close(pipe2[1]);  /* dup2ed */
+		dup2(pipe3[1], 1);
+		close(pipe3[1]);  /* dup2ed */
 		if (m == 1)
 			execl(DMENU, DMENU, "-i", "-l", "40", NULL);
 		else
 			execl(DMENU, DMENU, "-p", "Filters?", NULL);
+        }
 
-	} else {          /* parent */
-		close(pipe1[0]);  /* unused */
-		close(pipe2[1]);  /* unused */
-		dup2(pipe2[0], 0);
-		close(pipe2[0]);  /* dup2ed */
-		dup2(pipe1[1], 1);
-		close(pipe1[1]);  /* dup2ed */
-		if (m == 1) {
-			if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
-				eprintf("fopen failed\n");
-			while ((nread = fread(line, 1, PATH_MAX, fp)) > 0)
-				write(1, line, nread);
-			fclose(fp);
-		}
-        /*
-		if (read(pipe2[0], sel, PATH_MAX) > 0)
-			sel[strlen(sel) + 1] = '\0';
-        */
+	} else {      /* parent */
+        close(pipe1[0]);  /* unused */
+        close(pipe1[1]);  /* unused */
+        close(pipe2[0]);  /* unused */
+        close(pipe2[1]);  /* unused */
+        close(pipe3[1]);  /* unused */
+		if (read(pipe3[0], sel, PATH_MAX) > 0)
+			sel[strlen(sel)] = '\0';
+        close(pipe3[0]);
+
 	}
-	printf("%s\n", sel);
-	return sel;
+	printf("%s", sel);
+	//return sel;
 }
 
 void
