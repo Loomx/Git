@@ -9,8 +9,8 @@
 #define MUSICDIR   "Music"
 #define ALBUMCACHE ".album_cache"
 #define TRACKCACHE ".track_cache"
-#define PLAYER     "/usr/bin/mplayer"
-#define DMENU      "/usr/local/bin/dmenu"
+#define PLAYER	 "/usr/bin/mplayer"
+#define DMENU	  "/usr/local/bin/dmenu"
 #define MPOUTPUT   "/tmp/mp_output"
 #define STATUSMSG  "/tmp/status_msg"
 
@@ -45,7 +45,7 @@ main(void)
 
 	/* Open dmenu to choose an album */
 	album = dmenu(1);
-	if (!strcmp(album, NULL))
+	if (album[0] == '\0')
 		exit(EXIT_SUCCESS);
 	else if (!strcmp(album, "DVD"))
 		execl(PLAYER, PLAYER, "dvd://", NULL);
@@ -64,6 +64,8 @@ main(void)
 
 	/* Clean up when mplayer exits */
 
+	printf("exiting at end of main()\n");
+	exit(EXIT_SUCCESS);
 }
 
 /*
@@ -103,7 +105,7 @@ albumsel(void)
 char *
 dmenu(const int m)
 {
-    char line[PATH_MAX];
+	char line[PATH_MAX];
 	static char sel[PATH_MAX];
 	int pipe1[2], pipe2[2], pipe3[2];
 	pid_t cpid;
@@ -117,31 +119,31 @@ dmenu(const int m)
 		eprintf("fork failed");
 
 	if (cpid == 0) {  /* child */
-        cpid = fork();
-        if (cpid == -1)
-            eprintf("inner fork failed");
-        if (cpid == 0) {  /* grandchild */
-            close(pipe1[0]);  /* unused */
-            close(pipe2[1]);  /* unused */
-            close(pipe3[0]);  /* unused */
-            close(pipe3[1]);  /* unused */
-            dup2(pipe2[0], 0);
-            close(pipe2[0]);  /* dup2ed */
-            dup2(pipe1[1], 1);
-            close(pipe1[1]);  /* dup2ed */
-            if (m == 1) {
-                if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
-                    eprintf("fopen failed\n");
-                while ((nread = fread(line, 1, PATH_MAX, fp)) > 0)
-                    write(1, line, nread);
-                fclose(fp);
-            _exit(EXIT_SUCCESS);
-            }
-        } else {  /* child */
+		cpid = fork();
+		if (cpid == -1)
+			eprintf("inner fork failed");
+		if (cpid == 0) {  /* grandchild */
+			close(pipe1[0]);  /* unused */
+			close(pipe2[1]);  /* unused */
+			close(pipe3[0]);  /* unused */
+			close(pipe3[1]);  /* unused */
+			dup2(pipe2[0], 0);
+			close(pipe2[0]);  /* dup2ed */
+			dup2(pipe1[1], 1);
+			close(pipe1[1]);  /* dup2ed */
+			if (m == 1) {
+				if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
+					eprintf("fopen failed\n");
+				while ((nread = fread(line, 1, PATH_MAX, fp)) > 0)
+					write(1, line, nread);
+				fclose(fp);
+			_exit(EXIT_SUCCESS);
+			}
+		} else {  /* child */
 		close(pipe1[1]);  /* unused */
 		close(pipe2[0]);  /* unused */
-        close(pipe2[1]);  /* unused */
-        close(pipe3[0]);  /* unused */
+		close(pipe2[1]);  /* unused */
+		close(pipe3[0]);  /* unused */
 		dup2(pipe1[0], 0);
 		close(pipe1[0]);  /* dup2ed */
 		dup2(pipe3[1], 1);
@@ -150,21 +152,19 @@ dmenu(const int m)
 			execl(DMENU, DMENU, "-i", "-l", "40", NULL);
 		else
 			execl(DMENU, DMENU, "-p", "Filters?", NULL);
-        }
+		}
 
-	} else {      /* parent */
-        close(pipe1[0]);  /* unused */
-        close(pipe1[1]);  /* unused */
-        close(pipe2[0]);  /* unused */
-        close(pipe2[1]);  /* unused */
-        close(pipe3[1]);  /* unused */
-		if (read(pipe3[0], sel, PATH_MAX) > 0)
-			sel[strlen(sel)] = '\0';
-        close(pipe3[0]);
-
+	} else {  /* parent */
+		close(pipe1[0]);  /* unused */
+		close(pipe1[1]);  /* unused */
+		close(pipe2[0]);  /* unused */
+		close(pipe2[1]);  /* unused */
+		close(pipe3[1]);  /* unused */
+		if ((nread = read(pipe3[0], sel, PATH_MAX)) > 0)
+			sel[nread - 1] = '\0';
+		close(pipe3[0]);
 	}
-	printf("%s", sel);
-	//return sel;
+	return sel;
 }
 
 void
