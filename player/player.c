@@ -9,12 +9,13 @@
 #define MUSICDIR   "Music"
 #define ALBUMCACHE ".album_cache"
 #define TRACKCACHE ".track_cache"
-#define PLAYER	 "/usr/bin/mplayer"
-#define DMENU	  "/usr/local/bin/dmenu"
+#define PLAYER     "mplayer"
+#define DMENU      "dmenu"
 #define MPOUTPUT   "/tmp/mp_output"
 #define STATUSMSG  "/tmp/status_msg"
 
 //static int albumsel(void);
+static int checkplayer(void);
 static char *dmenu(const int m);
 static void eprintf(const char *s);
 static int qstrcmp(const void *a, const void *b);
@@ -26,9 +27,14 @@ static const char *HOME;
 int
 main(void)
 {
-	int mode;
+	int mpid, mode;
 	char *album;
-	//char album[PATH_MAX];
+
+	mpid = checkplayer();
+	if (mpid == 1) {
+		printf("PLAYER already running\n");
+		exit(EXIT_SUCCESS);
+	}
 
 	/* Check cache files and update if needed */
 	if (!(HOME = getenv("HOME")))
@@ -44,21 +50,21 @@ main(void)
 	}
 
 	/* Open dmenu to choose an album */
-	album = dmenu(1);
+	album = dmenu(0);
 	if (album[0] == '\0')
 		exit(EXIT_SUCCESS);
 	else if (!strcmp(album, "DVD"))
-		execl(PLAYER, PLAYER, "dvd://", NULL);
+		execlp(PLAYER, PLAYER, "dvd://", NULL);
 	else if (!strcmp(album, "Jukebox"))
-		mode = 0;
-	else mode = 1;
+		mode = 1;
+	else mode = 2;
 
 	printf("Selection = %s\nMode = %d\n", album, mode);
 
 	/* Open dmenu to prompt for filters | trackname */
 
 	/* Start mplayer with tracklist */
-	//execl(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
+	//execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
 
 	/* Set up loop whle mplayer is running to update track name for dstatus */
 
@@ -66,6 +72,44 @@ main(void)
 
 	printf("exiting at end of main()\n");
 	exit(EXIT_SUCCESS);
+}
+
+int
+checkplayer(void)
+{
+	char comm[32], path[PATH_MAX];
+	int nread;
+	struct dirent *ent;
+	DIR *dp;
+	FILE *fp;
+
+	if (!(dp = opendir("/proc")))
+		eprintf("opendir /proc failed");
+	while ((ent = readdir(dp))) {
+		if (ent->d_name[0] != '0' &&
+			ent->d_name[0] != '1' &&
+			ent->d_name[0] != '2' &&
+			ent->d_name[0] != '3' &&
+			ent->d_name[0] != '4' &&
+			ent->d_name[0] != '5' &&
+			ent->d_name[0] != '6' &&
+			ent->d_name[0] != '7' &&
+			ent->d_name[0] != '8' &&
+			ent->d_name[0] != '9')
+			continue;
+		snprintf(path, sizeof path, "/proc/%s/comm", ent->d_name);
+		if ((fp = fopen(path, "r")) == NULL)
+			continue;
+		if ((nread = fread(comm, 1, 30, fp)) > 0) {
+			comm[nread - 1] = '\0';
+			if (!strcmp(comm, PLAYER))
+				return 1;
+			}
+		fclose(fp);
+	}
+	closedir(dp);	
+	return 0;
+
 }
 
 /*
@@ -131,7 +175,7 @@ dmenu(const int m)
 			close(pipe2[0]);  /* dup2ed */
 			dup2(pipe1[1], 1);
 			close(pipe1[1]);  /* dup2ed */
-			if (m == 1) {
+			if (m == 0) {
 				if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
 					eprintf("fopen failed\n");
 				while ((nread = fread(line, 1, PATH_MAX, fp)) > 0)
@@ -148,10 +192,10 @@ dmenu(const int m)
 		close(pipe1[0]);  /* dup2ed */
 		dup2(pipe3[1], 1);
 		close(pipe3[1]);  /* dup2ed */
-		if (m == 1)
-			execl(DMENU, DMENU, "-i", "-l", "40", NULL);
+		if (m == 0)
+			execlp(DMENU, DMENU, "-i", "-l", "40", NULL);
 		else
-			execl(DMENU, DMENU, "-p", "Filters?", NULL);
+			execlp(DMENU, DMENU, "-p", "Filters?", NULL);
 		}
 
 	} else {  /* parent */
