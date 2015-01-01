@@ -1,5 +1,6 @@
 //#include <errno.h>
 #include <dirent.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +8,8 @@
 #include <sys/stat.h>
 
 #define MUSICDIR   "Music"
+#define FIFO       "/home/jonny/.mplayer/mp_pipe" 
+//#define FIFO       ".mp_pipe" 
 #define ALBUMCACHE ".album_cache"
 #define TRACKCACHE ".track_cache"
 #define PLAYER     "mplayer"
@@ -15,7 +18,7 @@
 #define STATUSMSG  "/tmp/status_msg"
 
 //static int albumsel(void);
-static int checkplayer(void);
+//static int checkplayer(void);
 static char *dmenu(const int m);
 static void eprintf(const char *s);
 static int qstrcmp(const void *a, const void *b);
@@ -25,18 +28,13 @@ static int uptodate(void);
 static const char *HOME;
 
 int
-main(void)
+main(int argc, char *argv[])
 {
-	int mpid, mode;
+	//int mpid, mode;
+	int fd, mode;
 	char *album;
+	char args[16];
 
-	mpid = checkplayer();
-	if (mpid == 1) {
-		printf("PLAYER already running\n");
-		exit(EXIT_SUCCESS);
-	}
-
-	/* Check cache files and update if needed */
 	if (!(HOME = getenv("HOME")))
 		eprintf("no $HOME");
 	if (chdir(HOME) < 0)
@@ -44,6 +42,31 @@ main(void)
 	if (chdir(MUSICDIR) < 0)
 		eprintf("chdir $MUSICDIR failed");
 
+	/* Check for arguments and send to PLAYER */
+	mknod(FIFO, S_IFIFO | 0644, 0);
+	if ((fd = open(FIFO, O_WRONLY | O_NONBLOCK)) != -1) {  /* PLAYER running */
+		if (argc > 2)
+			snprintf(args, sizeof args, "%s %s\n", argv[1], argv[2]);
+		else if (argc == 2)
+			snprintf(args, sizeof args, "%s\n", argv[1]);
+		else
+			snprintf(args, sizeof args, "pause\n");
+		write(fd, args, strlen(args));
+		close(fd);
+		exit(EXIT_SUCCESS);
+	}
+	if (argc > 1)
+		exit(EXIT_SUCCESS);
+
+/*
+	mpid = checkplayer();
+	if (mpid == 1) {
+		printf("PLAYER already running\n");
+		exit(EXIT_SUCCESS);
+	}
+*/
+
+	/* Check cache files and update if needed */
 	if (!uptodate()) {
 		scan();
 		printf("scanning...\n");
@@ -59,12 +82,13 @@ main(void)
 		mode = 1;
 	else mode = 2;
 
-	printf("Selection = %s\nMode = %d\n", album, mode);
+	//printf("Selection = %s\nMode = %d\n", album, mode);
 
 	/* Open dmenu to prompt for filters | trackname */
 
 	/* Start mplayer with tracklist */
-	//execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
+	if (mode == 1)
+		execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
 
 	/* Set up loop whle mplayer is running to update track name for dstatus */
 
@@ -74,6 +98,7 @@ main(void)
 	exit(EXIT_SUCCESS);
 }
 
+/*
 int
 checkplayer(void)
 {
@@ -111,6 +136,7 @@ checkplayer(void)
 	return 0;
 
 }
+*/
 
 /*
 int
@@ -291,7 +317,7 @@ uptodate(void)
 	if (!(dp = opendir(".")))
 		eprintf("opendir $MUSICDIR failed");
 	while ((ent = readdir(dp))) {
-		if (!strcmp(ent->d_name, ".."))
+		if (!strcmp(ent->d_name, "..") || !strcmp(ent->d_name, FIFO))
 			continue;
 		stat(ent->d_name, &st);
 		if (st.st_mtime > mtime) {
