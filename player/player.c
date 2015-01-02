@@ -31,7 +31,7 @@ int
 main(int argc, char *argv[])
 {
 	//int mpid, mode;
-	int fd, mode;
+	int fd, len, mode;
 	char *album;
 	char args[16];
 
@@ -46,11 +46,13 @@ main(int argc, char *argv[])
 	mknod(FIFO, S_IFIFO | 0644, 0);
 	if ((fd = open(FIFO, O_WRONLY | O_NONBLOCK)) != -1) {  /* PLAYER running */
 		if (argc > 2)
-			snprintf(args, sizeof args, "%s %s\n", argv[1], argv[2]);
+			len = snprintf(args, sizeof args, "%s %s\n", argv[1], argv[2]);
 		else if (argc == 2)
-			snprintf(args, sizeof args, "%s\n", argv[1]);
+			len = snprintf(args, sizeof args, "%s\n", argv[1]);
 		else
-			snprintf(args, sizeof args, "pause\n");
+			len = snprintf(args, sizeof args, "pause\n");
+		if (len >= sizeof args)
+			eprintf("args too long");
 		write(fd, args, strlen(args));
 		close(fd);
 		exit(EXIT_SUCCESS);
