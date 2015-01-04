@@ -23,9 +23,8 @@ static char *dmenu(const int m);
 static void eprintf(const char *s);
 static int qstrcmp(const void *a, const void *b);
 static void scan(void);
+static void setup(void);
 static int uptodate(void);
-
-static const char *HOME;
 
 int
 main(int argc, char *argv[])
@@ -34,13 +33,6 @@ main(int argc, char *argv[])
 	int fd, len, mode;
 	char *album;
 	char args[16];
-
-	if (!(HOME = getenv("HOME")))
-		eprintf("no $HOME");
-	if (chdir(HOME) < 0)
-		eprintf("chdir $HOME failed");
-	if (chdir(MUSICDIR) < 0)
-		eprintf("chdir $MUSICDIR failed");
 
 	/* Check for arguments and send to PLAYER */
 	mknod(FIFO, S_IFIFO | 0644, 0);
@@ -67,6 +59,8 @@ main(int argc, char *argv[])
 		exit(EXIT_SUCCESS);
 	}
 */
+
+	setup();
 
 	/* Check cache files and update if needed */
 	if (!uptodate()) {
@@ -98,6 +92,19 @@ main(int argc, char *argv[])
 
 	printf("exiting at end of main()\n");
 	exit(EXIT_SUCCESS);
+}
+
+void
+setup(void)
+{
+	const char *HOME;
+
+	if (!(HOME = getenv("HOME")))
+		eprintf("no $HOME");
+	if (chdir(HOME) < 0)
+		eprintf("chdir $HOME failed");
+	if (chdir(MUSICDIR) < 0)
+		eprintf("chdir $MUSICDIR failed");
 }
 
 /*
