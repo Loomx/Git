@@ -27,8 +27,9 @@ static int uptodate(void);
 int
 main(int argc, char *argv[])
 {
-	int fd, len, mode;
-	char *album;
+	//int fd, len, mode;
+	int fd, len;
+	char *album, *filters, *trackname;
 	char args[16];
 
 	/* Check for arguments and send to PLAYER */
@@ -58,21 +59,25 @@ main(int argc, char *argv[])
 
 	/* Open dmenu to choose an album */
 	album = dmenu(0);
+	//printf("Selection = %s\nMode = %d\n", album, mode);
 	if (album[0] == '\0')
 		exit(EXIT_SUCCESS);
 	else if (!strcmp(album, "DVD"))
 		execlp(PLAYER, PLAYER, "dvd://", NULL);
-	else if (!strcmp(album, "Jukebox"))
-		mode = 1;
-	else mode = 2;
-
-	//printf("Selection = %s\nMode = %d\n", album, mode);
-
-	/* Open dmenu to prompt for filters (mode == 1) or trackname (mode ==2) */
+	/* Open dmenu to prompt for filters or trackname */
+	else if (!strcmp(album, "Jukebox")) {
+		//mode = 1;
+		filters = dmenu(1);
+		printf("Filters = %s\n", filters);
+	}
+	else {
+		trackname = dmenu(2);
+		printf("Trackname = %s\n", trackname);
+	}
 
 	/* Start mplayer with tracklist */
-	if (mode == 1)
-		execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
+	//if (mode == 1)
+		//execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
 
 	/* Set up loop whle mplayer is running to update track name for dstatus */
 
@@ -141,10 +146,10 @@ dmenu(const int m)
 		close(pipe1[0]);  /* dup2ed */
 		dup2(pipe3[1], 1);
 		close(pipe3[1]);  /* dup2ed */
-		if (m == 0)
-			execlp(DMENU, DMENU, "-i", "-l", "40", NULL);
-		else
+		if (m == 1)
 			execlp(DMENU, DMENU, "-p", "Filters?", NULL);
+		else
+			execlp(DMENU, DMENU, "-i", "-l", "40", NULL);
 		}
 
 	} else {  /* parent */
