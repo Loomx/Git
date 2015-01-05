@@ -67,7 +67,7 @@ main(int argc, char *argv[])
 	else if (!strcmp(album, "Jukebox")) {
 		filters = dmenu(1);
 		if (filters[0] == '\0') {
-			//execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
+			execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
 			eprintf("exec PLAYER failed");
 		}
 	}
@@ -127,7 +127,7 @@ dmenu(const int m)
 				fclose(fp);
 			_exit(EXIT_SUCCESS);
 			} else if (m == 1) {
-				write(1, "", 1);
+				write(1, NULL, 1);
 			}
 		} else {  /* child */
 		close(pipe1[1]);  /* unused */
