@@ -87,19 +87,6 @@ main(int argc, char *argv[])
 	exit(EXIT_SUCCESS);
 }
 
-void
-setup(void)
-{
-	const char *HOME;
-
-	if (!(HOME = getenv("HOME")))
-		eprintf("no $HOME");
-	if (chdir(HOME) < 0)
-		eprintf("chdir $HOME failed");
-	if (chdir(MUSICDIR) < 0)
-		eprintf("chdir $MUSICDIR failed");
-}
-
 char *
 dmenu(const int m)
 {
@@ -136,6 +123,8 @@ dmenu(const int m)
 					write(1, line, nread);
 				fclose(fp);
 			_exit(EXIT_SUCCESS);
+			} else if (m ==1) {
+				write(1, NULL, 1);
 			}
 		} else {  /* child */
 		close(pipe1[1]);  /* unused */
@@ -225,6 +214,19 @@ scan(void)
 	}
 	fclose(cache);
 	fclose(cache2);
+}
+
+void
+setup(void)
+{
+	const char *HOME;
+
+	if (!(HOME = getenv("HOME")))
+		eprintf("no $HOME");
+	if (chdir(HOME) < 0)
+		eprintf("chdir $HOME failed");
+	if (chdir(MUSICDIR) < 0)
+		eprintf("chdir $MUSICDIR failed");
 }
 
 int
