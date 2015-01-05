@@ -83,7 +83,7 @@ main(int argc, char *argv[])
 
 	/* Clean up when mplayer exits */
 
-	printf("exiting at end of main()\n");
+	//printf("exiting at end of main()\n");
 	exit(EXIT_SUCCESS);
 }
 
