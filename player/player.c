@@ -66,9 +66,10 @@ main(int argc, char *argv[])
 	/* Open dmenu to prompt for filters or trackname */
 	else if (!strcmp(album, "Jukebox")) {
 		filters = dmenu(1);
-		if (filters[0] == '\0')
-			eprintf("exited from dmenu");
-			//exit(EXIT_SUCCESS);
+		if (filters[0] == '\0') {
+			//execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
+			eprintf("exec PLAYER failed");
+		}
 	}
 	else {
 		trackname = dmenu(2);
@@ -125,8 +126,8 @@ dmenu(const int m)
 					write(1, line, nread);
 				fclose(fp);
 			_exit(EXIT_SUCCESS);
-			} else if (m ==1) {
-				write(1, NULL, 1);
+			} else if (m == 1) {
+				write(1, "", 1);
 			}
 		} else {  /* child */
 		close(pipe1[1]);  /* unused */
