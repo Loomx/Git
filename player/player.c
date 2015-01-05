@@ -68,11 +68,11 @@ main(int argc, char *argv[])
 	else if (!strcmp(album, "Jukebox")) {
 		//mode = 1;
 		filters = dmenu(1);
-		printf("Filters = %s\n", filters);
+		//printf("Filters = %s\n", filters);
 	}
 	else {
 		trackname = dmenu(2);
-		printf("Trackname = %s\n", trackname);
+		//printf("Trackname = %s\n", trackname);
 	}
 
 	/* Start mplayer with tracklist */
