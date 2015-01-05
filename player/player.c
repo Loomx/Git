@@ -27,7 +27,6 @@ static int uptodate(void);
 int
 main(int argc, char *argv[])
 {
-	//int fd, len, mode;
 	int fd, len;
 	char *album, *filters, *trackname;
 	char args[16];
@@ -66,13 +65,16 @@ main(int argc, char *argv[])
 		execlp(PLAYER, PLAYER, "dvd://", NULL);
 	/* Open dmenu to prompt for filters or trackname */
 	else if (!strcmp(album, "Jukebox")) {
-		//mode = 1;
 		filters = dmenu(1);
-		//printf("Filters = %s\n", filters);
+		if (filters[0] == '\0')
+			eprintf("exited from dmenu");
+			//exit(EXIT_SUCCESS);
 	}
 	else {
 		trackname = dmenu(2);
-		//printf("Trackname = %s\n", trackname);
+		if (trackname[0] == '\0')
+			eprintf("exited from dmenu");
+			//exit(EXIT_SUCCESS);
 	}
 
 	/* Start mplayer with tracklist */
