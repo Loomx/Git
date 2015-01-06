@@ -12,24 +12,28 @@
 //#define FIFO       ".mp_pipe" 
 #define ALBUMCACHE ".album_cache"
 #define TRACKCACHE ".track_cache"
+#define PLAYLIST   "/tmp/playlist"
 #define PLAYER     "mplayer"
 #define DMENU      "dmenu"
-#define MPOUTPUT   "/tmp/mp_output"
-#define STATUSMSG  "/tmp/status_msg"
+//#define MPOUTPUT   "/tmp/mp_output"
+//#define STATUSMSG  "/tmp/status_msg"
 
-static char *dmenu(const int m);
-static void eprintf(const char *s);
+static char *dmenu(const int m, const char *dir);
+static void die(const char *s);
 static int qstrcmp(const void *a, const void *b);
 static void scan(void);
 static void setup(void);
 static int uptodate(void);
 
+const char *HOME;
+
 int
 main(int argc, char *argv[])
 {
 	int fd, len;
-	char *album, *filters, *trackname;
 	char args[16];
+	const char *album, *trackname;
+	//const char *album, *filters, *trackname;
 
 	/* Check for arguments and send to PLAYER */
 	mknod(FIFO, S_IFIFO | 0644, 0);
@@ -41,7 +45,7 @@ main(int argc, char *argv[])
 		else
 			len = snprintf(args, sizeof args, "pause\n");
 		if (len >= sizeof args)
-			eprintf("args too long");
+			die("args too long");
 		write(fd, args, strlen(args));
 		close(fd);
 		exit(EXIT_SUCCESS);
@@ -51,65 +55,82 @@ main(int argc, char *argv[])
 
 	/* Check cache files and update if needed */
 	setup();
-	if (!uptodate()) {
+	if (!uptodate())
 		scan();
-		printf("scanning...\n");
-	}
 
 	/* Open dmenu to choose an album */
-	album = dmenu(0);
-	//printf("Selection = %s\nMode = %d\n", album, mode);
-	if (album[0] == '\0')
-		exit(EXIT_SUCCESS);
-	else if (!strcmp(album, "DVD"))
-		execlp(PLAYER, PLAYER, "dvd://", NULL);
+	album = dmenu(0, NULL);
+
 	/* Open dmenu to prompt for filters or trackname */
-	else if (!strcmp(album, "Jukebox")) {
-		filters = dmenu(1);
-		if (filters[0] == '\0') {
-			execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
-			eprintf("exec PLAYER failed");
+	if (!strcmp(album, "Jukebox")) {
+		//TODO: filters
+		//filters = dmenu(1, NULL);
+		execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
+		die("exec PLAYER failed");
+	}
+	else if (!strcmp(album, "DVD")) {
+		execlp(PLAYER, PLAYER, "dvd://", NULL);
+		die("exec PLAYER failed");
+	}
+	else if (album[0] != '\0') {
+		if (chdir(album) < 0)
+			die("chdir $album failed");
+		printf("\n");
+		trackname = dmenu(2, album);
+		if (!strcmp(trackname, "Play")) {
+			execlp(PLAYER, PLAYER, "-playlist", PLAYLIST, NULL);
+			die("exec PLAYER failed");
+		}
+		else if (!strcmp(trackname, "Shuffle")) {
+			execlp(PLAYER, PLAYER, "-shuffle", "-playlist", PLAYLIST, NULL);
+			die("exec PLAYER failed");
+		}
+		else {
+			execlp(PLAYER, PLAYER, trackname, NULL);
+			die("exec PLAYER failed");
 		}
 	}
-	else {
-		trackname = dmenu(2);
-		if (trackname[0] == '\0')
-			eprintf("exited from dmenu");
-			//exit(EXIT_SUCCESS);
-	}
-
-	/* Start mplayer with tracklist */
-	//if (mode == 1)
-		//execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
+	else
+		exit(EXIT_SUCCESS);  /* fall through */
 
 	/* Set up loop whle mplayer is running to update track name for dstatus */
 
 	/* Clean up when mplayer exits */
 
-	//printf("exiting at end of main()\n");
 	exit(EXIT_SUCCESS);
 }
 
+void
+die(const char *s)
+{
+	fprintf(stderr, "player: %s\n", s);
+	exit(EXIT_FAILURE);
+}
+
 char *
-dmenu(const int m)
+dmenu(const int m, const char *dir)
 {
 	char line[PATH_MAX];
-	static char sel[PATH_MAX];
+	char **tracklist = NULL;
+	int i, count = 0;
 	int pipe1[2], pipe2[2], pipe3[2];
 	pid_t cpid;
 	size_t nread;
+	static char list[PATH_MAX], sel[PATH_MAX];
+	struct dirent *ent;
+	DIR *dp;
 	FILE *fp;
 
 	if (pipe(pipe1) == -1 || pipe(pipe2) == -1 || pipe(pipe3) == -1 )
-		eprintf("pipe failed");
+		die("pipe failed");
 	cpid = fork();
 	if (cpid == -1)
-		eprintf("fork failed");
+		die("fork failed");
 
 	if (cpid == 0) {  /* child */
 		cpid = fork();
 		if (cpid == -1)
-			eprintf("inner fork failed");
+			die("inner fork failed");
 		if (cpid == 0) {  /* grandchild */
 			close(pipe1[0]);  /* unused */
 			close(pipe2[1]);  /* unused */
@@ -121,13 +142,37 @@ dmenu(const int m)
 			close(pipe1[1]);  /* dup2ed */
 			if (m == 0) {
 				if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
-					eprintf("fopen failed\n");
+					die("fopen failed");
 				while ((nread = fread(line, 1, PATH_MAX, fp)) > 0)
 					write(1, line, nread);
 				fclose(fp);
-			_exit(EXIT_SUCCESS);
-			} else if (m == 1) {
-				write(1, NULL, 1);
+				_exit(EXIT_SUCCESS);
+			}
+			else if (m == 2) {
+				printf("Play\nShuffle\n");
+
+				if (!(dp = opendir(".")))
+					die("opendir $album failed");
+				while ((ent = readdir(dp))) {
+					if (ent->d_name[0] == '.')
+						continue;
+					if (!(tracklist  = realloc(tracklist, ++count * sizeof *tracklist)))
+						die("malloc failed");
+					if (!(tracklist[count-1] = strdup(ent->d_name)))
+						die("strdup failed");
+				}
+				closedir(dp);
+
+				qsort(tracklist, count, sizeof *tracklist, qstrcmp);
+				if ((fp = fopen(PLAYLIST, "w")) == NULL)
+					die("fopen failed");
+				for(i = 0; i < count; i++) {
+					fprintf(fp, "%s/%s/%s/%s\n", HOME, MUSICDIR, dir, tracklist[i]);
+					snprintf(line, sizeof line, "%s\n", tracklist[i]);
+					strcat(list, line);
+					}
+				printf("%s", list);
+				fclose(fp);
 			}
 		} else {  /* child */
 		close(pipe1[1]);  /* unused */
@@ -143,7 +188,6 @@ dmenu(const int m)
 		else
 			execlp(DMENU, DMENU, "-i", "-l", "40", NULL);
 		}
-
 	} else {  /* parent */
 		close(pipe1[0]);  /* unused */
 		close(pipe1[1]);  /* unused */
@@ -157,13 +201,6 @@ dmenu(const int m)
 	return sel;
 }
 
-void
-eprintf(const char *s)
-{
-	fprintf(stderr, "player: %s\n", s);
-	exit(EXIT_FAILURE);
-}
-
 int
 qstrcmp(const void *a, const void *b)
 {
@@ -173,44 +210,44 @@ qstrcmp(const void *a, const void *b)
 void
 scan(void)
 {
-	char **album = NULL;
+	char **dir = NULL;
 	char path[PATH_MAX];
-	size_t i, count = 0;
+	int i, count = 0;
 	struct dirent *ent;
-	FILE *cache, *cache2;
 	DIR *dp;
+	FILE *cache, *cache2;
 
 	if (!(dp = opendir(".")))
-		eprintf("opendir $MUSICDIR failed");
+		die("opendir $MUSICDIR failed");
 	while ((ent = readdir(dp))) {
 		if (ent->d_name[0] == '.')
 			continue;
-		if (!(album = realloc(album, ++count * sizeof *album)))
-			eprintf("malloc failed");
-		if (!(album[count-1] = strdup(ent->d_name)))
-			eprintf("strdup failed");
+		if (!(dir = realloc(dir, ++count * sizeof *dir)))
+			die("malloc failed");
+		if (!(dir[count-1] = strdup(ent->d_name)))
+			die("strdup failed");
 	}
 	closedir(dp);
 
-	qsort(album, count, sizeof *album, qstrcmp);
+	qsort(dir, count, sizeof *dir, qstrcmp);
 	if (!(cache = fopen(ALBUMCACHE, "w")))
-		eprintf("fopen failed");
+		die("fopen failed");
 	if (!(cache2 = fopen(TRACKCACHE, "w")))
-		eprintf("fopen2 failed");
+		die("fopen2 failed");
 	fprintf(cache, "Jukebox\nDVD\n");
 	for(i = 0; i < count; i++) {
-		if (i > 0 && !strcmp(album[i], album[i-1]))
+		if (i > 0 && !strcmp(dir[i], dir[i-1]))
 			continue;
-		fprintf(cache, "%s\n", album[i]);
+		fprintf(cache, "%s\n", dir[i]);
 
-		if (!(dp = opendir(album[i])))
-			eprintf("opendir $album failed");
+		if (!(dp = opendir(dir[i])))
+			die("opendir $album failed");
 		while ((ent = readdir(dp))) {
 			if (ent->d_name[0] == '.')
 				continue;
 			path[0] = '\0';
-			//snprintf(path, sizeof path, "%s/%s/%s/%s", HOME, MUSICDIR, album[i], ent->d_name); /* full paths */
-			snprintf(path, sizeof path, "%s/%s", album[i], ent->d_name);
+			//snprintf(path, sizeof path, "%s/%s/%s/%s", HOME, MUSICDIR, dir[i], ent->d_name); /* full paths */
+			snprintf(path, sizeof path, "%s/%s", dir[i], ent->d_name);
 			fprintf(cache2, "%s\n", path);
 		}
 		closedir(dp);
@@ -222,14 +259,12 @@ scan(void)
 void
 setup(void)
 {
-	const char *HOME;
-
 	if (!(HOME = getenv("HOME")))
-		eprintf("no $HOME");
+		die("no $HOME");
 	if (chdir(HOME) < 0)
-		eprintf("chdir $HOME failed");
+		die("chdir $HOME failed");
 	if (chdir(MUSICDIR) < 0)
-		eprintf("chdir $MUSICDIR failed");
+		die("chdir $MUSICDIR failed");
 }
 
 int
@@ -248,7 +283,7 @@ uptodate(void)
 		return 0;
 
 	if (!(dp = opendir(".")))
-		eprintf("opendir $MUSICDIR failed");
+		die("opendir $MUSICDIR failed");
 	while ((ent = readdir(dp))) {
 		if (!strcmp(ent->d_name, "..") || !strcmp(ent->d_name, FIFO))
 			continue;
