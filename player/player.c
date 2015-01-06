@@ -173,6 +173,7 @@ dmenu(const int m, const char *dir)
 					}
 				printf("%s", list);
 				fclose(fp);
+				_exit(EXIT_SUCCESS);
 			}
 		} else {  /* child */
 		close(pipe1[1]);  /* unused */
