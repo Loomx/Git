@@ -212,7 +212,6 @@ void
 scan(void)
 {
 	char **dir = NULL;
-	char path[PATH_MAX];
 	int i, count = 0;
 	struct dirent *ent;
 	DIR *dp;
@@ -246,11 +245,7 @@ scan(void)
 		while ((ent = readdir(dp))) {
 			if (ent->d_name[0] == '.')
 				continue;
-			path[0] = '\0';
-			//snprintf(path, sizeof path, "%s/%s/%s/%s", HOME, MUSICDIR, dir[i], ent->d_name); /* full paths */
-			snprintf(path, sizeof path, "%s/%s", dir[i], ent->d_name);
-			fprintf(cache2, "%s\n", path);
-		}
+			fprintf(cache2, "%s/%s\n", dir[i], ent->d_name);		}
 		closedir(dp);
 	}
 	fclose(cache);
