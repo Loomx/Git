@@ -13,8 +13,6 @@
 #define ALBUMCACHE ".album_cache"
 #define TRACKCACHE ".track_cache"
 #define PLAYLIST   "/tmp/playlist"
-#define PLAYER     "mplayer"
-#define DMENU      "dmenu"
 //#define MPOUTPUT   "/tmp/mp_output"
 //#define STATUSMSG  "/tmp/status_msg"
 
@@ -35,9 +33,9 @@ main(int argc, char *argv[])
 	const char *album, *trackname;
 	//const char *album, *filters, *trackname;
 
-	/* Check for arguments and send to PLAYER */
+	/* Check for arguments and send to mplayer */
 	mknod(FIFO, S_IFIFO | 0644, 0);
-	if ((fd = open(FIFO, O_WRONLY | O_NONBLOCK)) != -1) {  /* PLAYER running */
+	if ((fd = open(FIFO, O_WRONLY | O_NONBLOCK)) != -1) {  /* mplayer running */
 		if (argc > 2)
 			len = snprintf(args, sizeof args, "%s %s\n", argv[1], argv[2]);
 		else if (argc == 2)
@@ -65,12 +63,12 @@ main(int argc, char *argv[])
 	if (!strcmp(album, "Jukebox")) {
 		//TODO: filters
 		//filters = dmenu(1, NULL);
-		execlp(PLAYER, PLAYER, "-shuffle", "-playlist", TRACKCACHE, NULL);
-		die("exec PLAYER failed");
+		execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL);
+		die("exec mplayer failed");
 	}
 	else if (!strcmp(album, "DVD")) {
-		execlp(PLAYER, PLAYER, "dvd://", NULL);
-		die("exec PLAYER failed");
+		execlp("mplayer", "mplayer", "dvd://", NULL);
+		die("exec mplayer failed");
 	}
 	else if (album[0] != '\0') {
 		if (chdir(album) < 0)
@@ -78,16 +76,16 @@ main(int argc, char *argv[])
 		printf("\n");
 		trackname = dmenu(2, album);
 		if (!strcmp(trackname, "Play")) {
-			execlp(PLAYER, PLAYER, "-playlist", PLAYLIST, NULL);
-			die("exec PLAYER failed");
+			execlp("mplayer", "mplayer", "-playlist", PLAYLIST, NULL);
+			die("exec mplayer failed");
 		}
 		else if (!strcmp(trackname, "Shuffle")) {
-			execlp(PLAYER, PLAYER, "-shuffle", "-playlist", PLAYLIST, NULL);
-			die("exec PLAYER failed");
+			execlp("mplayer", "mplayer", "-shuffle", "-playlist", PLAYLIST, NULL);
+			die("exec mplayer failed");
 		}
 		else {
-			execlp(PLAYER, PLAYER, trackname, NULL);
-			die("exec PLAYER failed");
+			execlp("mplayer", "mplayer", trackname, NULL);
+			die("exec mplayer failed");
 		}
 	}
 	else
@@ -185,9 +183,9 @@ dmenu(const int m, const char *dir)
 		dup2(pipe3[1], 1);
 		close(pipe3[1]);  /* dup2ed */
 		if (m == 1)
-			execlp(DMENU, DMENU, "-p", "Filters?", NULL);
+			execlp("dmenu", "dmenu", "-p", "Filters?", NULL);
 		else
-			execlp(DMENU, DMENU, "-i", "-l", "40", NULL);
+			execlp("dmenu", "dmenu", "-i", "-l", "40", NULL);
 		}
 	} else {  /* parent */
 		close(pipe1[0]);  /* unused */
