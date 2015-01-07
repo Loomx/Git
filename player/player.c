@@ -110,13 +110,13 @@ die(const char *s)
 char *
 dmenu(const int m, const char *dir)
 {
-	char line[PATH_MAX];
+	char line[PATH_MAX], list[PATH_MAX * 4];
 	char **tracklist = NULL;
 	int i, count = 0;
 	int pipe1[2], pipe2[2], pipe3[2];
 	pid_t cpid;
 	size_t nread;
-	static char list[PATH_MAX], sel[PATH_MAX];
+	static char sel[PATH_MAX];
 	struct dirent *ent;
 	DIR *dp;
 	FILE *fp;
