@@ -1,4 +1,4 @@
-//#include <errno.h>
+/* #include <errno.h> */
 #include <dirent.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -9,12 +9,12 @@
 
 #define MUSICDIR   "Music"
 #define FIFO       "/home/jonny/.mplayer/mp_pipe" 
-//#define FIFO       ".mp_pipe" 
+/* #define FIFO       ".mp_pipe" */
 #define ALBUMCACHE ".album_cache"
 #define TRACKCACHE ".track_cache"
 #define PLAYLIST   "/tmp/playlist"
-//#define MPOUTPUT   "/tmp/mp_output"
-//#define STATUSMSG  "/tmp/status_msg"
+/* #define MPOUTPUT   "/tmp/mp_output" */
+/* #define STATUSMSG  "/tmp/status_msg" */
 
 static char *dmenu(const int m, const char *dir);
 static void die(const char *s);
@@ -31,7 +31,7 @@ main(int argc, char *argv[])
 	int fd, len;
 	char args[16];
 	const char *album, *trackname;
-	//const char *album, *filters, *trackname;
+	/* const char *album, *filters, *trackname; */
 
 	/* Check for arguments and send to mplayer */
 	mknod(FIFO, S_IFIFO | 0644, 0);
@@ -61,8 +61,8 @@ main(int argc, char *argv[])
 
 	/* Open dmenu to prompt for filters or trackname */
 	if (!strcmp(album, "Jukebox")) {
-		//TODO: filters
-		//filters = dmenu(1, NULL);
+		/* TODO: filters */
+		/* filters = dmenu(1, NULL); */
 		execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL);
 		die("exec mplayer failed");
 	}
