@@ -1,0 +1,24 @@
+player
+======
+player is simple music player.
+
+It uses dmenu to select an option:
+    - "Jukebox" mode (shuffle all)
+    - "DVD" mode
+    - album from ~/Music
+       `- "Play" album
+        - "Shuffle" album
+        - a track
+
+It then calls mplayer to play the track(s).
+
+
+Installation
+------------
+Edit `Makefile' to match your local setup (player is installed
+into the /usr/local namespace by default).
+
+Afterwards enter the following command to build and install player
+(if necessary as root):
+
+    make install clean
