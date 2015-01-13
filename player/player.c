@@ -29,9 +29,10 @@ int
 main(int argc, char *argv[])
 {
 	int fd, len;
-	char args[16];
-	const char *album, *trackname;
-	/* const char *album, *filters, *trackname; */
+	char args[16], buf[PATH_MAX], line[PATH_MAX], *s;
+	/* const char *album, *trackname; */
+	const char *album, *filters, *trackname;
+	FILE *fp;
 
 	/* Check for arguments and send to mplayer */
 	mknod(FIFO, S_IFIFO | 0644, 0);
@@ -62,9 +63,20 @@ main(int argc, char *argv[])
 	/* Open dmenu to prompt for filters or trackname */
 	if (!strcmp(album, "Jukebox")) {
 		/* TODO: filters */
-		/* filters = dmenu(1, NULL); */
-		execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL);
-		die("exec mplayer failed");
+		filters = dmenu(1, NULL);
+		printf("length = %d\n", strlen(filters));
+		if (strlen(filters) == 0) {
+			execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL);
+			die("exec mplayer failed");
+		}
+		if ((fp = fopen(TRACKCACHE, "r")) == NULL)
+			die("fopen failed");
+		strcpy(buf, filters);
+		while (fgets(line, sizeof line, fp) != NULL)
+			for (s = strtok(buf, " ") ; s ; s = strtok(NULL, " "))
+				if (strstr(line, s) != NULL)
+					printf("%s : %s", s, line);
+		fclose(fp);
 	}
 	else if (!strcmp(album, "DVD")) {
 		execlp("mplayer", "mplayer", "dvd://", NULL);
@@ -144,6 +156,10 @@ dmenu(const int m, const char *dir)
 				while ((nread = fread(line, 1, PATH_MAX, fp)) > 0)
 					write(1, line, nread);
 				fclose(fp);
+				_exit(EXIT_SUCCESS);
+			}
+			else if (m == 1) {
+				/* printf(""); */
 				_exit(EXIT_SUCCESS);
 			}
 			else if (m == 2) {
