@@ -234,8 +234,6 @@ scan(void)
 		die("fopen2 failed");
 	fprintf(cache, "Jukebox\nDVD\n");
 	for(i = 0; i < count; i++) {
-		if (i > 0 && !strcmp(dir[i], dir[i-1]))
-			continue;
 		fprintf(cache, "%s\n", dir[i]);
 
 		if (!(dp = opendir(dir[i])))
