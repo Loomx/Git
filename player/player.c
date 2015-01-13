@@ -108,7 +108,7 @@ die(const char *s)
 char *
 dmenu(const int m, const char *dir)
 {
-	char line[PATH_MAX], list[PATH_MAX * 4];
+	char line[PATH_MAX];
 	char **tracklist = NULL;
 	int i, count = 0;
 	int pipe1[2], pipe2[2], pipe3[2];
@@ -165,11 +165,9 @@ dmenu(const int m, const char *dir)
 				if ((fp = fopen(PLAYLIST, "w")) == NULL)
 					die("fopen failed");
 				for(i = 0; i < count; i++) {
+					printf("%s\n", tracklist[i]);
 					fprintf(fp, "%s/%s/%s/%s\n", HOME, MUSICDIR, dir, tracklist[i]);
-					snprintf(line, sizeof line, "%s\n", tracklist[i]);
-					strcat(list, line);
 					}
-				printf("%s", list);
 				fclose(fp);
 				_exit(EXIT_SUCCESS);
 			}
