@@ -1,4 +1,3 @@
-/* #include <errno.h> */
 #include <ctype.h>
 #include <dirent.h>
 #include <fcntl.h>
@@ -17,21 +16,22 @@
 /* #define MPOUTPUT   "/tmp/mp_output" */
 /* #define STATUSMSG  "/tmp/status_msg" */
 
-static char *dmenu(const int m, const char *dir);
+static char *dmenu(const int m);
 static void die(const char *s);
 static int qstrcmp(const void *a, const void *b);
 static void scan(void);
 static void setup(void);
 static int uptodate(void);
 
-const char *HOME;
+static const char *HOME;
+static const char *album;
 
 int
 main(int argc, char *argv[])
 {
 	int fd, i, len;
 	char args[16], buf[PATH_MAX], *filters, line[PATH_MAX], lline[PATH_MAX], *s;
-	const char *album, *trackname;
+	const char *trackname;
 	FILE *fp, *fp2;
 
 	/* Check for arguments and send to mplayer */
@@ -58,11 +58,11 @@ main(int argc, char *argv[])
 		scan();
 
 	/* Open dmenu to choose an album */
-	album = dmenu(0, NULL);
+	album = dmenu(0);
 
 	/* Open dmenu to prompt for filters or trackname */
 	if (!strcmp(album, "Jukebox")) {
-		filters = dmenu(1, NULL);
+		filters = dmenu(1);
 		if (strlen(filters) == 0) {
 			execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL);
 			die("exec mplayer failed");
@@ -95,7 +95,7 @@ main(int argc, char *argv[])
 		if (chdir(album) < 0)
 			die("chdir $album failed");
 		printf("\n");
-		trackname = dmenu(2, album);
+		trackname = dmenu(2);
 		if (!strcmp(trackname, "Play")) {
 			execlp("mplayer", "mplayer", "-playlist", PLAYLIST, NULL);
 			die("exec mplayer failed");
@@ -111,6 +111,7 @@ main(int argc, char *argv[])
 	}
 	exit(EXIT_SUCCESS);  /* fall through */
 
+
 	/* TODO: Set up loop whle mplayer is running to update track name for dstatus */
 
 	/* TODO: Clean up when mplayer exits */
@@ -124,7 +125,7 @@ die(const char *s)
 }
 
 char *
-dmenu(const int m, const char *dir)
+dmenu(const int m)
 {
 	char line[PATH_MAX];
 	char **tracklist = NULL;
@@ -132,7 +133,7 @@ dmenu(const int m, const char *dir)
 	int pipe1[2], pipe2[2], pipe3[2];
 	pid_t cpid;
 	size_t nread;
-	static char sel[PATH_MAX];
+	static char sel[NAME_MAX];
 	struct dirent *ent;
 	DIR *dp;
 	FILE *fp;
@@ -187,7 +188,7 @@ dmenu(const int m, const char *dir)
 					die("fopen failed");
 				for(i = 0; i < count; i++) {
 					printf("%s\n", tracklist[i]);
-					fprintf(fp, "%s/%s/%s/%s\n", HOME, MUSICDIR, dir, tracklist[i]);
+					fprintf(fp, "%s/%s/%s/%s\n", HOME, MUSICDIR, album, tracklist[i]);
 					}
 				fclose(fp);
 				_exit(EXIT_SUCCESS);
@@ -256,7 +257,7 @@ scan(void)
 		fprintf(cache, "%s\n", dir[i]);
 
 		if (!(dp = opendir(dir[i])))
-			die("opendir $album failed");
+			die("opendir $dir failed");
 		while ((ent = readdir(dp))) {
 			if (ent->d_name[0] == '.')
 				continue;
