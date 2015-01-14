@@ -1,4 +1,5 @@
 /* #include <errno.h> */
+#include <ctype.h>
 #include <dirent.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -28,11 +29,10 @@ const char *HOME;
 int
 main(int argc, char *argv[])
 {
-	int fd, len;
-	char args[16], buf[PATH_MAX], line[PATH_MAX], *s;
-	/* const char *album, *trackname; */
-	const char *album, *filters, *trackname;
-	FILE *fp;
+	int fd, i, len;
+	char args[16], buf[PATH_MAX], *filters, line[PATH_MAX], lline[PATH_MAX], *s;
+	const char *album, *trackname;
+	FILE *fp, *fp2;
 
 	/* Check for arguments and send to mplayer */
 	mknod(FIFO, S_IFIFO | 0644, 0);
@@ -62,21 +62,30 @@ main(int argc, char *argv[])
 
 	/* Open dmenu to prompt for filters or trackname */
 	if (!strcmp(album, "Jukebox")) {
-		/* TODO: filters */
 		filters = dmenu(1, NULL);
-		printf("length = %d\n", strlen(filters));
 		if (strlen(filters) == 0) {
 			execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL);
 			die("exec mplayer failed");
 		}
+		for (i=0; filters[i]; ++i)
+			filters[i] = tolower(filters[i]);
 		if ((fp = fopen(TRACKCACHE, "r")) == NULL)
 			die("fopen failed");
-		strcpy(buf, filters);
-		while (fgets(line, sizeof line, fp) != NULL)
-			for (s = strtok(buf, " ") ; s ; s = strtok(NULL, " "))
-				if (strstr(line, s) != NULL)
-					printf("%s : %s", s, line);
+		if ((fp2 = fopen(PLAYLIST, "w")) == NULL)
+			die("fopen2 failed");
+		while (fgets(line, sizeof line, fp) != NULL) {
+			for (i=0; line[i]; ++i)
+				lline[i] = tolower(line[i]);
+			lline[strlen(line)] = '\0';
+			strcpy(buf, filters);
+			for (s = strtok(buf, " "); s; s = strtok(NULL, " "))
+				if (strstr(lline, s) != NULL)
+					fprintf(fp2, "%s/%s/%s", HOME, MUSICDIR, line);
+		}
 		fclose(fp);
+		fclose(fp2);
+		execlp("mplayer", "mplayer", "-shuffle", "-playlist", PLAYLIST, NULL);
+		die("exec mplayer failed");
 	}
 	else if (!strcmp(album, "DVD")) {
 		execlp("mplayer", "mplayer", "dvd://", NULL);
@@ -100,14 +109,11 @@ main(int argc, char *argv[])
 			die("exec mplayer failed");
 		}
 	}
-	else
-		exit(EXIT_SUCCESS);  /* fall through */
+	exit(EXIT_SUCCESS);  /* fall through */
 
-	/* Set up loop whle mplayer is running to update track name for dstatus */
+	/* TODO: Set up loop whle mplayer is running to update track name for dstatus */
 
-	/* Clean up when mplayer exits */
-
-	exit(EXIT_SUCCESS);
+	/* TODO: Clean up when mplayer exits */
 }
 
 void
@@ -159,7 +165,6 @@ dmenu(const int m, const char *dir)
 				_exit(EXIT_SUCCESS);
 			}
 			else if (m == 1) {
-				/* printf(""); */
 				_exit(EXIT_SUCCESS);
 			}
 			else if (m == 2) {
