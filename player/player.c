@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 
 #define MUSICDIR   "Music"
 #define FIFO       "/home/jonny/.mplayer/mp_pipe" 
@@ -13,12 +14,12 @@
 #define ALBUMCACHE ".album_cache"
 #define TRACKCACHE ".track_cache"
 #define PLAYLIST   "/tmp/playlist"
-/* #define MPOUTPUT   "/tmp/mp_output" */
-/* #define STATUSMSG  "/tmp/status_msg" */
+#define STATUSMSG  "/tmp/status_msg"
 
 static char *dmenu(const int m);
 static void die(const char *s);
 static int qstrcmp(const void *a, const void *b);
+static void mplayer(void);
 static void scan(void);
 static void setup(void);
 static int uptodate(void);
@@ -63,10 +64,9 @@ main(int argc, char *argv[])
 	/* Open dmenu to prompt for filters or trackname */
 	if (!strcmp(album, "Jukebox")) {
 		filters = dmenu(1);
-		if (strlen(filters) == 0) {
-			execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL);
-			die("exec mplayer failed");
-		}
+		if (strlen(filters) == 0)
+			mplayer();
+
 		for (i=0; filters[i]; ++i)
 			filters[i] = tolower(filters[i]);
 		if ((fp = fopen(TRACKCACHE, "r")) == NULL)
@@ -110,13 +110,43 @@ main(int argc, char *argv[])
 		}
 	}
 	exit(EXIT_SUCCESS);  /* fall through */
-
-
-	/* TODO: Set up loop whle mplayer is running to update track name for dstatus */
-
-	/* TODO: Clean up when mplayer exits */
 }
 
+void
+mplayer(void)
+{
+	char link[PATH_MAX], path[NAME_MAX], test[NAME_MAX], *track;
+	int len;
+	pid_t cpid;
+	FILE *fp;
+
+	cpid = fork();
+	if (cpid == -1)
+		die("fork failed");
+
+	if (cpid == 0) {  /* child */
+		execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL); /* TODO: use parameters here... */
+		die("exec mplayer failed");
+	}
+	else {  /* parent */
+		sleep(1);
+		sprintf(test, "/proc/%d/fd/3", cpid);
+		sprintf(path, "/proc/%d/fd/4", cpid);
+		while (readlink(test, link, sizeof link) != -1)
+			while ((len = readlink(path, link, sizeof link)) > 1) {
+				link[len] = '\0';
+				if ((fp = fopen(STATUSMSG, "w")) == NULL)
+					die("fopen failed");
+				track = strrchr(link, '/');
+				fprintf(fp, "%s\n", ++track);
+				fclose(fp);
+				sleep(1); /* TODO: use inotify here... */
+			}
+		unlink(PLAYLIST);
+		unlink(STATUSMSG);
+		exit(EXIT_SUCCESS);
+	}
+}
 void
 die(const char *s)
 {
@@ -193,7 +223,8 @@ dmenu(const int m)
 				fclose(fp);
 				_exit(EXIT_SUCCESS);
 			}
-		} else {  /* child */
+		}
+		else {  /* child */
 		close(pipe1[1]);  /* unused */
 		close(pipe2[0]);  /* unused */
 		close(pipe2[1]);  /* unused */
@@ -207,7 +238,8 @@ dmenu(const int m)
 		else
 			execlp("dmenu", "dmenu", "-i", "-l", "40", NULL);
 		}
-	} else {  /* parent */
+	}
+	else {  /* parent */
 		close(pipe1[0]);  /* unused */
 		close(pipe1[1]);  /* unused */
 		close(pipe2[0]);  /* unused */
