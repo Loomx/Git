@@ -19,20 +19,19 @@
 static char *dmenu(const int m);
 static void die(const char *s);
 static int qstrcmp(const void *a, const void *b);
-static void mplayer(void);
+static void mplayer(const int m);
 static void scan(void);
 static void setup(void);
 static int uptodate(void);
 
 static const char *HOME;
-static const char *album;
+static const char *album, *trackname;
 
 int
 main(int argc, char *argv[])
 {
 	int fd, i, len;
-	char args[16], buf[PATH_MAX], *filters, line[PATH_MAX], lline[PATH_MAX], *s;
-	const char *trackname;
+	char args[80], buf[PATH_MAX], *filters, line[PATH_MAX], lline[PATH_MAX], *s;
 	FILE *fp, *fp2;
 
 	/* Check for arguments and send to mplayer */
@@ -65,7 +64,7 @@ main(int argc, char *argv[])
 	if (!strcmp(album, "Jukebox")) {
 		filters = dmenu(1);
 		if (strlen(filters) == 0)
-			mplayer();
+			mplayer(0); /* shuffle all */
 
 		for (i=0; filters[i]; ++i)
 			filters[i] = tolower(filters[i]);
@@ -84,48 +83,60 @@ main(int argc, char *argv[])
 		}
 		fclose(fp);
 		fclose(fp2);
-		execlp("mplayer", "mplayer", "-shuffle", "-playlist", PLAYLIST, NULL);
-		die("exec mplayer failed");
+		mplayer(1); /* shuffle playlist */
 	}
-	else if (!strcmp(album, "DVD")) {
-		execlp("mplayer", "mplayer", "dvd://", NULL);
-		die("exec mplayer failed");
-	}
+	else if (!strcmp(album, "DVD"))
+		mplayer(2); /* play dvd */
+
 	else if (album[0] != '\0') {
 		if (chdir(album) < 0)
 			die("chdir $album failed");
 		printf("\n");
 		trackname = dmenu(2);
-		if (!strcmp(trackname, "Play")) {
-			execlp("mplayer", "mplayer", "-playlist", PLAYLIST, NULL);
-			die("exec mplayer failed");
-		}
-		else if (!strcmp(trackname, "Shuffle")) {
-			execlp("mplayer", "mplayer", "-shuffle", "-playlist", PLAYLIST, NULL);
-			die("exec mplayer failed");
-		}
-		else {
-			execlp("mplayer", "mplayer", trackname, NULL);
-			die("exec mplayer failed");
-		}
+		if (!strcmp(trackname, "Play"))
+			mplayer(3); /* play playlist */
+
+		else if (!strcmp(trackname, "Shuffle"))
+			mplayer(1); /* shuffle playlist */
+
+		else
+			mplayer(4); /* play track */
 	}
 	exit(EXIT_SUCCESS);  /* fall through */
 }
 
 void
-mplayer(void)
+mplayer(const int m)
 {
 	char link[PATH_MAX], path[NAME_MAX], test[NAME_MAX], *track;
 	int len;
 	pid_t cpid;
 	FILE *fp;
 
+	if (m == 2) {
+		execlp("mplayer", "mplayer", "dvd://", NULL);
+		die("exec mplayer failed");
+	}
+
 	cpid = fork();
 	if (cpid == -1)
 		die("fork failed");
 
 	if (cpid == 0) {  /* child */
-		execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL); /* TODO: use parameters here... */
+		switch(m) {
+			case 0:
+				execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL);
+				break;
+			case 1:
+				execlp("mplayer", "mplayer", "-shuffle", "-playlist", PLAYLIST, NULL);
+				break;
+			case 3:
+				execlp("mplayer", "mplayer", "-playlist", PLAYLIST, NULL);
+				break;
+			case 4:
+				execlp("mplayer", "mplayer", trackname, NULL);
+				break;
+		}
 		die("exec mplayer failed");
 	}
 	else {  /* parent */
