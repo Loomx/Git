@@ -16,8 +16,8 @@
 #define PLAYLIST   "/tmp/playlist"
 #define STATUSMSG  "/tmp/status_msg"
 
-static char *dmenu(const int m);
 static void die(const char *s);
+static char *dmenu(const int m);
 static void filter(void);
 static void mplayer(const int m);
 static int qstrcmp(const void *a, const void *b);
@@ -91,85 +91,6 @@ main(int argc, char *argv[])
 	exit(EXIT_SUCCESS);  /* fall through */
 }
 
-void
-filter(void)
-{
-	int i;
-	char buf[PATH_MAX], line[PATH_MAX], lline[PATH_MAX], *s;
-	FILE *fp, *fp2;
-
-	for (i=0; filters[i]; ++i)
-		filters[i] = tolower(filters[i]);
-	if ((fp = fopen(TRACKCACHE, "r")) == NULL)
-		die("fopen failed");
-	if ((fp2 = fopen(PLAYLIST, "w")) == NULL)
-		die("fopen2 failed");
-	while (fgets(line, sizeof line, fp) != NULL) {
-		for (i=0; line[i]; ++i)
-			lline[i] = tolower(line[i]);
-		lline[strlen(line)] = '\0';
-		strcpy(buf, filters);
-		for (s = strtok(buf, " "); s; s = strtok(NULL, " "))
-			if (strstr(lline, s) != NULL)
-				fprintf(fp2, "%s/%s/%s", HOME, MUSICDIR, line);
-	}
-	fclose(fp);
-	fclose(fp2);
-}
-
-void
-mplayer(const int m)
-{
-	char link[PATH_MAX], path[NAME_MAX], test[NAME_MAX], *track;
-	int len;
-	pid_t cpid;
-	FILE *fp;
-
-	if (m == 2) {
-		execlp("mplayer", "mplayer", "dvd://", NULL);
-		die("exec mplayer failed");
-	}
-
-	cpid = fork();
-	if (cpid == -1)
-		die("fork failed");
-
-	if (cpid == 0) {  /* child */
-		switch(m) {
-			case 0:
-				execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL);
-				break;
-			case 1:
-				execlp("mplayer", "mplayer", "-shuffle", "-playlist", PLAYLIST, NULL);
-				break;
-			case 3:
-				execlp("mplayer", "mplayer", "-playlist", PLAYLIST, NULL);
-				break;
-			case 4:
-				execlp("mplayer", "mplayer", trackname, NULL);
-				break;
-		}
-		die("exec mplayer failed");
-	}
-	else {  /* parent */
-		sleep(1);
-		sprintf(test, "/proc/%d/fd/3", cpid);
-		sprintf(path, "/proc/%d/fd/4", cpid);
-		while (readlink(test, link, sizeof link) != -1)
-			while ((len = readlink(path, link, sizeof link)) > 1) {
-				link[len] = '\0';
-				if ((fp = fopen(STATUSMSG, "w")) == NULL)
-					die("fopen failed");
-				track = strrchr(link, '/');
-				fprintf(fp, "%s\n", ++track);
-				fclose(fp);
-				sleep(1); /* TODO: use inotify here... */
-			}
-		unlink(PLAYLIST);
-		unlink(STATUSMSG);
-		exit(EXIT_SUCCESS);
-	}
-}
 void
 die(const char *s)
 {
@@ -273,6 +194,86 @@ dmenu(const int m)
 		close(pipe3[0]);
 	}
 	return sel;
+}
+
+void
+filter(void)
+{
+	int i;
+	char buf[PATH_MAX], line[PATH_MAX], lline[PATH_MAX], *s;
+	FILE *fp, *fp2;
+
+	for (i=0; filters[i]; ++i)
+		filters[i] = tolower(filters[i]);
+	if ((fp = fopen(TRACKCACHE, "r")) == NULL)
+		die("fopen failed");
+	if ((fp2 = fopen(PLAYLIST, "w")) == NULL)
+		die("fopen2 failed");
+	while (fgets(line, sizeof line, fp) != NULL) {
+		for (i=0; line[i]; ++i)
+			lline[i] = tolower(line[i]);
+		lline[strlen(line)] = '\0';
+		strcpy(buf, filters);
+		for (s = strtok(buf, " "); s; s = strtok(NULL, " "))
+			if (strstr(lline, s) != NULL)
+				fprintf(fp2, "%s/%s/%s", HOME, MUSICDIR, line);
+	}
+	fclose(fp);
+	fclose(fp2);
+}
+
+void
+mplayer(const int m)
+{
+	char link[PATH_MAX], path[NAME_MAX], test[NAME_MAX], *track;
+	int len;
+	pid_t cpid;
+	FILE *fp;
+
+	if (m == 2) {
+		execlp("mplayer", "mplayer", "dvd://", NULL);
+		die("exec mplayer failed");
+	}
+
+	cpid = fork();
+	if (cpid == -1)
+		die("fork failed");
+
+	if (cpid == 0) {  /* child */
+		switch(m) {
+			case 0:
+				execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL);
+				break;
+			case 1:
+				execlp("mplayer", "mplayer", "-shuffle", "-playlist", PLAYLIST, NULL);
+				break;
+			case 3:
+				execlp("mplayer", "mplayer", "-playlist", PLAYLIST, NULL);
+				break;
+			case 4:
+				execlp("mplayer", "mplayer", trackname, NULL);
+				break;
+		}
+		die("exec mplayer failed");
+	}
+	else {  /* parent */
+		sleep(1);
+		sprintf(test, "/proc/%d/fd/3", cpid);
+		sprintf(path, "/proc/%d/fd/4", cpid);
+		while (readlink(test, link, sizeof link) != -1)
+			while ((len = readlink(path, link, sizeof link)) > 1) {
+				link[len] = '\0';
+				if ((fp = fopen(STATUSMSG, "w")) == NULL)
+					die("fopen failed");
+				track = strrchr(link, '/');
+				fprintf(fp, "%s\n", ++track);
+				fclose(fp);
+				sleep(1); /* TODO: use inotify here... */
+			}
+		unlink(PLAYLIST);
+		unlink(STATUSMSG);
+		exit(EXIT_SUCCESS);
+	}
 }
 
 int
