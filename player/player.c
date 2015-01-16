@@ -18,23 +18,23 @@
 
 static char *dmenu(const int m);
 static void die(const char *s);
-static int qstrcmp(const void *a, const void *b);
+static void filter(void);
 static void mplayer(const int m);
+static int qstrcmp(const void *a, const void *b);
 static void scan(void);
 static void setup(void);
 static int uptodate(void);
 
-static const char *HOME;
-static const char *album, *trackname;
+static char *filters;
+static const char *album, *trackname, *HOME;
 
 int
 main(int argc, char *argv[])
 {
-	int fd, i, len;
-	char args[80], buf[PATH_MAX], *filters, line[PATH_MAX], lline[PATH_MAX], *s;
-	FILE *fp, *fp2;
+	int fd, len;
+	char args[80];
 
-	/* Check for arguments and send to mplayer */
+	/* Check for arguments and send to mplayer via FIFO */
 	mknod(FIFO, S_IFIFO | 0644, 0);
 	if ((fd = open(FIFO, O_WRONLY | O_NONBLOCK)) != -1) {  /* mplayer running */
 		if (argc > 2)
@@ -63,32 +63,18 @@ main(int argc, char *argv[])
 	/* Open dmenu to prompt for filters or trackname */
 	if (!strcmp(album, "Jukebox")) {
 		filters = dmenu(1);
-		if (strlen(filters) == 0)
+		if (!*filters) {
 			mplayer(0); /* shuffle all */
-
-		for (i=0; filters[i]; ++i)
-			filters[i] = tolower(filters[i]);
-		if ((fp = fopen(TRACKCACHE, "r")) == NULL)
-			die("fopen failed");
-		if ((fp2 = fopen(PLAYLIST, "w")) == NULL)
-			die("fopen2 failed");
-		while (fgets(line, sizeof line, fp) != NULL) {
-			for (i=0; line[i]; ++i)
-				lline[i] = tolower(line[i]);
-			lline[strlen(line)] = '\0';
-			strcpy(buf, filters);
-			for (s = strtok(buf, " "); s; s = strtok(NULL, " "))
-				if (strstr(lline, s) != NULL)
-					fprintf(fp2, "%s/%s/%s", HOME, MUSICDIR, line);
 		}
-		fclose(fp);
-		fclose(fp2);
-		mplayer(1); /* shuffle playlist */
+		else {
+			filter();
+			mplayer(1); /* shuffle playlist */
+		}
 	}
 	else if (!strcmp(album, "DVD"))
 		mplayer(2); /* play dvd */
 
-	else if (album[0] != '\0') {
+	else if (*album) {
 		if (chdir(album) < 0)
 			die("chdir $album failed");
 		printf("\n");
@@ -103,6 +89,32 @@ main(int argc, char *argv[])
 			mplayer(4); /* play track */
 	}
 	exit(EXIT_SUCCESS);  /* fall through */
+}
+
+void
+filter(void)
+{
+	int i;
+	char buf[PATH_MAX], line[PATH_MAX], lline[PATH_MAX], *s;
+	FILE *fp, *fp2;
+
+	for (i=0; filters[i]; ++i)
+		filters[i] = tolower(filters[i]);
+	if ((fp = fopen(TRACKCACHE, "r")) == NULL)
+		die("fopen failed");
+	if ((fp2 = fopen(PLAYLIST, "w")) == NULL)
+		die("fopen2 failed");
+	while (fgets(line, sizeof line, fp) != NULL) {
+		for (i=0; line[i]; ++i)
+			lline[i] = tolower(line[i]);
+		lline[strlen(line)] = '\0';
+		strcpy(buf, filters);
+		for (s = strtok(buf, " "); s; s = strtok(NULL, " "))
+			if (strstr(lline, s) != NULL)
+				fprintf(fp2, "%s/%s/%s", HOME, MUSICDIR, line);
+	}
+	fclose(fp);
+	fclose(fp2);
 }
 
 void
