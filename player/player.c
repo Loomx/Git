@@ -9,8 +9,7 @@
 #include <sys/wait.h>
 
 #define MUSICDIR   "Music"
-#define FIFO       "/home/jonny/.mplayer/mp_pipe" 
-/* #define FIFO       ".mp_pipe" */
+#define FIFO       ".mp_pipe"
 #define ALBUMCACHE ".album_cache"
 #define TRACKCACHE ".track_cache"
 #define PLAYLIST   "/tmp/playlist"

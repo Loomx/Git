@@ -49,6 +49,10 @@ static const Layout layouts[] = {
 /* commands */
 static const char *dmenucmd[]     = { "dmenu_run", NULL };
 static const char *termcmd[]      = { "xterm", NULL };
+static const char *playcmd[]      = { "player", NULL };
+static const char *stopcmd[]      = { "player", "stop", NULL };
+static const char *prevcmd[]      = { "player", "pt_step", "-1", NULL };
+static const char *nextcmd[]      = { "player", "pt_step", "1", NULL };
 static const char *mutecmd[]      = { "amixer", "-q", "set", "Master", "toggle", NULL };
 static const char *ejectcmd[]     = { "eject", NULL };
 static const char *sleepcmd[]     = { "sudo", "/usr/sbin/pm-suspend", NULL };
@@ -57,10 +61,10 @@ static Key keys[] = {
     /* modifier            key                        function        argument */
     { 0,                   0xffeb,                    spawn,          {.v = dmenucmd } },
     { 0,                   0xffec,                    spawn,          {.v = termcmd } },
-    { 0,                   0x1008ff14,                spawn,          SHCMD("pgrep mplayer >/dev/null && echo pause >~/.mplayer/mp_pipe || exec player") },
-    { 0,                   0x1008ff15,                spawn,          SHCMD("pgrep mplayer >/dev/null && echo stop >~/.mplayer/mp_pipe") },
-    { 0,                   0x1008ff16,                spawn,          SHCMD("pgrep mplayer >/dev/null && echo pt_step -1 >~/.mplayer/mp_pipe") },
-    { 0,                   0x1008ff17,                spawn,          SHCMD("pgrep mplayer >/dev/null && echo pt_step 1 >~/.mplayer/mp_pipe") },
+    { 0,                   0x1008ff14,                spawn,          {.v = playcmd } },
+    { 0,                   0x1008ff15,                spawn,          {.v = stopcmd } },
+    { 0,                   0x1008ff16,                spawn,          {.v = prevcmd } },
+    { 0,                   0x1008ff17,                spawn,          {.v = nextcmd } },
     { 0,                   0x1008ff11,                spawn,          SHCMD("amixer set Master 4- unmute | awk -F [][] 'END { print $2 }' >/tmp/alsa_volume") },
     { 0,                   0x1008ff13,                spawn,          SHCMD("amixer set Master 4+ unmute | awk -F [][] 'END { print $2 }' >/tmp/alsa_volume") },
     { 0,                   0x1008ff12,                spawn,          {.v = mutecmd } },
