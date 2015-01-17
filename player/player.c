@@ -56,10 +56,10 @@ main(int argc, char *argv[])
 	if (!uptodate())
 		scan();
 
-	/* Open dmenu to choose an album */
+	/* Choose an album */
 	album = dmenu(0);
 
-	/* Open dmenu to prompt for filters or trackname */
+	/* Prompt for filters | mode | trackname, then launch mplayer */
 	if (!strcmp(album, "Jukebox")) {
 		filters = dmenu(1);
 		if (!*filters) {
@@ -70,9 +70,9 @@ main(int argc, char *argv[])
 			mplayer(1); /* shuffle playlist */
 		}
 	}
-	else if (!strcmp(album, "DVD"))
+	else if (!strcmp(album, "DVD")) {
 		mplayer(2); /* play dvd */
-
+	}
 	else if (*album) {
 		if (chdir(album) < 0)
 			die("chdir $album failed");
@@ -87,7 +87,11 @@ main(int argc, char *argv[])
 		else
 			mplayer(4); /* play track */
 	}
-	exit(EXIT_SUCCESS);  /* fall through */
+
+	/* Clean up after mplayer exits */
+	unlink(PLAYLIST);
+	unlink(STATUSMSG);
+	exit(EXIT_SUCCESS);
 }
 
 void
@@ -269,9 +273,6 @@ mplayer(const int m)
 				fclose(fp);
 				sleep(1); /* TODO: use inotify here... */
 			}
-		unlink(PLAYLIST);
-		unlink(STATUSMSG);
-		exit(EXIT_SUCCESS);
 	}
 }
 
