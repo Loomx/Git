@@ -19,6 +19,7 @@
 static void die(const char *s);
 static char *dmenu(const int m);
 static void filter(void);
+static void inotify(void);
 static void mplayer(const int m);
 static int qstrcmp(const void *a, const void *b);
 static void scan(void);
@@ -273,9 +274,26 @@ mplayer(const int m)
 				track = strrchr(link, '/');
 				fprintf(fp, "%s\n", ++track);
 				fclose(fp);
-				sleep(1); /* TODO: use inotify here... */
+				/* sleep(1); */
+				/* TODO: use inotify here... */
+				inotify();
 			}
 	}
+}
+
+void
+inotify(void)
+{
+	char buf[8192];
+	int fd, len, wd;
+
+	if ((fd = inotify_init()) == -1)
+		die("inotify failed");
+	wd = inotify_add_watch(fd, ".", IN_DONT_FOLLOW | IN_MODIFY);
+	len = read(fd, buf, sizeof buf);
+	printf("Len = %d", len);
+	inotify_rm_watch(fd, wd);
+	close(fd);
 }
 
 int
