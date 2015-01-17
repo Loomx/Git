@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/inotify.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 
@@ -228,7 +229,7 @@ filter(void)
 void
 mplayer(const int m)
 {
-	char link[PATH_MAX], path[NAME_MAX], test[NAME_MAX], *track;
+	char link[PATH_MAX], proc[NAME_MAX], *track;
 	int len;
 	pid_t cpid;
 	FILE *fp;
@@ -261,10 +262,11 @@ mplayer(const int m)
 	}
 	else {  /* parent */
 		sleep(1);
-		sprintf(test, "/proc/%d/fd/3", cpid);
-		sprintf(path, "/proc/%d/fd/4", cpid);
-		while (readlink(test, link, sizeof link) != -1)
-			while ((len = readlink(path, link, sizeof link)) > 1) {
+		sprintf(proc, "/proc/%d/fd", cpid);
+		if (chdir(proc) < 0)
+			die("chdir /proc/*/fd failed");
+		while (readlink("3", link, sizeof link) != -1)
+			while ((len = readlink("4", link, sizeof link)) > 1) {
 				link[len] = '\0';
 				if ((fp = fopen(STATUSMSG, "w")) == NULL)
 					die("fopen failed");
