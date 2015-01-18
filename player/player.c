@@ -19,7 +19,7 @@
 static void die(const char *s);
 static char *dmenu(const int m);
 static void filter(void);
-static void inotify(void);
+/* static void inotify(void); */
 static void mplayer(const int m);
 static int qstrcmp(const void *a, const void *b);
 static void scan(void);
@@ -274,13 +274,14 @@ mplayer(const int m)
 				track = strrchr(link, '/');
 				fprintf(fp, "%s\n", ++track);
 				fclose(fp);
-				/* sleep(1); */
+				sleep(1);
 				/* TODO: use inotify here... */
-				inotify();
+				/* inotify(); */
 			}
 	}
 }
 
+/*
 void
 inotify(void)
 {
@@ -295,6 +296,7 @@ inotify(void)
 	inotify_rm_watch(fd, wd);
 	close(fd);
 }
+*/
 
 int
 qstrcmp(const void *a, const void *b)
