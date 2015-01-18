@@ -19,7 +19,6 @@
 static void die(const char *s);
 static char *dmenu(const int m);
 static void filter(void);
-/* static void inotify(void); */
 static void mplayer(const int m);
 static int qstrcmp(const void *a, const void *b);
 static void scan(void);
@@ -194,7 +193,7 @@ dmenu(const int m)
 		close(pipe2[0]);  /* unused */
 		close(pipe2[1]);  /* unused */
 		close(pipe3[1]);  /* unused */
-		if ((nread = read(pipe3[0], sel, PATH_MAX)) > 0)
+		if ((nread = read(pipe3[0], sel, sizeof sel)) > 0)
 			sel[nread - 1] = '\0';
 		close(pipe3[0]);
 	}
@@ -230,8 +229,8 @@ filter(void)
 void
 mplayer(const int m)
 {
-	char link[PATH_MAX], proc[NAME_MAX], *track;
-	int len;
+	char junk[PATH_MAX], link[PATH_MAX], proc[NAME_MAX], *track;
+	int len, pipe1[2];
 	pid_t cpid;
 	FILE *fp;
 
@@ -240,28 +239,36 @@ mplayer(const int m)
 		die("exec mplayer failed");
 	}
 
+	if (pipe(pipe1) == -1)
+		die("pipe failed");
 	cpid = fork();
 	if (cpid == -1)
 		die("fork failed");
 
 	if (cpid == 0) {  /* child */
+		close(pipe1[0]);  /* unused */
+		dup2(pipe1[1], 1);
+		close(pipe1[1]);  /* dup2ed */
 		switch(m) {
 			case 0:
-				execlp("mplayer", "mplayer", "-shuffle", "-playlist", TRACKCACHE, NULL);
+				execlp("mplayer", "mplayer", "-identify", "-shuffle", "-playlist", TRACKCACHE, NULL);
 				break;
 			case 1:
-				execlp("mplayer", "mplayer", "-shuffle", "-playlist", PLAYLIST, NULL);
+				execlp("mplayer", "mplayer", "-identify", "-shuffle", "-playlist", PLAYLIST, NULL);
 				break;
 			case 3:
-				execlp("mplayer", "mplayer", "-playlist", PLAYLIST, NULL);
+				execlp("mplayer", "mplayer", "-identify", "-playlist", PLAYLIST, NULL);
 				break;
 			case 4:
-				execlp("mplayer", "mplayer", trackname, NULL);
+				execlp("mplayer", "mplayer", "-identify", trackname, NULL);
 				break;
 		}
 		die("exec mplayer failed");
 	}
 	else {  /* parent */
+		close(pipe1[1]);  /* unused */
+		dup2(pipe1[0], 0);
+		close(pipe1[0]);  /* dup2ed */
 		sleep(1);
 		sprintf(proc, "/proc/%d/fd", cpid);
 		if (chdir(proc) < 0)
@@ -274,29 +281,10 @@ mplayer(const int m)
 				track = strrchr(link, '/');
 				fprintf(fp, "%s\n", ++track);
 				fclose(fp);
-				sleep(1);
-				/* TODO: use inotify here... */
-				/* inotify(); */
+				read(0, junk, sizeof junk);
 			}
 	}
 }
-
-/*
-void
-inotify(void)
-{
-	char buf[8192];
-	int fd, len, wd;
-
-	if ((fd = inotify_init()) == -1)
-		die("inotify failed");
-	wd = inotify_add_watch(fd, ".", IN_DONT_FOLLOW | IN_MODIFY);
-	len = read(fd, buf, sizeof buf);
-	printf("Len = %d", len);
-	inotify_rm_watch(fd, wd);
-	close(fd);
-}
-*/
 
 int
 qstrcmp(const void *a, const void *b)
