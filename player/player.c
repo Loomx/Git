@@ -270,19 +270,16 @@ mplayer(const int m)
 		dup2(pipe1[0], 0);
 		close(pipe1[0]);  /* dup2ed */
 		sleep(1);
-		sprintf(proc, "/proc/%d/fd", cpid);
-		if (chdir(proc) < 0)
-			die("chdir /proc/*/fd failed");
-		while (readlink("3", link, sizeof link) != -1)
-			while ((len = readlink("4", link, sizeof link)) > 1) {
-				link[len] = '\0';
-				if ((fp = fopen(STATUSMSG, "w")) == NULL)
-					die("fopen failed");
-				track = strrchr(link, '/');
-				fprintf(fp, "%s\n", ++track);
-				fclose(fp);
-				read(0, junk, sizeof junk);
-			}
+		sprintf(proc, "/proc/%d/fd/4", cpid);
+		while ((len = readlink(proc, link, sizeof link)) > 1) {
+			link[len] = '\0';
+			if ((fp = fopen(STATUSMSG, "w")) == NULL)
+				die("fopen failed");
+			track = strrchr(link, '/');
+			fprintf(fp, "%s\n", ++track);
+			fclose(fp);
+			read(0, junk, sizeof junk);
+		}
 	}
 }
 
