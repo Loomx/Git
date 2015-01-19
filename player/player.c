@@ -40,12 +40,12 @@ main(int argc, char *argv[])
 	mknod(FIFO, S_IFIFO | 0644, 0);
 	if ((fd = open(FIFO, O_WRONLY | O_NONBLOCK)) != -1) {  /* mplayer running */
 		if (argc > 2)
-			len = snprintf(args, sizeof args, "%s %s\n", argv[1], argv[2]);
+			len = snprintf(args, sizeof(args), "%s %s\n", argv[1], argv[2]);
 		else if (argc == 2)
-			len = snprintf(args, sizeof args, "%s\n", argv[1]);
+			len = snprintf(args, sizeof(args), "%s\n", argv[1]);
 		else
-			len = snprintf(args, sizeof args, "pause\n");
-		if (len >= sizeof args)
+			len = snprintf(args, sizeof(args), "pause\n");
+		if (len >= sizeof(args))
 			die("args too long");
 		write(fd, args, strlen(args));
 		close(fd);
@@ -154,7 +154,7 @@ dmenu(const int m)
 		close(pipe2[0]);  /* unused */
 		close(pipe2[1]);  /* unused */
 		close(pipe3[1]);  /* unused */
-		if ((nread = read(pipe3[0], sel, sizeof sel)) > 0)
+		if ((nread = read(pipe3[0], sel, sizeof(sel))) > 0)
 			sel[nread - 1] = '\0';
 		close(pipe3[0]);
 	}
@@ -188,14 +188,14 @@ dmenuinput(const int m)
 		while ((ent = readdir(dp))) {
 			if (ent->d_name[0] == '.')
 				continue;
-			if (!(tracklist  = realloc(tracklist, ++count * sizeof *tracklist)))
+			if (!(tracklist  = realloc(tracklist, sizeof(*tracklist) * ++count)))
 				die("malloc failed");
 			if (!(tracklist[count-1] = strdup(ent->d_name)))
 				die("strdup failed");
 		}
 		closedir(dp);
 
-		qsort(tracklist, count, sizeof *tracklist, qstrcmp);
+		qsort(tracklist, count, sizeof(*tracklist), qstrcmp);
 		if ((fp = fopen(PLAYLIST, "w")) == NULL)
 			die("fopen failed");
 		for(i = 0; i < count; i++) {
@@ -219,7 +219,7 @@ filter(void)
 		die("fopen failed");
 	if ((fp2 = fopen(PLAYLIST, "w")) == NULL)
 		die("fopen2 failed");
-	while (fgets(line, sizeof line, fp) != NULL) {
+	while (fgets(line, sizeof(line), fp) != NULL) {
 		for (i=0; line[i]; ++i)
 			lline[i] = tolower(line[i]);
 		lline[strlen(line)] = '\0';
@@ -240,14 +240,14 @@ gettrackname(const pid_t cpid)
 	FILE *fp;
 
 	sprintf(proc, "/proc/%d/fd/4", cpid);
-	while ((len = readlink(proc, link, sizeof link)) > 1) {
+	while ((len = readlink(proc, link, sizeof(link))) > 1) {
 		link[len] = '\0';
 		if ((fp = fopen(STATUSMSG, "w")) == NULL)
 			die("fopen failed");
 		track = strrchr(link, '/');
 		fprintf(fp, "%s\n", ++track);
 		fclose(fp);
-		read(0, junk, sizeof junk);
+		read(0, junk, sizeof(junk));
 	}
 }
 
@@ -317,14 +317,14 @@ scan(void)
 	while ((ent = readdir(dp))) {
 		if (ent->d_name[0] == '.')
 			continue;
-		if (!(dir = realloc(dir, ++count * sizeof *dir)))
+		if (!(dir = realloc(dir, sizeof(*dir) * ++count)))
 			die("malloc failed");
 		if (!(dir[count-1] = strdup(ent->d_name)))
 			die("strdup failed");
 	}
 	closedir(dp);
 
-	qsort(dir, count, sizeof *dir, qstrcmp);
+	qsort(dir, count, sizeof(*dir), qstrcmp);
 	if (!(cache = fopen(ALBUMCACHE, "w")))
 		die("fopen failed");
 	if (!(cache2 = fopen(TRACKCACHE, "w")))
