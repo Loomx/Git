@@ -1,16 +1,17 @@
 player
 ======
-player is simple music player.
+player is a simple music player in C.
 
-It uses dmenu to select an option:
+It calls dmenu to select:
     - "Jukebox" mode (shuffle all)
     - "DVD" mode
-    - album from ~/Music
+    - an album from ~/Music
        `- "Play" album
         - "Shuffle" album
-        - a track
+        - play a track
 
-It then calls mplayer to play the track(s).
+It then calls mplayer to play the track(s) and loops to write the
+currently playing trackname to /tmp/status_msg
 
 
 Installation

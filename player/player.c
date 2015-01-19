@@ -1,3 +1,8 @@
+/* player
+ * a simple music player in C using dmenu and mplayer.
+ * GPL Licence
+ */
+
 #include <ctype.h>
 #include <dirent.h>
 #include <fcntl.h>
