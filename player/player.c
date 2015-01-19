@@ -196,7 +196,7 @@ dmenu(const int m)
 			sel[nread - 1] = '\0';
 		close(pipe3[0]);
 	}
-    wait(NULL);
+	wait(NULL);
 	return sel;
 }
 
