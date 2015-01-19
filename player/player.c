@@ -272,19 +272,19 @@ mplayer(const int m)
 		close(pipe1[0]);  /* unused */
 		dup2(pipe1[1], 1);
 		close(pipe1[1]);  /* dup2ed */
-		switch(m) {
-			case 0:
-				execlp("mplayer", "mplayer", "-identify", "-shuffle", "-playlist", TRACKCACHE, NULL);
-				break;
-			case 1:
-				execlp("mplayer", "mplayer", "-identify", "-shuffle", "-playlist", PLAYLIST, NULL);
-				break;
-			case 3:
-				execlp("mplayer", "mplayer", "-identify", "-playlist", PLAYLIST, NULL);
-				break;
-			case 4:
-				execlp("mplayer", "mplayer", "-identify", trackname, NULL);
-				break;
+		switch (m) {
+		case 0:
+			execlp("mplayer", "mplayer", "-identify", "-shuffle", "-playlist", TRACKCACHE, NULL);
+			break;
+		case 1:
+			execlp("mplayer", "mplayer", "-identify", "-shuffle", "-playlist", PLAYLIST, NULL);
+			break;
+		case 3:
+			execlp("mplayer", "mplayer", "-identify", "-playlist", PLAYLIST, NULL);
+			break;
+		case 4:
+			execlp("mplayer", "mplayer", "-identify", trackname, NULL);
+			break;
 		}
 		die("exec mplayer failed");
 	}
