@@ -17,7 +17,9 @@
 
 static void die(const char *s);
 static char *dmenu(const int m);
+static void dmenuinput(const int m);
 static void filter(void);
+static void gettrackname(const pid_t cpid);
 static void mplayer(const int m);
 static int qstrcmp(const void *a, const void *b);
 static void scan(void);
@@ -104,16 +106,10 @@ die(const char *s)
 char *
 dmenu(const int m)
 {
-	char line[PATH_MAX];
-	char **tracklist = NULL;
-	int i, count = 0;
 	int pipe1[2], pipe2[2], pipe3[2];
 	pid_t cpid;
 	size_t nread;
 	static char sel[NAME_MAX];
-	struct dirent *ent;
-	DIR *dp;
-	FILE *fp;
 
 	if (pipe(pipe1) == -1 || pipe(pipe2) == -1 || pipe(pipe3) == -1 )
 		die("pipe failed");
@@ -134,42 +130,8 @@ dmenu(const int m)
 			close(pipe2[0]);  /* dup2ed */
 			dup2(pipe1[1], 1);
 			close(pipe1[1]);  /* dup2ed */
-			if (m == 0) {
-				if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
-					die("fopen failed");
-				while ((nread = fread(line, 1, PATH_MAX, fp)) > 0)
-					write(1, line, nread);
-				fclose(fp);
-				_exit(EXIT_SUCCESS);
-			}
-			else if (m == 1) {
-				_exit(EXIT_SUCCESS);
-			}
-			else if (m == 2) {
-				printf("Play\nShuffle\n");
-
-				if (!(dp = opendir(".")))
-					die("opendir $album failed");
-				while ((ent = readdir(dp))) {
-					if (ent->d_name[0] == '.')
-						continue;
-					if (!(tracklist  = realloc(tracklist, ++count * sizeof *tracklist)))
-						die("malloc failed");
-					if (!(tracklist[count-1] = strdup(ent->d_name)))
-						die("strdup failed");
-				}
-				closedir(dp);
-
-				qsort(tracklist, count, sizeof *tracklist, qstrcmp);
-				if ((fp = fopen(PLAYLIST, "w")) == NULL)
-					die("fopen failed");
-				for(i = 0; i < count; i++) {
-					printf("%s\n", tracklist[i]);
-					fprintf(fp, "%s/%s/%s/%s\n", HOME, MUSICDIR, album, tracklist[i]);
-					}
-				fclose(fp);
-				_exit(EXIT_SUCCESS);
-			}
+			dmenuinput(m);
+			_exit(EXIT_SUCCESS);
 		}
 		else {  /* child */
 		close(pipe1[1]);  /* unused */
@@ -201,6 +163,50 @@ dmenu(const int m)
 }
 
 void
+dmenuinput(const int m)
+{
+	char line[PATH_MAX];
+	char **tracklist = NULL;
+	int i, count = 0;
+	size_t nread;
+	struct dirent *ent;
+	DIR *dp;
+	FILE *fp;
+
+	if (m == 0) {
+		if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
+			die("fopen failed");
+		while ((nread = fread(line, 1, PATH_MAX, fp)) > 0)
+			write(1, line, nread);
+		fclose(fp);
+	}
+	else if (m == 2) {
+		printf("Play\nShuffle\n");
+
+		if (!(dp = opendir(".")))
+			die("opendir $album failed");
+		while ((ent = readdir(dp))) {
+			if (ent->d_name[0] == '.')
+				continue;
+			if (!(tracklist  = realloc(tracklist, ++count * sizeof *tracklist)))
+				die("malloc failed");
+			if (!(tracklist[count-1] = strdup(ent->d_name)))
+				die("strdup failed");
+		}
+		closedir(dp);
+
+		qsort(tracklist, count, sizeof *tracklist, qstrcmp);
+		if ((fp = fopen(PLAYLIST, "w")) == NULL)
+			die("fopen failed");
+		for(i = 0; i < count; i++) {
+			printf("%s\n", tracklist[i]);
+			fprintf(fp, "%s/%s/%s/%s\n", HOME, MUSICDIR, album, tracklist[i]);
+			}
+		fclose(fp);
+	}
+}
+
+void
 filter(void)
 {
 	int i;
@@ -227,12 +233,29 @@ filter(void)
 }
 
 void
-mplayer(const int m)
+gettrackname(const pid_t cpid)
 {
 	char junk[PATH_MAX], link[PATH_MAX], proc[NAME_MAX], *track;
-	int len, pipe1[2];
-	pid_t cpid;
+	int len;
 	FILE *fp;
+
+	sprintf(proc, "/proc/%d/fd/4", cpid);
+	while ((len = readlink(proc, link, sizeof link)) > 1) {
+		link[len] = '\0';
+		if ((fp = fopen(STATUSMSG, "w")) == NULL)
+			die("fopen failed");
+		track = strrchr(link, '/');
+		fprintf(fp, "%s\n", ++track);
+		fclose(fp);
+		read(0, junk, sizeof junk);
+	}
+}
+
+void
+mplayer(const int m)
+{
+	int pipe1[2];
+	pid_t cpid;
 
 	if (m == 2) {
 		execlp("mplayer", "mplayer", "dvd://", NULL);
@@ -270,16 +293,7 @@ mplayer(const int m)
 		dup2(pipe1[0], 0);
 		close(pipe1[0]);  /* dup2ed */
 		sleep(1);
-		sprintf(proc, "/proc/%d/fd/4", cpid);
-		while ((len = readlink(proc, link, sizeof link)) > 1) {
-			link[len] = '\0';
-			if ((fp = fopen(STATUSMSG, "w")) == NULL)
-				die("fopen failed");
-			track = strrchr(link, '/');
-			fprintf(fp, "%s\n", ++track);
-			fclose(fp);
-			read(0, junk, sizeof junk);
-		}
+		gettrackname(cpid);
 	}
 }
 
