@@ -25,7 +25,7 @@ static char *dmenu(const int m);
 static void dmenuinput(const int m);
 static void filter(void);
 static void gettrackname(const pid_t cpid);
-static void mplayer(const int m);
+static pid_t mplayer(const int m);
 static int qstrcmp(const void *a, const void *b);
 static void scan(void);
 static void setup(void);
@@ -39,6 +39,7 @@ main(int argc, char *argv[])
 {
 	int fd, len;
 	char args[80];
+	pid_t cpid;
 
 	/* Check for arguments and send to mplayer via FIFO */
 	setup();
@@ -66,19 +67,19 @@ main(int argc, char *argv[])
 	/* Choose an album */
 	album = dmenu(0);
 
-	/* Prompt for filters | mode | trackname, then launch mplayer */
+	/* Prompt for filters | mode | trackname, launch mplayer */
 	if (!strcmp(album, "Jukebox")) {
 		filters = dmenu(1);
 		if (!*filters) {
-			mplayer(0); /* shuffle all */
+			cpid = mplayer(0); /* shuffle all */
 		}
 		else {
 			filter();
-			mplayer(1); /* shuffle playlist */
+			cpid = mplayer(1); /* shuffle playlist */
 		}
 	}
 	else if (!strcmp(album, "DVD")) {
-		mplayer(2); /* play dvd */
+		mplayer(2); /* play dvd or die */
 	}
 	else if (*album) {
 		if (chdir(album) < 0)
@@ -86,14 +87,17 @@ main(int argc, char *argv[])
 		printf("\n");
 		trackname = dmenu(2);
 		if (!strcmp(trackname, "Play"))
-			mplayer(3); /* play playlist */
+			cpid = mplayer(3); /* play playlist */
 
 		else if (!strcmp(trackname, "Shuffle"))
-			mplayer(1); /* shuffle playlist */
+			cpid = mplayer(1); /* shuffle playlist */
 
 		else
-			mplayer(4); /* play track */
+			cpid = mplayer(4); /* play track */
 	}
+
+	/* Loop while playing to save current trackname */
+	gettrackname(cpid);
 
 	/* Clean up after mplayer exits */
 	unlink(PLAYLIST);
@@ -244,6 +248,7 @@ gettrackname(const pid_t cpid)
 	int len;
 	FILE *fp;
 
+	sleep(1); /* give mplayer time to start */
 	sprintf(proc, "/proc/%d/fd/4", cpid);
 	while ((len = readlink(proc, link, sizeof(link))) > 1) {
 		link[len] = '\0';
@@ -256,7 +261,7 @@ gettrackname(const pid_t cpid)
 	}
 }
 
-void
+pid_t
 mplayer(const int m)
 {
 	int pipe1[2];
@@ -297,9 +302,8 @@ mplayer(const int m)
 		close(pipe1[1]);  /* unused */
 		dup2(pipe1[0], 0);
 		close(pipe1[0]);  /* dup2ed */
-		sleep(1);
-		gettrackname(cpid);
 	}
+	return cpid;
 }
 
 int
