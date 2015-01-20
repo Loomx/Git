@@ -210,8 +210,10 @@ dmenuinput(const int m)
 		for(i = 0; i < count; i++) {
 			printf("%s\n", tracklist[i]);
 			fprintf(fp, "%s/%s/%s/%s\n", HOME, MUSICDIR, album, tracklist[i]);
+			free(tracklist[i]);
 			}
 		fclose(fp);
+		free(tracklist);
 	}
 }
 
@@ -350,9 +352,11 @@ scan(void)
 			fprintf(cache2, "%s/%s\n", dir[i], ent->d_name);
 		}
 		closedir(dp);
+		free(dir[i]);
 	}
 	fclose(cache);
 	fclose(cache2);
+	free(dir);
 }
 
 void
