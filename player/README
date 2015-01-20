@@ -1,25 +1,31 @@
 player
 ======
-player is a simple music player in C.
-
-It calls dmenu to select:
-    - "Jukebox" mode (shuffle all)
-    - "DVD" mode
-    - an album from ~/Music
-       `- "Play" album
-        - "Shuffle" album
-        - play a track
-
-It then calls mplayer to play the track(s) and loops to write the
-currently playing trackname to /tmp/status_msg
+A simple music player in C using dmenu and mplayer.
 
 
 Installation
 ------------
-Edit `Makefile' to match your local setup (player is installed
-into the /usr/local namespace by default).
+Edit `Makefile' to match your local setup (player is installed into 
+the /usr/local namespace by default).
 
 Afterwards enter the following command to build and install player
 (if necessary as root):
 
     make install clean
+
+
+Running player
+--------------
+Note: player assumes your music directory is organised in a simple,
+flat layout (which suits dmenu), similar to this:
+	~/Music/Album-Artist/trackname
+
+When called as `player [...]' it will:
+
+	* Check for arguments and send to mplayer via FIFO
+	* Check cache files and update if needed
+	* Prompt to choose an album
+	* Prompt for filters | mode | trackname
+	* Launch mplayer
+	* Loop while playing to save current trackname
+	* Clean up after mplayer exits
