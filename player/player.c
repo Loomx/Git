@@ -71,15 +71,15 @@ main(int argc, char *argv[])
 	if (!strcmp(album, "Jukebox")) {
 		filters = dmenu(1);
 		if (!*filters) {
-			cpid = mplayer(0); /* shuffle all */
+			cpid = mplayer(0);  /* shuffle all */
 		}
 		else {
 			filter();
-			cpid = mplayer(1); /* shuffle playlist */
+			cpid = mplayer(1);  /* shuffle playlist */
 		}
 	}
 	else if (!strcmp(album, "DVD")) {
-		mplayer(2); /* play dvd or die */
+		mplayer(2);  /* play dvd or die */
 	}
 	else if (*album) {
 		if (chdir(album) < 0)
@@ -87,13 +87,13 @@ main(int argc, char *argv[])
 		printf("\n");
 		trackname = dmenu(2);
 		if (!strcmp(trackname, "Play"))
-			cpid = mplayer(3); /* play playlist */
+			cpid = mplayer(3);  /* play playlist */
 
 		else if (!strcmp(trackname, "Shuffle"))
-			cpid = mplayer(1); /* shuffle playlist */
+			cpid = mplayer(1);  /* shuffle playlist */
 
 		else
-			cpid = mplayer(4); /* play track */
+			cpid = mplayer(4);  /* play track */
 	}
 
 	/* Loop while playing to save current trackname */
@@ -248,7 +248,7 @@ gettrackname(const pid_t cpid)
 	int len;
 	FILE *fp;
 
-	sleep(1); /* give mplayer time to start */
+	sleep(1);  /* give mplayer time to start */
 	sprintf(proc, "/proc/%d/fd/4", cpid);
 	while ((len = readlink(proc, link, sizeof(link))) > 1) {
 		link[len] = '\0';
@@ -347,7 +347,8 @@ scan(void)
 		while ((ent = readdir(dp))) {
 			if (ent->d_name[0] == '.')
 				continue;
-			fprintf(cache2, "%s/%s\n", dir[i], ent->d_name);		}
+			fprintf(cache2, "%s/%s\n", dir[i], ent->d_name);
+		}
 		closedir(dp);
 	}
 	fclose(cache);

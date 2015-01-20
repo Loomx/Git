@@ -5,19 +5,19 @@ A simple music player in C using dmenu and mplayer.
 
 Installation
 ------------
-Edit `Makefile' to match your local setup (player is installed into 
-the /usr/local namespace by default).
+Edit `Makefile' to match your setup
+- default is /usr/local/bin/player
 
-Afterwards enter the following command to build and install player
-(if necessary as root):
+Then build and install player (if necessary as root) e.g.
 
-    make install clean
+  # make install clean
 
 
 Running player
 --------------
-Note: player assumes your music directory is organised in a simple,
-flat layout (which suits dmenu), similar to this:
+player assumes your music directory is organised in a simple,
+flat layout (which suits dmenu) e.g.
+
 	~/Music/Album-Artist/trackname
 
 When called as `player [...]' it will:
