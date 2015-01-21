@@ -58,11 +58,11 @@ static DC *dc;
 static Item *items = NULL;
 static Item *matches, *matchend;
 static Item *prev, *curr, *next, *sel;
-static Bool dmenurun = False;
 static const char *HOME, *PATH;
 static Window win;
 static XIC xic;
 static int mon = -1;
+static int dmenurun = 0;
 
 #include "config.h"
 
@@ -74,43 +74,43 @@ main(int argc, char *argv[]) {
 	Bool fast = False;
 	int i;
 
-    if(strcmp(argv[0], "dmenu_run") == 0) {
-        dmenurun = True;
+    if (!strcmp(argv[0], "dmenu_run")) {
+        dmenurun = 1;
         updatecache();
     }
 
-	for(i = 1; i < argc; i++)
+	for (i = 1; i < argc; i++)
 		/* these options take no arguments */
-		if(!strcmp(argv[i], "-v")) {      /* prints version information */
+		if (!strcmp(argv[i], "-v")) {      /* prints version information */
 			puts("dmenu-"VERSION", © 2006-2014 dmenu engineers, see LICENSE for details");
 			exit(EXIT_SUCCESS);
 		}
-		else if(!strcmp(argv[i], "-b"))   /* appears at the bottom of the screen */
+		else if (!strcmp(argv[i], "-b"))   /* appears at the bottom of the screen */
 			topbar = False;
-		else if(!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
+		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
 			fast = True;
-		else if(!strcmp(argv[i], "-i")) { /* case-insensitive item matching */
+		else if (!strcmp(argv[i], "-i")) { /* case-insensitive item matching */
 			fstrncmp = strncasecmp;
 			fstrstr = cistrstr;
 		}
-		else if(i+1 == argc)
+		else if (i+1 == argc)
 			usage();
 		/* these options take one argument */
-		else if(!strcmp(argv[i], "-l"))   /* number of lines in vertical list */
+		else if (!strcmp(argv[i], "-l"))   /* number of lines in vertical list */
 			lines = atoi(argv[++i]);
-		else if(!strcmp(argv[i], "-m"))
+		else if (!strcmp(argv[i], "-m"))
 			mon = atoi(argv[++i]);
-		else if(!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
+		else if (!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
 			prompt = argv[++i];
-		else if(!strcmp(argv[i], "-fn"))  /* font or font set */
+		else if (!strcmp(argv[i], "-fn"))  /* font or font set */
 			font = argv[++i];
-		else if(!strcmp(argv[i], "-nb"))  /* normal background color */
+		else if (!strcmp(argv[i], "-nb"))  /* normal background color */
 			normbgcolor = argv[++i];
-		else if(!strcmp(argv[i], "-nf"))  /* normal foreground color */
+		else if (!strcmp(argv[i], "-nf"))  /* normal foreground color */
 			normfgcolor = argv[++i];
-		else if(!strcmp(argv[i], "-sb"))  /* selected background color */
+		else if (!strcmp(argv[i], "-sb"))  /* selected background color */
 			selbgcolor = argv[++i];
-		else if(!strcmp(argv[i], "-sf"))  /* selected foreground color */
+		else if (!strcmp(argv[i], "-sf"))  /* selected foreground color */
 			selfgcolor = argv[++i];
 		else
 			usage();
@@ -118,7 +118,7 @@ main(int argc, char *argv[]) {
 	dc = initdc();
 	initfont(dc, font);
 
-	if(fast) {
+	if (fast) {
 		grabkeyboard();
 		readstdin();
 	}
@@ -134,7 +134,7 @@ main(int argc, char *argv[]) {
 
 void
 appenditem(Item *item, Item **list, Item **last) {
-	if(*last)
+	if (*last)
 		(*last)->right = item;
 	else
 		*list = item;
@@ -148,16 +148,16 @@ void
 calcoffsets(void) {
 	int i, n;
 
-	if(lines > 0)
+	if (lines > 0)
 		n = lines * bh;
 	else
 		n = mw - (promptw + inputw + textw(dc, "<") + textw(dc, ">"));
 	/* calculate which items will begin the next page and previous page */
-	for(i = 0, next = curr; next; next = next->right)
-		if((i += (lines > 0) ? bh : MIN(textw(dc, next->text), n)) > n)
+	for (i = 0, next = curr; next; next = next->right)
+		if ((i += (lines > 0) ? bh : MIN(textw(dc, next->text), n)) > n)
 			break;
-	for(i = 0, prev = curr; prev && prev->left; prev = prev->left)
-		if((i += (lines > 0) ? bh : MIN(textw(dc, prev->left->text), n)) > n)
+	for (i = 0, prev = curr; prev && prev->left; prev = prev->left)
+		if ((i += (lines > 0) ? bh : MIN(textw(dc, prev->left->text), n)) > n)
 			break;
 }
 
@@ -165,8 +165,8 @@ char *
 cistrstr(const char *s, const char *sub) {
 	size_t len;
 
-	for(len = strlen(sub); *s; s++)
-		if(!strncasecmp(s, sub, len))
+	for (len = strlen(sub); *s; s++)
+		if (!strncasecmp(s, sub, len))
 			return (char *)s;
 	return NULL;
 }
@@ -181,7 +181,7 @@ drawmenu(void) {
 	dc->h = bh;
 	drawrect(dc, 0, 0, mw, mh, True, BG(dc, normcol));
 
-	if(prompt && *prompt) {
+	if (prompt && *prompt) {
 		dc->w = promptw;
 		drawtext(dc, prompt, selcol);
 		dc->x = dc->w;
@@ -189,25 +189,25 @@ drawmenu(void) {
 	/* draw input field */
 	dc->w = (lines > 0 || !matches) ? mw - dc->x : inputw;
 	drawtext(dc, text, normcol);
-	if((curpos = textnw(dc, text, cursor) + dc->h/2 - 2) < dc->w)
+	if ((curpos = textnw(dc, text, cursor) + dc->h/2 - 2) < dc->w)
 		drawrect(dc, curpos, 2, 1, dc->h - 4, True, FG(dc, normcol));
 
-	if(lines > 0) {
+	if (lines > 0) {
 		/* draw vertical list */
 		dc->w = mw - dc->x;
-		for(item = curr; item != next; item = item->right) {
+		for (item = curr; item != next; item = item->right) {
 			dc->y += dc->h;
 			drawtext(dc, item->text, (item == sel) ? selcol :
 			                         (item->out)   ? outcol : normcol);
 		}
 	}
-	else if(matches) {
+	else if (matches) {
 		/* draw horizontal list */
 		dc->x += inputw;
 		dc->w = textw(dc, "<");
-		if(curr->left)
+		if (curr->left)
 			drawtext(dc, "<", normcol);
-		for(item = curr; item != next; item = item->right) {
+		for (item = curr; item != next; item = item->right) {
 			dc->x += dc->w;
 			dc->w = MIN(textw(dc, item->text), mw - dc->x - textw(dc, ">"));
 			drawtext(dc, item->text, (item == sel) ? selcol :
@@ -215,7 +215,7 @@ drawmenu(void) {
 		}
 		dc->w = textw(dc, ">");
 		dc->x = mw - dc->w;
-		if(next)
+		if (next)
 			drawtext(dc, ">", normcol);
 	}
 	mapdc(dc, win, mw, mh);
@@ -226,8 +226,8 @@ grabkeyboard(void) {
 	int i;
 
 	/* try to grab keyboard, we may have to wait for another process to ungrab */
-	for(i = 0; i < 1000; i++) {
-		if(XGrabKeyboard(dc->dpy, DefaultRootWindow(dc->dpy), True,
+	for (i = 0; i < 1000; i++) {
+		if (XGrabKeyboard(dc->dpy, DefaultRootWindow(dc->dpy), True,
 		                 GrabModeAsync, GrabModeAsync, CurrentTime) == GrabSuccess)
 			return;
 		usleep(1000);
@@ -237,11 +237,11 @@ grabkeyboard(void) {
 
 void
 insert(const char *str, ssize_t n) {
-	if(strlen(text) + n > sizeof text - 1)
+	if (strlen(text) + n > sizeof text - 1)
 		return;
 	/* move existing text out of the way, insert new text, and update cursor */
 	memmove(&text[cursor + n], &text[cursor], sizeof text - cursor - MAX(n, 0));
-	if(n > 0)
+	if (n > 0)
 		memcpy(&text[cursor], str, n);
 	cursor += n;
 	match();
@@ -255,9 +255,9 @@ keypress(XKeyEvent *ev) {
 	Status status;
 
 	len = XmbLookupString(xic, ev, buf, sizeof buf, &ksym, &status);
-	if(status == XBufferOverflow)
+	if (status == XBufferOverflow)
 		return;
-	if(ev->state & ControlMask)
+	if (ev->state & ControlMask)
 		switch(ksym) {
 		case XK_a: ksym = XK_Home;      break;
 		case XK_b: ksym = XK_Left;      break;
@@ -283,9 +283,9 @@ keypress(XKeyEvent *ev) {
 			insert(NULL, 0 - cursor);
 			break;
 		case XK_w: /* delete word */
-			while(cursor > 0 && text[nextrune(-1)] == ' ')
+			while (cursor > 0 && text[nextrune(-1)] == ' ')
 				insert(NULL, nextrune(-1) - cursor);
-			while(cursor > 0 && text[nextrune(-1)] != ' ')
+			while (cursor > 0 && text[nextrune(-1)] != ' ')
 				insert(NULL, nextrune(-1) - cursor);
 			break;
 		case XK_y: /* paste selection */
@@ -300,44 +300,44 @@ keypress(XKeyEvent *ev) {
 		default:
 			return;
 		}
-	else if(ev->state & Mod1Mask)
+	else if (ev->state & Mod1Mask)
 		switch(ksym) {
 		case XK_g: ksym = XK_Home;  break;
 		case XK_G: ksym = XK_End;   break;
-		case XK_h: ksym = XK_Up;    break;
-		case XK_j: ksym = XK_Next;  break;
-		case XK_k: ksym = XK_Prior; break;
-		case XK_l: ksym = XK_Down;  break;
+		case XK_h: ksym = XK_Left;  break;
+		case XK_j: ksym = XK_Down;  break;
+		case XK_k: ksym = XK_Up;    break;
+		case XK_l: ksym = XK_Right; break;
 		default:
 			return;
 		}
 	switch(ksym) {
 	default:
-		if(!iscntrl(*buf))
+		if (!iscntrl(*buf))
 			insert(buf, len);
 		break;
 	case XK_Delete:
-		if(text[cursor] == '\0')
+		if (text[cursor] == '\0')
 			return;
 		cursor = nextrune(+1);
 		/* fallthrough */
 	case XK_BackSpace:
-		if(cursor == 0)
+		if (cursor == 0)
 			return;
 		insert(NULL, nextrune(-1) - cursor);
 		break;
 	case XK_End:
-		if(text[cursor] != '\0') {
+		if (text[cursor] != '\0') {
 			cursor = strlen(text);
 			break;
 		}
-		if(next) {
+		if (next) {
 			/* jump to end of list and position items in reverse */
 			curr = matchend;
 			calcoffsets();
 			curr = prev;
 			calcoffsets();
-			while(next && (curr = curr->right))
+			while (next && (curr = curr->right))
 				calcoffsets();
 		}
 		sel = matchend;
@@ -345,7 +345,7 @@ keypress(XKeyEvent *ev) {
 	case XK_Escape:
 		exit(EXIT_FAILURE);
 	case XK_Home:
-		if(sel == matches) {
+		if (sel == matches) {
 			cursor = 0;
 			break;
 		}
@@ -353,57 +353,59 @@ keypress(XKeyEvent *ev) {
 		calcoffsets();
 		break;
 	case XK_Left:
-		if(cursor > 0 && (!sel || !sel->left || lines > 0)) {
+		if (cursor > 0 && (!sel || !sel->left || lines > 0)) {
 			cursor = nextrune(-1);
 			break;
 		}
-		if(lines > 0)
+		if (lines > 0)
 			return;
 		/* fallthrough */
 	case XK_Up:
-		if(sel && sel->left && (sel = sel->left)->right == curr) {
+		if (sel && sel->left && (sel = sel->left)->right == curr) {
 			curr = prev;
 			calcoffsets();
 		}
 		break;
 	case XK_Next:
-		if(!next)
+		if (!next)
 			return;
 		sel = curr = next;
 		calcoffsets();
 		break;
 	case XK_Prior:
-		if(!prev)
+		if (!prev)
 			return;
 		sel = curr = prev;
 		calcoffsets();
 		break;
 	case XK_Return:
 	case XK_KP_Enter:
-        if(dmenurun)
-            execlp(sel->text, sel->text, NULL);     /* dmenu_run */
+        if (dmenurun) {
+            execlp(sel->text, sel->text, NULL);  /* dmenu_run */
+            eprintf("exec failed");
+		}
 		puts((sel && !(ev->state & ShiftMask)) ? sel->text : text);
-		if(!(ev->state & ControlMask))
+		if (!(ev->state & ControlMask))
 			exit(EXIT_SUCCESS);
-		if(sel)
+		if (sel)
 			sel->out = True;
 		break;
 	case XK_Right:
-		if(text[cursor] != '\0') {
+		if (text[cursor] != '\0') {
 			cursor = nextrune(+1);
 			break;
 		}
-		if(lines > 0)
+		if (lines > 0)
 			return;
 		/* fallthrough */
 	case XK_Down:
-		if(sel && sel->right && (sel = sel->right) == next) {
+		if (sel && sel->right && (sel = sel->right) == next) {
 			curr = next;
 			calcoffsets();
 		}
 		break;
 	case XK_Tab:
-		if(!sel)
+		if (!sel)
 			return;
 		strncpy(text, sel->text, sizeof text - 1);
 		text[sizeof text - 1] = '\0';
@@ -426,28 +428,28 @@ match(void) {
 
 	strcpy(buf, text);
 	/* separate input text into tokens to be matched individually */
-	for(s = strtok(buf, " "); s; tokv[tokc-1] = s, s = strtok(NULL, " "))
-		if(++tokc > tokn && !(tokv = realloc(tokv, ++tokn * sizeof *tokv)))
+	for (s = strtok(buf, " "); s; tokv[tokc-1] = s, s = strtok(NULL, " "))
+		if (++tokc > tokn && !(tokv = realloc(tokv, ++tokn * sizeof *tokv)))
 			eprintf("cannot realloc %u bytes\n", tokn * sizeof *tokv);
 	len = tokc ? strlen(tokv[0]) : 0;
 
 	matches = lprefix = lsubstr = matchend = prefixend = substrend = NULL;
-	for(item = items; item && item->text; item++) {
-		for(i = 0; i < tokc; i++)
-			if(!fstrstr(item->text, tokv[i]))
+	for (item = items; item && item->text; item++) {
+		for (i = 0; i < tokc; i++)
+			if (!fstrstr(item->text, tokv[i]))
 				break;
-		if(i != tokc) /* not all tokens match */
+		if (i != tokc) /* not all tokens match */
 			continue;
 		/* exact matches go first, then prefixes, then substrings */
-		if(!tokc || !fstrncmp(tokv[0], item->text, len+1))
+		if (!tokc || !fstrncmp(tokv[0], item->text, len+1))
 			appenditem(item, &matches, &matchend);
-		else if(!fstrncmp(tokv[0], item->text, len))
+		else if (!fstrncmp(tokv[0], item->text, len))
 			appenditem(item, &lprefix, &prefixend);
 		else
 			appenditem(item, &lsubstr, &substrend);
 	}
-	if(lprefix) {
-		if(matches) {
+	if (lprefix) {
+		if (matches) {
 			matchend->right = lprefix;
 			lprefix->left = matchend;
 		}
@@ -455,8 +457,8 @@ match(void) {
 			matches = lprefix;
 		matchend = prefixend;
 	}
-	if(lsubstr) {
-		if(matches) {
+	if (lsubstr) {
+		if (matches) {
 			matchend->right = lsubstr;
 			lsubstr->left = matchend;
 		}
@@ -473,7 +475,7 @@ nextrune(int inc) {
 	ssize_t n;
 
 	/* return location of next utf8 rune in the given direction (+1 or -1) */
-	for(n = cursor + inc; n + inc >= 0 && (text[n] & 0xc0) == 0x80; n += inc);
+	for (n = cursor + inc; n + inc >= 0 && (text[n] & 0xc0) == 0x80; n += inc);
 	return n;
 }
 
@@ -503,29 +505,29 @@ readstdin(void) {
 	size_t i, max = 0, size = 0;
 	FILE *cache;
 
-    if(dmenurun)
-        if(!(cache = fopen(CACHE, "r")))
+    if (dmenurun)
+        if (!(cache = fopen(CACHE, "r")))
             eprintf("open failed");
 
 	/* read each line from stdin or cache and add it to the item list */
-	for(i = 0; fgets(buf, sizeof buf, (dmenurun) ? cache : stdin); i++) {
-		if(i+1 >= size / sizeof *items)
-			if(!(items = realloc(items, (size += BUFSIZ))))
+	for (i = 0; fgets(buf, sizeof buf, (dmenurun) ? cache : stdin); i++) {
+		if (i+1 >= size / sizeof *items)
+			if (!(items = realloc(items, (size += BUFSIZ))))
 				eprintf("cannot realloc %u bytes:", size);
-		if((p = strchr(buf, '\n')))
+		if ((p = strchr(buf, '\n')))
 			*p = '\0';
-		if(!(items[i].text = strdup(buf)))
+		if (!(items[i].text = strdup(buf)))
 			eprintf("cannot strdup %u bytes:", strlen(buf)+1);
 		items[i].out = False;
-		if(strlen(items[i].text) > max)
+		if (strlen(items[i].text) > max)
 			max = strlen(maxstr = items[i].text);
 	}
-	if(items)
+	if (items)
 		items[i].text = NULL;
 	inputw = maxstr ? textw(dc, maxstr) : 0;
 	lines = MIN(lines, i);
 
-    if(dmenurun)
+    if (dmenurun)
         fclose(cache);
 }
 
@@ -533,23 +535,23 @@ void
 run(void) {
 	XEvent ev;
 
-	while(!XNextEvent(dc->dpy, &ev)) {
-		if(XFilterEvent(&ev, win))
+	while (!XNextEvent(dc->dpy, &ev)) {
+		if (XFilterEvent(&ev, win))
 			continue;
 		switch(ev.type) {
 		case Expose:
-			if(ev.xexpose.count == 0)
+			if (ev.xexpose.count == 0)
 				mapdc(dc, win, mw, mh);
 			break;
 		case KeyPress:
 			keypress(&ev.xkey);
 			break;
 		case SelectionNotify:
-			if(ev.xselection.property == utf8)
+			if (ev.xselection.property == utf8)
 				paste();
 			break;
 		case VisibilityNotify:
-			if(ev.xvisibility.state != VisibilityUnobscured)
+			if (ev.xvisibility.state != VisibilityUnobscured)
 				XRaiseWindow(dc->dpy, win);
 			break;
 		}
@@ -565,27 +567,27 @@ scan(void) {
 	DIR *dp;
 	FILE *cache;
 
-	if(!(path = strdup(PATH)))
+	if (!(path = strdup(PATH)))
 		eprintf("strdup failed");
-	for(dir = strtok(path, ":"); dir; dir = strtok(NULL, ":")) {
-		if(!(dp = opendir(dir)))
+	for (dir = strtok(path, ":"); dir; dir = strtok(NULL, ":")) {
+		if (!(dp = opendir(dir)))
 			continue;
-		while((ent = readdir(dp))) {
+		while ((ent = readdir(dp))) {
 			snprintf(buf, sizeof buf, "%s/%s", dir, ent->d_name);
-			if(ent->d_name[0] == '.' || access(buf, X_OK) < 0)
+			if (ent->d_name[0] == '.' || access(buf, X_OK) < 0)
 				continue;
-			if(!(bins = realloc(bins, ++count * sizeof *bins)))
+			if (!(bins = realloc(bins, ++count * sizeof *bins)))
 				eprintf("malloc failed");
-			if(!(bins[count-1] = strdup(ent->d_name)))
+			if (!(bins[count-1] = strdup(ent->d_name)))
 				eprintf("strdup failed");
 		}
 		closedir(dp);
 	}
 	qsort(bins, count, sizeof *bins, qstrcmp);
-	if(!(cache = fopen(CACHE, "w")))
+	if (!(cache = fopen(CACHE, "w")))
 		eprintf("open failed");
-	for(i = 0; i < count; i++) {
-		if(i > 0 && !strcmp(bins[i], bins[i-1]))
+	for (i = 0; i < count; i++) {
+		if (i > 0 && !strcmp(bins[i], bins[i-1]))
 			continue;
 		fprintf(cache, "%s\n", bins[i]);
 	}
@@ -619,33 +621,33 @@ setup(void) {
 	lines = MAX(lines, 0);
 	mh = (lines + 1) * bh;
 #ifdef XINERAMA
-	if((info = XineramaQueryScreens(dc->dpy, &n))) {
+	if ((info = XineramaQueryScreens(dc->dpy, &n))) {
 		int a, j, di, i = 0, area = 0;
 		unsigned int du;
 		Window w, pw, dw, *dws;
 		XWindowAttributes wa;
 
 		XGetInputFocus(dc->dpy, &w, &di);
-		if(mon != -1 && mon < n)
+		if (mon != -1 && mon < n)
 			i = mon;
-		if(!i && w != root && w != PointerRoot && w != None) {
+		if (!i && w != root && w != PointerRoot && w != None) {
 			/* find top-level window containing current input focus */
 			do {
-				if(XQueryTree(dc->dpy, (pw = w), &dw, &w, &dws, &du) && dws)
+				if (XQueryTree(dc->dpy, (pw = w), &dw, &w, &dws, &du) && dws)
 					XFree(dws);
-			} while(w != root && w != pw);
+			} while (w != root && w != pw);
 			/* find xinerama screen with which the window intersects most */
-			if(XGetWindowAttributes(dc->dpy, pw, &wa))
-				for(j = 0; j < n; j++)
-					if((a = INTERSECT(wa.x, wa.y, wa.width, wa.height, info[j])) > area) {
+			if (XGetWindowAttributes(dc->dpy, pw, &wa))
+				for (j = 0; j < n; j++)
+					if ((a = INTERSECT(wa.x, wa.y, wa.width, wa.height, info[j])) > area) {
 						area = a;
 						i = j;
 					}
 		}
 		/* no focused window is on screen, so use pointer location instead */
-		if(mon == -1 && !area && XQueryPointer(dc->dpy, root, &dw, &dw, &x, &y, &di, &di, &du))
-			for(i = 0; i < n; i++)
-				if(INTERSECT(x, y, 1, 1, info[i]))
+		if (mon == -1 && !area && XQueryPointer(dc->dpy, root, &dw, &dw, &x, &y, &di, &di, &du))
+			for (i = 0; i < n; i++)
+				if (INTERSECT(x, y, 1, 1, info[i]))
 					break;
 
 		x = info[i].x_org;
@@ -685,13 +687,13 @@ setup(void) {
 
 void
 updatecache(void) {
-	if(!(HOME = getenv("HOME")))
+	if (!(HOME = getenv("HOME")))
 		eprintf("no $HOME");
-	if(!(PATH = getenv("PATH")))
+	if (!(PATH = getenv("PATH")))
 		eprintf("no $PATH");
-	if(chdir(HOME) < 0)
+	if (chdir(HOME) < 0)
 		eprintf("chdir failed");
-	if(!(uptodate()))
+	if (!(uptodate()))
 	    scan();
 }
 
@@ -701,13 +703,13 @@ uptodate(void) {
 	time_t mtime;
 	struct stat st;
 
-	if(stat(CACHE, &st) < 0)
+	if (stat(CACHE, &st) < 0)
 		return 0;
 	mtime = st.st_mtime;
-	if(!(path = strdup(PATH)))
+	if (!(path = strdup(PATH)))
 		eprintf("strdup failed");
-	for(dir = strtok(path, ":"); dir; dir = strtok(NULL, ":"))
-		if(!stat(dir, &st) && st.st_mtime > mtime)
+	for (dir = strtok(path, ":"); dir; dir = strtok(NULL, ":"))
+		if (!stat(dir, &st) && st.st_mtime > mtime)
 			return 0;
 	free(path);
 	return 1;
@@ -716,6 +718,7 @@ uptodate(void) {
 void
 usage(void) {
 	fputs("usage: dmenu [-b] [-f] [-i] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
-	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-v]\n", stderr);
+	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-v]\n"
+	      "       dmenu_run\n", stderr);
 	exit(EXIT_FAILURE);
 }
