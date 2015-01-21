@@ -19,6 +19,8 @@
 #define TRACKCACHE ".track_cache"
 #define PLAYLIST   "/tmp/playlist"
 #define STATUSMSG  "/tmp/status_msg"
+#define PATH_MAX 4096
+#define NAME_MAX 255
 
 static void die(const char *s);
 static char *dmenu(const int m);
@@ -191,7 +193,6 @@ dmenuinput(const int m)
 	}
 	else if (m == 2) {
 		printf("Play\nShuffle\n");
-
 		if (!(dp = opendir(".")))
 			die("opendir $album failed");
 		while ((ent = readdir(dp))) {
