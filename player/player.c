@@ -3,7 +3,8 @@
  * GPL Licence
  */
 
-#include <ctype.h>
+#define _GNU_SOURCE
+
 #include <dirent.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -33,8 +34,8 @@ static int qstrcmp(const void *a, const void *b);
 static void scan(void);
 static void setup(void);
 static int uptodate(void);
-static char *filters;
-static const char *album, *trackname, *HOME;
+
+static const char *album, *filters, *trackname, *HOME;
 
 int
 main(int argc, char *argv[])
@@ -45,7 +46,6 @@ main(int argc, char *argv[])
 
 	/* Check for arguments and send to mplayer via FIFO */
 	setup();
-	/* mknod(FIFO, S_IFIFO | 0644, 0); */
 	mkfifo(FIFO, 0644);
 	if ((fd = open(FIFO, O_WRONLY | O_NONBLOCK)) != -1) {  /* mplayer running */
 		if (argc > 2)
@@ -222,23 +222,17 @@ dmenuinput(const int m)
 void
 filter(void)
 {
-	int i;
-	char buf[PATH_MAX], line[PATH_MAX], lline[PATH_MAX], *s;
+	char buf[PATH_MAX], line[PATH_MAX], *s;
 	FILE *fp, *fp2;
 
-	for (i=0; filters[i]; ++i)
-		filters[i] = tolower(filters[i]);
 	if ((fp = fopen(TRACKCACHE, "r")) == NULL)
 		die("fopen failed");
 	if ((fp2 = fopen(PLAYLIST, "w")) == NULL)
 		die("fopen2 failed");
 	while (fgets(line, sizeof(line), fp) != NULL) {
-		for (i=0; line[i]; ++i)
-			lline[i] = tolower(line[i]);
-		lline[strlen(line)] = '\0';
 		strcpy(buf, filters);
 		for (s = strtok(buf, " "); s; s = strtok(NULL, " "))
-			if (strstr(lline, s) != NULL)
+			if (strcasestr(line, s) != NULL)
 				fprintf(fp2, "%s/%s/%s", HOME, MUSICDIR, line);
 	}
 	fclose(fp);
