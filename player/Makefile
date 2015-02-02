@@ -1,7 +1,7 @@
 PKG = player
 SRC = player.c
 CC  = cc
-CFLAGS = -pedantic -Wall
+CFLAGS = -std=c99 -pedantic -Wall
 PREFIX = /usr/local
 
 ${PKG}: ${SRC}

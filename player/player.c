@@ -11,6 +11,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 
 #define MUSICDIR   "Music"
@@ -32,7 +33,6 @@ static int qstrcmp(const void *a, const void *b);
 static void scan(void);
 static void setup(void);
 static int uptodate(void);
-
 static char *filters;
 static const char *album, *trackname, *HOME;
 
@@ -45,7 +45,8 @@ main(int argc, char *argv[])
 
 	/* Check for arguments and send to mplayer via FIFO */
 	setup();
-	mknod(FIFO, S_IFIFO | 0644, 0);
+	/* mknod(FIFO, S_IFIFO | 0644, 0); */
+	mkfifo(FIFO, 0644);
 	if ((fd = open(FIFO, O_WRONLY | O_NONBLOCK)) != -1) {  /* mplayer running */
 		if (argc > 2)
 			len = snprintf(args, sizeof(args), "%s %s\n", argv[1], argv[2]);
@@ -253,7 +254,7 @@ gettrackname(const pid_t cpid)
 
 	sleep(1);  /* give mplayer time to start */
 	sprintf(proc, "/proc/%d/fd/4", cpid);
-	while ((len = readlink(proc, link, sizeof(link))) > 1) {
+	while ((len = readlink(proc, link, sizeof(link)-1)) > 1) {
 		link[len] = '\0';
 		if ((fp = fopen(STATUSMSG, "w")) == NULL)
 			die("fopen failed");
