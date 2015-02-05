@@ -246,7 +246,7 @@ gettrackname(const pid_t cpid)
 	int len;
 	FILE *fp;
 
-	sleep(1);  /* give mplayer time to start */
+	read(0, junk, sizeof(junk));
 	sprintf(proc, "/proc/%d/fd/4", cpid);
 	while ((len = readlink(proc, link, sizeof(link)-1)) > 1) {
 		link[len] = '\0';
