@@ -1,6 +1,7 @@
 PKG = player
 SRC = player.c
 CC  = cc
+#CC  = /usr/local/musl/bin/musl-gcc
 CFLAGS = -std=c99 -pedantic -Wall
 PREFIX = /usr/local
 
