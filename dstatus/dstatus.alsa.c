@@ -3,19 +3,16 @@
  * GPL Licence
  */
 
-#include <fcntl.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 #include <time.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <sys/soundcard.h>
 #include <X11/Xlib.h>
 
 #define TRACK_FILE      "/tmp/status_msg"
 #define MEM_FILE        "/proc/meminfo"
-#define VOL_FILE        "/dev/dsp"
+#define VOL_FILE        "/tmp/alsa_volume"
 #define BAT_NOW         "/sys/class/power_supply/BAT0/energy_now"
 #define BAT_FULL        "/sys/class/power_supply/BAT0/energy_full"
 
@@ -28,7 +25,7 @@
 int
 main(void) {
     Display *dpy;
-    int fd, num;
+    int num;
     long lnum1, lnum2, lnum3, lnum4;
     char track[50], statnext[50], status[100];
     time_t current;
@@ -62,10 +59,10 @@ main(void) {
         }
 
         /* Volume */
-        if ((fd = open(VOL_FILE, O_WRONLY))) {
-            ioctl(fd, SOUND_MIXER_READ_VOLUME, &num);
-            close(fd);
-            sprintf(statnext, VOL_STR, num/256);
+        if ((fp = fopen(VOL_FILE, "r"))) {
+            fscanf(fp, "%d", &num);
+            fclose(fp);
+            sprintf(statnext, VOL_STR, num);
             strcat(status, statnext);
         }
 
