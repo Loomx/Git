@@ -53,9 +53,7 @@ static const char *playcmd[]      = { "player", NULL };
 static const char *stopcmd[]      = { "player", "stop", NULL };
 static const char *prevcmd[]      = { "player", "pt_step", "-1", NULL };
 static const char *nextcmd[]      = { "player", "pt_step", "1", NULL };
-static const char *mutecmd[]      = { "ossmix", "-q", "--", "vol", "0", NULL };
-static const char *voldowncmd[]   = { "ossmix", "-q", "--", "vol", "-5", NULL };
-static const char *volupcmd[]     = { "ossmix", "-q", "--", "vol", "+5", NULL };
+static const char *mutecmd[]      = { "amixer", "-q", "set", "Master", "toggle", NULL };
 static const char *ejectcmd[]     = { "eject", NULL };
 static const char *sleepcmd[]     = { "sudo", "/usr/sbin/pm-suspend", NULL };
 
@@ -67,9 +65,9 @@ static Key keys[] = {
     { 0,                   0x1008ff15,                spawn,          {.v = stopcmd } },
     { 0,                   0x1008ff16,                spawn,          {.v = prevcmd } },
     { 0,                   0x1008ff17,                spawn,          {.v = nextcmd } },
+    { 0,                   0x1008ff11,                spawn,          SHCMD("amixer set Master 4- unmute | awk -F [][] 'END { print $2 }' >/tmp/alsa_volume") },
+    { 0,                   0x1008ff13,                spawn,          SHCMD("amixer set Master 4+ unmute | awk -F [][] 'END { print $2 }' >/tmp/alsa_volume") },
     { 0,                   0x1008ff12,                spawn,          {.v = mutecmd } },
-    { 0,                   0x1008ff11,                spawn,          {.v = voldowncmd } },
-    { 0,                   0x1008ff13,                spawn,          {.v = volupcmd } },
     { 0,                   0x1008ff2c,                spawn,          {.v = ejectcmd } },
     { 0,                   0x1008ff2f,                spawn,          {.v = sleepcmd } },
 //    { 0,                   0x1008ff03,                spawn,          SHCMD("Mon=$(cat ~/.mon_brightness); echo $((Mon-440)) >~/.mon_brightness") },
