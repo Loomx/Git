@@ -24,68 +24,68 @@
 
 int
 main(void) {
-    Display *dpy;
-    int num;
-    long lnum1, lnum2, lnum3, lnum4;
-    char track[50], statnext[50], status[100];
-    time_t current;
-    FILE *fp;
+	Display *dpy;
+	int num;
+	long lnum1, lnum2, lnum3, lnum4;
+	char track[50], statnext[50], status[100];
+	time_t current;
+	FILE *fp;
 
-    if (!(dpy = XOpenDisplay(NULL))) {
-        fprintf(stderr, "ERROR: could not open display\n");
-        exit(1);
-    }
+	if (!(dpy = XOpenDisplay(NULL))) {
+		fprintf(stderr, "ERROR: could not open display\n");
+		exit(1);
+	}
 
-    for (;;sleep(1)) {
-        status[0]='\0';
+	for (;;sleep(1)) {
+		status[0]='\0';
 
-        /* Track */
-        if ((fp = fopen(TRACK_FILE, "r"))) {
-            //fgets(track, sizeof(track), fp);
-            //track[strlen(track)-1] = ' ';
-            fscanf(fp, "%48[^.\n]", track);
-            fclose(fp);
-            sprintf(statnext, TRACK_STR, track);
-            strcat(status, statnext);
-        }
+		/* Track */
+		if ((fp = fopen(TRACK_FILE, "r"))) {
+			//fgets(track, sizeof(track), fp);
+			//track[strlen(track)-1] = ' ';
+			fscanf(fp, "%48[^.\n]", track);
+			fclose(fp);
+			sprintf(statnext, TRACK_STR, track);
+			strcat(status, statnext);
+		}
 
-        /* Memory */
-        if ((fp = fopen(MEM_FILE, "r"))) {
-            fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nBuffers: %ld kB\nCached: %ld kB\n",
-                        &lnum1, &lnum2, &lnum3, &lnum4);
-            fclose(fp);
-            sprintf(statnext, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));
-            strcat(status, statnext);
-        }
+		/* Memory */
+		if ((fp = fopen(MEM_FILE, "r"))) {
+			fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nBuffers: %ld kB\nCached: %ld kB\n",
+			            &lnum1, &lnum2, &lnum3, &lnum4);
+			fclose(fp);
+			sprintf(statnext, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));
+			strcat(status, statnext);
+		}
 
-        /* Volume */
-        if ((fp = fopen(VOL_FILE, "r"))) {
-            fscanf(fp, "%d", &num);
-            fclose(fp);
-            sprintf(statnext, VOL_STR, num);
-            strcat(status, statnext);
-        }
+		/* Volume */
+		if ((fp = fopen(VOL_FILE, "r"))) {
+			fscanf(fp, "%d", &num);
+			fclose(fp);
+			sprintf(statnext, VOL_STR, num);
+			strcat(status, statnext);
+		}
 
-        /* Battery */
-        if ((fp = fopen(BAT_NOW, "r"))) {
-            fscanf(fp, "%ld\n", &lnum1);
-            fclose(fp);
-            fp = fopen(BAT_FULL, "r");
-            fscanf(fp, "%ld\n", &lnum2);
-            fclose(fp);
-            sprintf(statnext, BAT_STR, (lnum1/(lnum2/100)));
-            strcat(status, statnext);
-        }
+		/* Battery */
+		if ((fp = fopen(BAT_NOW, "r"))) {
+			fscanf(fp, "%ld\n", &lnum1);
+			fclose(fp);
+			fp = fopen(BAT_FULL, "r");
+			fscanf(fp, "%ld\n", &lnum2);
+			fclose(fp);
+			sprintf(statnext, BAT_STR, (lnum1/(lnum2/100)));
+			strcat(status, statnext);
+		}
 
-        /* Time */
-        time(&current);
-        strftime(statnext, 38, TIME_STR, localtime(&current));
-        strcat(status, statnext);
+		/* Time */
+		time(&current);
+		strftime(statnext, 38, TIME_STR, localtime(&current));
+		strcat(status, statnext);
 
-    XStoreName(dpy, DefaultRootWindow(dpy), status);
-    XSync(dpy, False);
-    }
+	XStoreName(dpy, DefaultRootWindow(dpy), status);
+	XSync(dpy, False);
+	}
 
-    XCloseDisplay(dpy);
-    return 0;
+	XCloseDisplay(dpy);
+	return 0;
 }
