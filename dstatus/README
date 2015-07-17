@@ -4,11 +4,13 @@ dstatus is a simple statusbar for dwm.
 
 It displays the following:
 
-string from /tmp/status_msg | memory % | OSS volume % | battery % | time
+string from /tmp/status_msg | memory % | volume % from /tmp/alsa_volume \
+| battery % | time
 
 If any of the files don't exist, it will silently omit them.
 
 See ../player for /tmp/status_msg
+See ../dwm/config.h for /tmp/alsa_volume
 
 
 Installation
