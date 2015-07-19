@@ -2,9 +2,9 @@
 #
 # ~/.xinitrc
 
-xrdb -merge ~/.Xresources
+setxkbmap -option ctrl:nocaps
 
-setxkbmap -option caps:escape
+xcape
 
 dstatus &
 
