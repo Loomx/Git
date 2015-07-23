@@ -48,7 +48,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static const char *dmenucmd[]     = { "dmenu_run", NULL };
-static const char *termcmd[]      = { "xterm", NULL };
+static const char *termcmd[]      = { "st", NULL };
 static const char *playcmd[]      = { "player", NULL };
 static const char *stopcmd[]      = { "player", "stop", NULL };
 static const char *prevcmd[]      = { "player", "pt_step", "-1", NULL };
