@@ -7,19 +7,19 @@
 
 case "$1" in
     *.pdf|*.PDF)
-        xpdf "$1"
+        exec xpdf "$1"
         ;;
 
     *.jpg|*.JPG|*.png|*.PNG|*.tiff|*.TIFF)
-        geeqie "$1"
+        exec geeqie "$1"
         ;;
 
     *.doc|*.DOC|*.docx|*.DOCX|*.xls|*.XLS|*.xlsx|*.XLSX|*.dotx|*.DOTX|*.ppt|*.PPT|*.pptx|*.PPTX)
-        libreoffice "$1"
+        exec libreoffice "$1"
         ;;
 
     *)
-        echo "No"
+		exec mplayer "$1"
         ;;
 esac
 
