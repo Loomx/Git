@@ -70,8 +70,7 @@ sdout () {
 }
 backup () {
     if [ -d ~/PHONE/Linux/.backup ]; then
-        rsync -a --delete \
-        --exclude=USB/ --exclude=PHONE/ --exclude=SD/ \
+        rsync -axx --delete \
         --exclude=Git/ --exclude=Music/ --exclude=.cache/ \
         ~/ ~/PHONE/Linux/.backup/
     fi
