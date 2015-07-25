@@ -76,10 +76,6 @@ backup () {
         ~/ ~/PHONE/Linux/.backup/
     fi
 }
-wifi () {
-    sudo /usr/bin/wpa_gui
-	sudo /etc/rc.d/rc.inet1 restart
-}
 tao () {
     awk -v verse=$( echo $[RANDOM%80+2] ) 'RS=""; NR==verse' ~/Documents/tao.txt
 }
