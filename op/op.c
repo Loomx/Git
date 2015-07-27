@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 #define PDF_OPEN "xpdf"
-#define PIC_OPEN "geeqie"
+#define PIC_OPEN "xv"
 #define DOC_OPEN "libreoffice"
 #define DEFAULT  "mplayer"
 
