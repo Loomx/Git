@@ -1,5 +1,5 @@
 op
-======
+==
 A simple file opener in C.
 
 
@@ -8,7 +8,7 @@ Installation
 Edit `Makefile' to match your setup
 - default is /usr/local/bin/op
 
-Then build and install player (if necessary as root) e.g.
+Then build and install op (if necessary as root) e.g.
 
   # make install clean
 
@@ -17,5 +17,5 @@ Running op
 ----------
 `op filename'
 
-Based on the suffix, op will exec xpdf, libreoffice, geeqie or
-(fallthrough option) mplayer to open the file.
+Based on the suffix, op will exec a pdf-viewer, image-viewer, office program
+or (fallthrough option) mplayer to open the file.
