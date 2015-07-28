@@ -21,35 +21,26 @@ main(int argc, char *argv[])
 	suffix = strrchr(argv[1], '.');
 
 	if (suffix == NULL)
-		execlp(DEFAULT, DEFAULT, argv[1], NULL);
+		execlp("setsid", "setsid", DEFAULT, argv[1], NULL);
 
-	if (!strcasecmp(suffix, ".pdf"))
-		execlp(PDF_OPEN, PDF_OPEN, argv[1], NULL);
+	else if (!strcasecmp(suffix, ".pdf"))
+		execlp("setsid", "setsid", PDF_OPEN, argv[1], NULL);
 
-	else if (!strcasecmp(suffix, ".jpg"))
-		execlp(PIC_OPEN, PIC_OPEN, argv[1], NULL);
-	else if (!strcasecmp(suffix, ".jpeg"))
-		execlp(PIC_OPEN, PIC_OPEN, argv[1], NULL);
-	else if (!strcasecmp(suffix, ".tiff"))
-		execlp(PIC_OPEN, PIC_OPEN, argv[1], NULL);
-	else if (!strcasecmp(suffix, ".png"))
-		execlp(PIC_OPEN, PIC_OPEN, argv[1], NULL);
+	else if (!strcasecmp(suffix, ".jpg")
+	      || !strcasecmp(suffix, ".jpeg")
+	      || !strcasecmp(suffix, ".png")
+	      || !strcasecmp(suffix, ".tiff"))
+		execlp("setsid", "setsid", PIC_OPEN, argv[1], NULL);
 
-	else if (!strcasecmp(suffix, ".doc"))
-		execlp(DOC_OPEN, DOC_OPEN, argv[1], NULL);
-	else if (!strcasecmp(suffix, ".docx"))
-		execlp(DOC_OPEN, DOC_OPEN, argv[1], NULL);
-	else if (!strcasecmp(suffix, ".ppt"))
-		execlp(DOC_OPEN, DOC_OPEN, argv[1], NULL);
-	else if (!strcasecmp(suffix, ".pptx"))
-		execlp(DOC_OPEN, DOC_OPEN, argv[1], NULL);
-	else if (!strcasecmp(suffix, ".xls"))
-		execlp(DOC_OPEN, DOC_OPEN, argv[1], NULL);
-	else if (!strcasecmp(suffix, ".xlsx"))
-		execlp(DOC_OPEN, DOC_OPEN, argv[1], NULL);
-	else if (!strcasecmp(suffix, ".dotx"))
-		execlp(DOC_OPEN, DOC_OPEN, argv[1], NULL);
+	else if (!strcasecmp(suffix, ".doc")
+	      || !strcasecmp(suffix, ".docx")
+	      || !strcasecmp(suffix, ".ppt")
+	      || !strcasecmp(suffix, ".pptx")
+	      || !strcasecmp(suffix, ".xls")
+	      || !strcasecmp(suffix, ".xlsx")
+	      || !strcasecmp(suffix, ".dotx"))
+		execlp("setsid", "setsid", DOC_OPEN, argv[1], NULL);
 
 	else
-		execlp(DEFAULT, DEFAULT, argv[1], NULL);
+		execlp("setsid", "setsid", DEFAULT, argv[1], NULL);
 }
