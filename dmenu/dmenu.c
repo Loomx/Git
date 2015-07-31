@@ -76,6 +76,7 @@ main(int argc, char *argv[]) {
 
     if (!strcmp(argv[0], "dmenu_run")) {
         dmenurun = 1;
+		fast = True;
         updatecache();
     }
 
