@@ -18,6 +18,9 @@ main(int argc, char *argv[])
 {
 	char *suffix;
 
+	if (argc < 2)
+		return 1;
+
 	suffix = strrchr(argv[1], '.');
 
 	if (suffix == NULL)
