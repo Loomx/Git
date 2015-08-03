@@ -9,12 +9,10 @@ CFLAGS += `pkg-config --cflags xtst x11`
 LDFLAGS += `pkg-config --libs xtst x11`
 LDFLAGS += -pthread
 
-all: $(TARGET)
-
 $(TARGET): xcape.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
-install:
+install: $(TARGET)
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(PREFIX)/bin
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(PREFIX)$(MANDIR)
 	$(INSTALL) -m 0755 $(TARGET) $(DESTDIR)$(PREFIX)/bin/$(TARGET)
@@ -23,4 +21,8 @@ install:
 clean:
 	rm $(TARGET)
 
-.PHONY: all clean install
+uninstall:
+	rm -f $(TARGET) $(DESTDIR)$(PREFIX)/bin/$(TARGET)
+	rm -f $(DESTDIR)$(PREFIX)$(MANDIR)/xcape.1
+
+.PHONY: install clean uninstall
