@@ -68,6 +68,14 @@ sdout () {
     [[ "$PWD" == ~/SD* ]] && cd ~
     umount ~/SD; rmdir ~/SD
 }
+hddin () {
+    mkdir ~/HDD 2>/dev/null
+    mount ~/HDD && cd ~/HDD || rmdir ~/HDD
+}
+hddout () {
+    [[ "$PWD" == ~/HDD* ]] && cd ~
+    umount ~/HDD; rmdir ~/HDD
+}
 backup () {
     if [ -d ~/PHONE/Linux/.backup ]; then
         rsync -axx --delete \
