@@ -45,7 +45,6 @@ main(int argc, char *argv[])
 	pid_t cpid;
 
 	/* Check for arguments and send to mplayer via FIFO */
-	setup();
 	mkfifo(FIFO, 0644);
 	if ((fd = open(FIFO, O_WRONLY | O_NONBLOCK)) != -1) {  /* mplayer running */
 		if (argc > 2)
@@ -64,6 +63,7 @@ main(int argc, char *argv[])
 		return 0;
 
 	/* Check cache files and update if needed */
+	setup();
 	if (!uptodate())
 		scan();
 
