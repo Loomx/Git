@@ -88,9 +88,11 @@ tao () {
 }
 hdmiin () {
     xrandr --auto --output HDMI1 --mode 1280x800
+	xset -dpms; xset s off
     cp ~/.asoundrc-hdmi ~/.asoundrc
 }
 hdmiout () {
+	xset +dpms; xset s default
     rm ~/.asoundrc
 }
 histfix () {
