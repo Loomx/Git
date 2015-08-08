@@ -58,10 +58,10 @@ main(int argc, char *argv[])
 			die("args too long");
 		write(fd, args, strlen(args));
 		close(fd);
-		exit(EXIT_SUCCESS);
+		return 0;
 	}
 	if (argc > 1)
-		exit(EXIT_SUCCESS);
+		return 0;
 
 	/* Check cache files and update if needed */
 	if (!uptodate())
@@ -105,7 +105,7 @@ main(int argc, char *argv[])
 	/* Clean up after mplayer exits */
 	unlink(PLAYLIST);
 	unlink(STATUSMSG);
-	exit(EXIT_SUCCESS);
+	return 0;
 }
 
 void
