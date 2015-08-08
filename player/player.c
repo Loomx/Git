@@ -16,9 +16,9 @@
 #include <sys/wait.h>
 
 #define MUSICDIR   "Music"
-#define FIFO       ".mp_pipe"
 #define ALBUMCACHE ".album_cache"
 #define TRACKCACHE ".track_cache"
+#define FIFO       "/tmp/mp_pipe"
 #define PLAYLIST   "/tmp/playlist"
 #define STATUSMSG  "/tmp/status_msg"
 #define PATH_MAX 4096

@@ -6,4 +6,4 @@ stop-xscreensaver=1
 really-quiet=1
 prefer-ipv4=1
 nolirc=1
-input=file=/home/jonny/Music/.mp_pipe
+input=file=/tmp/mp_pipe
