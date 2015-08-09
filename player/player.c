@@ -112,7 +112,7 @@ void
 die(const char *s)
 {
 	fprintf(stderr, "player: %s\n", s);
-	exit(EXIT_FAILURE);
+	exit(1);
 }
 
 char *
@@ -143,7 +143,7 @@ dmenu(const int m)
 			dup2(pipe1[1], 1);
 			close(pipe1[1]);  /* dup2ed */
 			dmenuinput(m);
-			_exit(EXIT_SUCCESS);
+			_exit(0);
 		}
 		else {  /* child */
 		close(pipe1[1]);  /* unused */
