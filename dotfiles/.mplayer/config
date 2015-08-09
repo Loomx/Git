@@ -1,5 +1,6 @@
 # ~/.mplayer/config
 
+ao=alsa
 fs=1
 framedrop=1
 stop-xscreensaver=1
