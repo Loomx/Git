@@ -3,10 +3,10 @@
 [ -z "$PS1" ] && return
 
 if [ "$USER" = "root" ]; then
-    . /etc/profile
-    PS1='\[\e[0;31m\][ \w ]\n\[\e[0;31m\]\h\$ \[\e[m\]'
+	. /etc/profile
+	PS1='\[\e[0;31m\][ \w ]\n\[\e[0;31m\]\h\$ \[\e[m\]'
 else
-    PS1='\[\e[0;33m\][ \w ]\n\[\e[0;33m\]\h\$ \[\e[m\]'
+	PS1='\[\e[0;33m\][ \w ]\n\[\e[0;33m\]\h\$ \[\e[m\]'
 fi
 
 PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; Prev="$PWD"'
@@ -34,69 +34,71 @@ ll () { ls -lh --color --group-directories-first $*; }
 lla () { ls -lha --color --group-directories-first $*; }
 
 man() {
-    env LESS_TERMCAP_mb=$'\e[01;31m' \
-    LESS_TERMCAP_md=$'\e[01;38;5;74m' \
-    LESS_TERMCAP_me=$'\e[0m' \
-    LESS_TERMCAP_so=$'\e[38;5;246m' \
-    LESS_TERMCAP_se=$'\e[0m' \
-    LESS_TERMCAP_us=$'\e[04;38;5;146m' \
-    LESS_TERMCAP_ue=$'\e[0m' \
-    man "$@"
+	env LESS_TERMCAP_mb=$'\e[01;31m' \
+	LESS_TERMCAP_md=$'\e[01;38;5;74m' \
+	LESS_TERMCAP_me=$'\e[0m' \
+	LESS_TERMCAP_so=$'\e[38;5;246m' \
+	LESS_TERMCAP_se=$'\e[0m' \
+	LESS_TERMCAP_us=$'\e[04;38;5;146m' \
+	LESS_TERMCAP_ue=$'\e[0m' \
+	man "$@"
 }
 
 usbin () {
-    mkdir ~/USB 2>/dev/null
-    mount ~/USB && cd ~/USB || rmdir ~/USB
+	mkdir ~/USB 2>/dev/null
+	mount ~/USB && cd ~/USB || rmdir ~/USB
 }
 usbout () {
-    [[ "$PWD" == ~/USB* ]] && cd ~
-    umount ~/USB; rmdir ~/USB
+	[[ "$PWD" == ~/USB* ]] && cd ~
+	umount ~/USB; rmdir ~/USB
 }
 phonein () {
-    mkdir ~/PHONE 2>/dev/null
-    mount ~/PHONE && cd ~/PHONE || rmdir ~/PHONE
+	mkdir ~/PHONE 2>/dev/null
+	mount ~/PHONE && cd ~/PHONE || rmdir ~/PHONE
 }
 phoneout () {
-    [[ "$PWD" == ~/PHONE* ]] && cd ~
-    umount ~/PHONE; rmdir ~/PHONE
+	[[ "$PWD" == ~/PHONE* ]] && cd ~
+	umount ~/PHONE; rmdir ~/PHONE
 }
 sdin () {
-    mkdir ~/SD 2>/dev/null
-    mount ~/SD && cd ~/SD || rmdir ~/SD
+	mkdir ~/SD 2>/dev/null
+	mount ~/SD && cd ~/SD || rmdir ~/SD
 }
 sdout () {
-    [[ "$PWD" == ~/SD* ]] && cd ~
-    umount ~/SD; rmdir ~/SD
+	[[ "$PWD" == ~/SD* ]] && cd ~
+	umount ~/SD; rmdir ~/SD
 }
 hddin () {
-    mkdir ~/HDD 2>/dev/null
-    mount ~/HDD && cd ~/HDD || rmdir ~/HDD
+	mkdir ~/HDD 2>/dev/null
+	mount ~/HDD && cd ~/HDD || rmdir ~/HDD
 }
 hddout () {
-    [[ "$PWD" == ~/HDD* ]] && cd ~
-    umount ~/HDD; rmdir ~/HDD
+	[[ "$PWD" == ~/HDD* ]] && cd ~
+	umount ~/HDD; rmdir ~/HDD
 }
-backup () {
-    if [ -d ~/PHONE/Linux/.backup ]; then
-        rsync -axx --delete \
-        --exclude=Git/ --exclude=Music/ --exclude=.cache/ \
-        ~/ ~/PHONE/Linux/.backup/
-    fi
+backup-to-phone () {
+	if [ -d ~/PHONE/Linux/.backup ]; then
+		rsync -axx --delete \
+		--exclude=Git/ --exclude=Music/ --exclude=.cache/ \
+		~/ ~/PHONE/Linux/.backup/$(hostname)/
+	fi
 }
 tao () {
-    awk -v verse=$( echo $[RANDOM%80+2] ) 'RS=""; NR==verse' ~/Documents/tao.txt
+	awk -v verse=$( echo $[RANDOM%80+2] ) 'RS=""; NR==verse' ~/Documents/tao.txt
 }
 hdmiin () {
-    xrandr --auto --output HDMI1 --mode 1280x800
+	xrandr --auto --output HDMI1 --mode 1280x800
 	xset -dpms; xset s off
-    cp ~/.asoundrc-hdmi ~/.asoundrc
+	cp ~/.asoundrc-hdmi ~/.asoundrc
 }
 hdmiout () {
 	xset +dpms; xset s default
-    rm ~/.asoundrc
+	rm ~/.asoundrc
 }
 histfix () {
-    tac ~/.bash_history | awk '!x[$0]++' | tac >/tmp/hist && mv /tmp/hist ~/.bash_history
+	tac ~/.bash_history | awk '!x[$0]++' | tac >/tmp/hist && mv /tmp/hist ~/.bash_history
 }
 
 trap histfix EXIT
+
+[ -r ~/.bashrc_local ] && . ~/.bashrc_local
