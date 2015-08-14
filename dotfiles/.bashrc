@@ -80,7 +80,7 @@ backup () {
 	if [ -d ~/PHONE/Linux/.backup ]; then
 		rsync -axx --delete \
 		--exclude=Git/ --exclude=Music/ --exclude=.cache/ \
-		~/ ~/PHONE/Linux/.backup/
+		~/ ~/PHONE/Linux/.backup/$(hostname)/
 	fi
 }
 tao () {
