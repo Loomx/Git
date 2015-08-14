@@ -76,7 +76,7 @@ hddout () {
 	[[ "$PWD" == ~/HDD* ]] && cd ~
 	umount ~/HDD; rmdir ~/HDD
 }
-backup () {
+backup-to-phone () {
 	if [ -d ~/PHONE/Linux/.backup ]; then
 		rsync -axx --delete \
 		--exclude=Git/ --exclude=Music/ --exclude=.cache/ \
