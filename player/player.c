@@ -21,8 +21,8 @@
 #define FIFO       "/tmp/mp_pipe"
 #define PLAYLIST   "/tmp/playlist"
 #define STATUSMSG  "/tmp/status_msg"
-#define PATH_MAX 4096
-#define NAME_MAX 255
+#define PATH_MAX   4096
+#define NAME_MAX   255
 
 static void die(const char *s);
 static char *dmenu(const int m);
