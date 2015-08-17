@@ -209,7 +209,7 @@ dmenuinput(const int m)
 		qsort(tracklist, count, sizeof(*tracklist), qstrcmp);
 		if ((fp = fopen(PLAYLIST, "w")) == NULL)
 			die("fopen failed");
-		for(i = 0; i < count; i++) {
+		for (i = 0; i < count; i++) {
 			printf("%s\n", tracklist[i]);
 			fprintf(fp, "%s/%s/%s/%s\n", HOME, MUSICDIR, album, tracklist[i]);
 			free(tracklist[i]);
@@ -337,7 +337,7 @@ scan(void)
 	if (!(cache2 = fopen(TRACKCACHE, "w")))
 		die("fopen2 failed");
 	fprintf(cache, "Jukebox\nDVD\n");
-	for(i = 0; i < count; i++) {
+	for (i = 0; i < count; i++) {
 		fprintf(cache, "%s\n", dir[i]);
 
 		if (!(dp = opendir(dir[i])))
