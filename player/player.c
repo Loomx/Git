@@ -186,7 +186,7 @@ dmenuinput(const int m)
 	FILE *fp;
 
 	if (m == 0) {
-		if ((fp = fopen(ALBUMCACHE, "r")) == NULL)
+		if (!(fp = fopen(ALBUMCACHE, "r")))
 			die("fopen failed");
 		while ((nread = fread(line, 1, PATH_MAX, fp)) > 0)
 			write(1, line, nread);
@@ -207,7 +207,7 @@ dmenuinput(const int m)
 		closedir(dp);
 
 		qsort(tracklist, count, sizeof(*tracklist), qstrcmp);
-		if ((fp = fopen(PLAYLIST, "w")) == NULL)
+		if (!(fp = fopen(PLAYLIST, "w")))
 			die("fopen failed");
 		for (i = 0; i < count; i++) {
 			printf("%s\n", tracklist[i]);
@@ -225,9 +225,9 @@ filter(void)
 	char buf[PATH_MAX], line[PATH_MAX], *s;
 	FILE *fp, *fp2;
 
-	if ((fp = fopen(TRACKCACHE, "r")) == NULL)
+	if (!(fp = fopen(TRACKCACHE, "r")))
 		die("fopen failed");
-	if ((fp2 = fopen(PLAYLIST, "w")) == NULL)
+	if (!(fp2 = fopen(PLAYLIST, "w")))
 		die("fopen2 failed");
 	while (fgets(line, sizeof(line), fp) != NULL) {
 		strcpy(buf, filters);
@@ -250,7 +250,7 @@ gettrackname(const pid_t cpid)
 	sprintf(proc, "/proc/%d/fd/4", cpid);
 	while ((len = readlink(proc, link, sizeof(link)-1)) > 1) {
 		link[len] = '\0';
-		if ((fp = fopen(STATUSMSG, "w")) == NULL)
+		if (!(fp = fopen(STATUSMSG, "w")))
 			die("fopen failed");
 		track = strrchr(link, '/');
 		fprintf(fp, "%s\n", ++track);
