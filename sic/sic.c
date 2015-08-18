@@ -50,7 +50,7 @@ privmsg(char *channel, char *msg) {
 		pout("", "No channel to send to");
 		return;
 	}
-	pout(channel, "<\x1b[34m%s\x1b[0m> \x1b[31m%s\x1b[0m", nick, msg);
+	pout(channel, "<\x1b[34m%s\x1b[0m> \x1b[33m%s\x1b[0m", nick, msg);
 	sout("PRIVMSG %s :%s", channel, msg);
 }
 
