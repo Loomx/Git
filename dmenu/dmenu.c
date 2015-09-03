@@ -483,6 +483,10 @@ buttonpress(XEvent *e) {
 		for(item = curr; item != next; item = item->right) {
 			dc->y += dc->h;
 			if(ev->y >= dc->y && ev->y <= (dc->y + dc->h)) {
+				if (dmenurun) {
+					execlp(item->text, item->text, NULL);  /* dmenu_run */
+					eprintf("exec failed");
+				}
 				puts(item->text);
 				exit(EXIT_SUCCESS);
 			}
@@ -505,6 +509,10 @@ buttonpress(XEvent *e) {
 			dc->x += dc->w;
 			dc->w = MIN(textw(dc, item->text), mw - dc->x - textw(dc, ">"));
 			if(ev->x >= dc->x && ev->x <= (dc->x + dc->w)) {
+				if (dmenurun) {
+					execlp(item->text, item->text, NULL);  /* dmenu_run */
+					eprintf("exec failed");
+				}
 				puts(item->text);
 				exit(EXIT_SUCCESS);
 			}
