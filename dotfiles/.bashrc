@@ -84,7 +84,7 @@ backup-to-phone () {
 	fi
 }
 tao () {
-	awk -v verse=$( echo $[RANDOM%80+2] ) 'RS=""; NR==verse' ~/Documents/tao.txt
+	awk -v verse=$((RANDOM%80+2)) 'RS=""; NR==verse' ~/Documents/tao.txt
 }
 hdmiin () {
 	xrandr --auto --output HDMI1 --mode 1280x800
