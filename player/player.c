@@ -98,6 +98,9 @@ main(int argc, char *argv[])
 		else
 			cpid = mplayer(4);  /* play track */
 	}
+	else {
+		return 0;  /* nothing selected */
+	}
 
 	/* Loop while playing to save current trackname */
 	gettrackname(cpid);
