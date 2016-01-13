@@ -12,7 +12,7 @@
 
 #define TRACK_FILE      "/tmp/status_msg"
 #define MEM_FILE        "/proc/meminfo"
-#define VOL_FILE        "/tmp/alsa_volume"
+#define VOL_FILE        "/tmp/volume"
 #define BAT_NOW         "/sys/class/power_supply/BAT0/energy_now"
 #define BAT_FULL        "/sys/class/power_supply/BAT0/energy_full"
 
