@@ -16,10 +16,10 @@
 #define BAT_NOW         "/sys/class/power_supply/BAT0/energy_now"
 #define BAT_FULL        "/sys/class/power_supply/BAT0/energy_full"
 
-#define TRACK_STR       "%s | "
-#define MEM_STR         "Mem:%ld | "
-#define VOL_STR         "Vol:%d | "
-#define BAT_STR         "Bat:%ld | "
+#define TRACK_STR       "%s   "
+#define MEM_STR         "Mem:%ld  "
+#define VOL_STR         "Vol:%d  "
+#define BAT_STR         "Bat:%ld  "
 #define TIME_STR        "%H:%M"
 
 int
