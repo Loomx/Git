@@ -27,7 +27,7 @@ main(void) {
 	Display *dpy;
 	int num;
 	long lnum1, lnum2, lnum3, lnum4;
-	char track[50], statnext[50], status[100];
+	char track[50], statnext[55], status[100];
 	time_t current;
 	FILE *fp;
 
@@ -43,7 +43,7 @@ main(void) {
 		if ((fp = fopen(TRACK_FILE, "r"))) {
 			//fgets(track, sizeof(track), fp);
 			//track[strlen(track)-1] = ' ';
-			fscanf(fp, "%48[^.\n]", track);
+			fscanf(fp, "%49[^.\n]", track);
 			fclose(fp);
 			sprintf(statnext, TRACK_STR, track);
 			strcat(status, statnext);
@@ -79,7 +79,7 @@ main(void) {
 
 		/* Time */
 		time(&current);
-		strftime(statnext, 38, TIME_STR, localtime(&current));
+		strftime(statnext, 20, TIME_STR, localtime(&current));
 		strcat(status, statnext);
 
 	XStoreName(dpy, DefaultRootWindow(dpy), status);
