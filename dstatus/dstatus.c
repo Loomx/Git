@@ -27,7 +27,7 @@ main(void) {
 	Display *dpy;
 	int num;
 	long lnum1, lnum2, lnum3, lnum4;
-	char track[50], statnext[55], status[100];
+	char track[50], statnext[55], status[110];
 	time_t current;
 	FILE *fp;
 
@@ -46,7 +46,7 @@ main(void) {
 			fscanf(fp, "%49[^.\n]", track);
 			fclose(fp);
 			sprintf(statnext, TRACK_STR, track);
-			strcat(status, statnext);
+			strncat(status, statnext, 55);
 		}
 
 		/* Memory */
@@ -55,7 +55,7 @@ main(void) {
 			            &lnum1, &lnum2, &lnum3, &lnum4);
 			fclose(fp);
 			sprintf(statnext, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));
-			strcat(status, statnext);
+			strncat(status, statnext, 10);
 		}
 
 		/* Volume */
@@ -63,7 +63,7 @@ main(void) {
 			fscanf(fp, "%d", &num);
 			fclose(fp);
 			sprintf(statnext, VOL_STR, num);
-			strcat(status, statnext);
+			strncat(status, statnext, 10);
 		}
 
 		/* Battery */
@@ -74,13 +74,13 @@ main(void) {
 			fscanf(fp, "%ld\n", &lnum2);
 			fclose(fp);
 			sprintf(statnext, BAT_STR, (lnum1/(lnum2/100)));
-			strcat(status, statnext);
+			strncat(status, statnext, 10);
 		}
 
 		/* Time */
 		time(&current);
 		strftime(statnext, 20, TIME_STR, localtime(&current));
-		strcat(status, statnext);
+		strncat(status, statnext, 20);
 
 	XStoreName(dpy, DefaultRootWindow(dpy), status);
 	XSync(dpy, False);
