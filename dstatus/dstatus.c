@@ -27,7 +27,7 @@ main(void) {
 	Display *dpy;
 	int num;
 	long lnum1, lnum2, lnum3, lnum4;
-	char track[50], statnext[55], status[110];
+	char track[50], statnext[55], status[100];
 	time_t current;
 	FILE *fp;
 
@@ -79,8 +79,8 @@ main(void) {
 
 		/* Time */
 		time(&current);
-		strftime(statnext, 20, TIME_STR, localtime(&current));
-		strncat(status, statnext, 20);
+		strftime(statnext, 10, TIME_STR, localtime(&current));
+		strncat(status, statnext, 10);
 
 	XStoreName(dpy, DefaultRootWindow(dpy), status);
 	XSync(dpy, False);
