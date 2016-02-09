@@ -15,6 +15,8 @@
 #define VOL_FILE        "/tmp/volume"
 #define BAT_NOW         "/sys/class/power_supply/BAT0/energy_now"
 #define BAT_FULL        "/sys/class/power_supply/BAT0/energy_full"
+//#define BAT_NOW         "/sys/class/power_supply/BAT0/charge_now"
+//#define BAT_FULL        "/sys/class/power_supply/BAT0/charge_full"
 
 #define TRACK_STR       "%s   "
 #define MEM_STR         "Mem:%ld  "
@@ -27,6 +29,7 @@ main(void) {
 	Display *dpy;
 	int num;
 	long lnum1, lnum2, lnum3, lnum4;
+//	long lnum1, lnum2, lnumX, lnum3, lnum4;
 	char track[50], statnext[55], status[100];
 	time_t current;
 	FILE *fp;
@@ -53,6 +56,8 @@ main(void) {
 		if ((fp = fopen(MEM_FILE, "r"))) {
 			fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nBuffers: %ld kB\nCached: %ld kB\n",
 			            &lnum1, &lnum2, &lnum3, &lnum4);
+//			fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nMemAvailable: %ld kB\nBuffers: %ld kB\nCached: %ld kB\n",
+//			            &lnum1, &lnum2, &lnumX, &lnum3, &lnum4);
 			fclose(fp);
 			sprintf(statnext, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));
 			strncat(status, statnext, 10);
