@@ -250,7 +250,7 @@ gettrackname(const pid_t cpid)
 	FILE *fp;
 
 	read(0, junk, sizeof(junk));
-	sprintf(proc, "/proc/%d/fd/4", cpid);
+	sprintf(proc, "/proc/%d/fd/5", cpid);
 	while ((len = readlink(proc, link, sizeof(link)-1)) > 1) {
 		link[len] = '\0';
 		if (!(fp = fopen(STATUSMSG, "w")))
