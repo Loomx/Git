@@ -202,7 +202,7 @@ dmenuinput(const int m)
 		while ((ent = readdir(dp))) {
 			if (ent->d_name[0] == '.')
 				continue;
-			if (!(tracklist  = realloc(tracklist, sizeof(*tracklist) * ++count)))
+			if (!(tracklist = realloc(tracklist, sizeof(*tracklist) * ++count)))
 				die("malloc failed");
 			if (!(tracklist[count-1] = strdup(ent->d_name)))
 				die("strdup failed");
@@ -285,16 +285,20 @@ mplayer(const int m)
 		close(pipe1[1]);  /* dup2ed */
 		switch (m) {
 		case 0:
-			execlp("mplayer", "mplayer", "-identify", "-shuffle", "-playlist", TRACKCACHE, NULL);
+			execlp("mplayer", "mplayer", "-vo", "null", "-identify",
+			       "-shuffle", "-playlist", TRACKCACHE, NULL);
 			break;
 		case 1:
-			execlp("mplayer", "mplayer", "-identify", "-shuffle", "-playlist", PLAYLIST, NULL);
+			execlp("mplayer", "mplayer", "-vo", "null", "-identify",
+			       "-shuffle", "-playlist", PLAYLIST, NULL);
 			break;
 		case 3:
-			execlp("mplayer", "mplayer", "-identify", "-playlist", PLAYLIST, NULL);
+			execlp("mplayer", "mplayer", "-vo", "null", "-identify",
+			       "-playlist", PLAYLIST, NULL);
 			break;
 		case 4:
-			execlp("mplayer", "mplayer", "-identify", trackname, NULL);
+			execlp("mplayer", "mplayer", "-vo", "null", "-identify",
+			       trackname, NULL);
 			break;
 		}
 		die("exec mplayer failed");
