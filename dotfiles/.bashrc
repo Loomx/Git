@@ -12,7 +12,7 @@ fi
 PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; Prev="$PWD"'
 
 . /etc/profile.d/bash_completion.sh
-CDPATH=".:..:~:/"
+CDPATH=".:..:~"
 shopt -s autocd cdspell checkwinsize #histappend
 HISTCONTROL=erasedups
 set -o vi
@@ -25,8 +25,7 @@ bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
 bind '"\C-a":beginning-of-line'
 bind '"\C-e":end-of-line'
-bind '"\C-k":kill-line'
-bind '"\C-l":"clear; ls --color --group-directories-first\n"'
+bind '"\C-l":"clear; histfix; ls --color --group-directories-first\n"'
 
 l () { ls --color --group-directories-first $*; }
 la () { ls -A --color --group-directories-first $*; }
@@ -96,7 +95,9 @@ hdmiout () {
 	rm ~/.asoundrc
 }
 histfix () {
-	tac ~/.bash_history | awk '!x[$0]++' | tac >/tmp/hist && mv /tmp/hist ~/.bash_history
+	history -a
+	tac ~/.bash_history | awk '!x[$0]++' | tac >/tmp/hist && \
+	mv /tmp/hist ~/.bash_history
 }
 
 trap histfix EXIT
