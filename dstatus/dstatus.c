@@ -30,7 +30,7 @@ main(void) {
 	int num;
 	long lnum1, lnum2, lnum3, lnum4;
 //	long lnum1, lnum2, lnumX, lnum3, lnum4;
-	char track[50], statnext[55], status[100];
+	char track[50], status[100], *str;
 	time_t current;
 	FILE *fp;
 
@@ -40,7 +40,7 @@ main(void) {
 	}
 
 	for (;;sleep(1)) {
-		status[0]='\0';
+		str = status;
 
 		/* Track */
 		if ((fp = fopen(TRACK_FILE, "r"))) {
@@ -48,8 +48,7 @@ main(void) {
 			//track[strlen(track)-1] = ' ';
 			fscanf(fp, "%49[^.\n]", track);
 			fclose(fp);
-			sprintf(statnext, TRACK_STR, track);
-			strncat(status, statnext, 55);
+			str += sprintf(str, TRACK_STR, track);
 		}
 
 		/* Memory */
@@ -59,16 +58,14 @@ main(void) {
 //			fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nMemAvailable: %ld kB\nBuffers: %ld kB\nCached: %ld kB\n",
 //			            &lnum1, &lnum2, &lnumX, &lnum3, &lnum4);
 			fclose(fp);
-			sprintf(statnext, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));
-			strncat(status, statnext, 10);
+			str += sprintf(str, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));
 		}
 
 		/* Volume */
 		if ((fp = fopen(VOL_FILE, "r"))) {
 			fscanf(fp, "%d", &num);
 			fclose(fp);
-			sprintf(statnext, VOL_STR, num);
-			strncat(status, statnext, 10);
+			str += sprintf(str, VOL_STR, num);
 		}
 
 		/* Battery */
@@ -78,14 +75,12 @@ main(void) {
 			fp = fopen(BAT_FULL, "r");
 			fscanf(fp, "%ld\n", &lnum2);
 			fclose(fp);
-			sprintf(statnext, BAT_STR, (lnum1/(lnum2/100)));
-			strncat(status, statnext, 10);
+			str += sprintf(str, BAT_STR, (lnum1/(lnum2/100)));
 		}
 
 		/* Time */
 		time(&current);
-		strftime(statnext, 10, TIME_STR, localtime(&current));
-		strncat(status, statnext, 10);
+		str += strftime(str, 10, TIME_STR, localtime(&current));
 
 	XStoreName(dpy, DefaultRootWindow(dpy), status);
 	XSync(dpy, False);
