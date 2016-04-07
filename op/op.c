@@ -21,9 +21,7 @@ main(int argc, char *argv[])
 	if (argc < 2)
 		return 1;
 
-	suffix = strrchr(argv[1], '.');
-
-	if (suffix == NULL)
+	if (!(suffix = strrchr(argv[1], '.')))
 		execlp("setsid", "setsid", DEFAULT, argv[1], NULL);
 
 	else if (!strcasecmp(suffix, ".pdf"))
