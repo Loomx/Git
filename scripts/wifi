@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # /usr/local/bin/wifi
-#
+
 # Add '$USER ALL=NOPASSWD: /usr/bin/wpa_gui, /etc/rc.d/rc.inet1' to /etc/sudoers
 
 sudo /usr/bin/wpa_gui
@@ -9,7 +9,7 @@ sudo /etc/rc.d/rc.inet1 restart
 
 
 # Add '$USER ALL=NOPASSWD: /usr/bin/nm-applet, /bin/killall nm-applet' to /etc/sudoers
-#
+
 #sudo nm-applet 2>/dev/null &
 #stalonetray --geometry=2x1-0-0 2>/dev/null
 #sudo killall nm-applet
