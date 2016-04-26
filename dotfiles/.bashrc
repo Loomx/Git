@@ -2,7 +2,7 @@
 
 [ -z "$PS1" ] && return
 
-if [ "$USER" = "root" ]; then
+if [ $UID -eq 0 ]; then
 	. /etc/profile
 	PS1='\[\e[0;31m\][ \w ]\n\[\e[0;31m\]\h\$ \[\e[m\]'
 else
