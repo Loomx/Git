@@ -40,22 +40,18 @@ static const char *album, *filters, *trackname, *HOME;
 int
 main(int argc, char *argv[])
 {
-	int fd, len;
-	char args[80];
+	int fd;
 	pid_t cpid;
 
 	/* Check for arguments and send to mplayer via FIFO */
 	mkfifo(FIFO, 0644);
 	if ((fd = open(FIFO, O_WRONLY | O_NONBLOCK)) != -1) {  /* mplayer running */
 		if (argc > 2)
-			len = snprintf(args, sizeof(args), "%s %s\n", argv[1], argv[2]);
+			dprintf(fd, "%s %s\n", argv[1], argv[2]);
 		else if (argc == 2)
-			len = snprintf(args, sizeof(args), "%s\n", argv[1]);
+			dprintf(fd, "%s\n", argv[1]);
 		else
-			len = snprintf(args, sizeof(args), "pause\n");
-		if (len >= sizeof(args))
-			die("args too long");
-		write(fd, args, strlen(args));
+			dprintf(fd, "pause\n");
 		close(fd);
 		return 0;
 	}
