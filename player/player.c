@@ -232,10 +232,10 @@ filter(void)
 		die("fopen failed");
 	if (!(fp2 = fopen(PLAYLIST, "w")))
 		die("fopen2 failed");
-	while (fgets(line, sizeof(line), fp) != NULL) {
+	while (fgets(line, sizeof(line), fp)) {
 		strcpy(buf, filters);
 		for (s = strtok(buf, " "); s; s = strtok(NULL, " "))
-			if (strcasestr(line, s) != NULL)
+			if (strcasestr(line, s))
 				fprintf(fp2, "%s/%s/%s", HOME, MUSICDIR, line);
 	}
 	fclose(fp);
