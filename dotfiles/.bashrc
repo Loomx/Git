@@ -33,10 +33,9 @@ ll () { ls -lh --color --group-directories-first $*; }
 lla () { ls -lha --color --group-directories-first $*; }
 
 man() {
-	env LESS_TERMCAP_mb=$'\e[01;31m' \
-	LESS_TERMCAP_md=$'\e[01;38;5;74m' \
+	env LESS_TERMCAP_md=$'\e[01;38;5;74m' \
 	LESS_TERMCAP_me=$'\e[0m' \
-	LESS_TERMCAP_so=$'\e[38;5;246m' \
+	LESS_TERMCAP_so=$'\e[30;33m' \
 	LESS_TERMCAP_se=$'\e[0m' \
 	LESS_TERMCAP_us=$'\e[04;38;5;146m' \
 	LESS_TERMCAP_ue=$'\e[0m' \
