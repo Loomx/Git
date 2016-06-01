@@ -83,7 +83,6 @@ main(int argc, char *argv[])
 	else if (*album) {
 		if (chdir(album) < 0)
 			die("chdir $album failed");
-		printf("\n");
 		trackname = dmenu(2);
 		if (!strcmp(trackname, "Play"))
 			cpid = mplayer(3);  /* play playlist */
@@ -192,7 +191,7 @@ dmenuinput(const int m)
 		fclose(fp);
 	}
 	else if (m == 2) {
-		printf("Play\nShuffle\n");
+		write(1, "Play\nShuffle\n", 13);
 		if (!(dp = opendir(".")))
 			die("opendir $album failed");
 		while ((ent = readdir(dp))) {
@@ -209,7 +208,8 @@ dmenuinput(const int m)
 		if (!(fp = fopen(PLAYLIST, "w")))
 			die("fopen failed");
 		for (i = 0; i < count; i++) {
-			printf("%s\n", tracklist[i]);
+			write(1, tracklist[i], strlen(tracklist[i]));
+			write(1, "\n", 1);
 			fprintf(fp, "%s/%s/%s/%s\n", HOME, MUSICDIR, album, tracklist[i]);
 			free(tracklist[i]);
 			}
