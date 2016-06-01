@@ -14,6 +14,7 @@ PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; P
 . /etc/profile.d/bash_completion.sh
 CDPATH=".:..:~"
 shopt -s autocd cdspell checkwinsize #histappend
+HISTCONTROL=erasedups
 HISTSIZE=5000
 HISTFILESIZE=5000
 set -o vi
