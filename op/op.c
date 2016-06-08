@@ -35,6 +35,7 @@ main(int argc, char *argv[])
 
 	else if (!strcasecmp(suffix, ".doc")
 	      || !strcasecmp(suffix, ".docx")
+	      || !strcasecmp(suffix, ".dot")
 	      || !strcasecmp(suffix, ".ppt")
 	      || !strcasecmp(suffix, ".pptx")
 	      || !strcasecmp(suffix, ".xls")
