@@ -21,6 +21,8 @@ main(int argc, char *argv[])
 	if (argc < 2)
 		return 1;
 
+	freopen("/dev/null", "w", stderr);
+
 	if (!(suffix = strrchr(argv[1], '.')))
 		execlp("setsid", "setsid", DEFAULT, argv[1], NULL);
 
