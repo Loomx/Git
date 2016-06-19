@@ -89,13 +89,13 @@ tao () {
 hdmiin () {
 	xrandr --auto --output HDMI1 --mode 1280x800
 	xset -dpms; xset s off
-	#cp ~/.asoundrc-hdmi ~/.asoundrc
-	pactl set-card-profile 0 output:hdmi-stereo
+	cp ~/.asoundrc-hdmi ~/.asoundrc
+	#pactl set-card-profile 0 output:hdmi-stereo
 }
 hdmiout () {
 	xset +dpms; xset s default
-	#rm ~/.asoundrc
-	pactl set-card-profile 0 output:analog-stereo
+	rm ~/.asoundrc
+	#pactl set-card-profile 0 output:analog-stereo
 }
 histfix () {
 	history -a
