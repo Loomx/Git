@@ -35,11 +35,11 @@ ll () { ls -lh --color --group-directories-first $*; }
 lla () { ls -lha --color --group-directories-first $*; }
 
 man() {
-	env LESS_TERMCAP_md=$'\e[01;38;5;74m' \
+	env LESS_TERMCAP_md=$'\e[34m' \
 	LESS_TERMCAP_me=$'\e[0m' \
 	LESS_TERMCAP_so=$'\e[32m' \
 	LESS_TERMCAP_se=$'\e[0m' \
-	LESS_TERMCAP_us=$'\e[04;38;5;146m' \
+	LESS_TERMCAP_us=$'\e[33m' \
 	LESS_TERMCAP_ue=$'\e[0m' \
 	man "$@"
 }
@@ -89,13 +89,13 @@ tao () {
 hdmiin () {
 	xrandr --auto --output HDMI1 --mode 1280x800
 	xset -dpms; xset s off
-	cp ~/.asoundrc-hdmi ~/.asoundrc
-	#pactl set-card-profile 0 output:hdmi-stereo
+	#cp ~/.asoundrc-hdmi ~/.asoundrc
+	pactl set-card-profile 0 output:hdmi-stereo
 }
 hdmiout () {
 	xset +dpms; xset s default
-	rm ~/.asoundrc
-	#pactl set-card-profile 0 output:analog-stereo
+	#rm ~/.asoundrc
+	pactl set-card-profile 0 output:analog-stereo
 }
 histfix () {
 	history -a
