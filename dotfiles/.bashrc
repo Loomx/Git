@@ -44,38 +44,30 @@ man() {
 	man "$@"
 }
 
-usbin () {
-	mkdir ~/USB 2>/dev/null
-	mount ~/USB && cd ~/USB || rmdir ~/USB
+# mount/unmount helper functions
+localmount () {
+	mkdir ~/"$1" 2>/dev/null
+	mount ~/"$1" && cd ~/"$1" || rmdir ~/"$1"
 }
-usbout () {
-	[[ "$PWD" == ~/USB* ]] && cd ~
-	umount ~/USB; rmdir ~/USB
+localumount () {
+	[[ "$PWD" == ~/"$1"* ]] && cd ~
+	umount ~/"$1"; rmdir ~/"$1"
 }
-phonein () {
-	mkdir ~/PHONE 2>/dev/null
-	mount ~/PHONE && cd ~/PHONE || rmdir ~/PHONE
-}
-phoneout () {
-	[[ "$PWD" == ~/PHONE* ]] && cd ~
-	umount ~/PHONE; rmdir ~/PHONE
-}
-sdin () {
-	mkdir ~/SD 2>/dev/null
-	mount ~/SD && cd ~/SD || rmdir ~/SD
-}
-sdout () {
-	[[ "$PWD" == ~/SD* ]] && cd ~
-	umount ~/SD; rmdir ~/SD
-}
-hddin () {
-	mkdir ~/HDD 2>/dev/null
-	mount ~/HDD && cd ~/HDD || rmdir ~/HDD
-}
-hddout () {
-	[[ "$PWD" == ~/HDD* ]] && cd ~
-	umount ~/HDD; rmdir ~/HDD
-}
+
+# generic mounts
+usbin () { localmount USB; }
+usbout () { localumount USB; }
+sdcardin () { localmount SDCARD; }
+sdcardout () { localumount SDCARD; }
+
+# specific device mounts
+phonein () { localmount PHONE; }
+phoneout () { localumount PHONE; }
+sdin () { localmount SD; }
+sdout () { localumount SD; }
+datain () { localmount DATA; }
+dataout () { localumount DATA; }
+
 backup-to-phone () {
 	if [ -d ~/PHONE/Linux/.backup ]; then
 		rsync -axx --delete \
