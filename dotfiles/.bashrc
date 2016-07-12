@@ -91,8 +91,8 @@ hdmiout () {
 }
 histfix () {
 	history -a
-	tac ~/.bash_history | awk '!x[$0]++' | tac >/tmp/hist && \
-	mv /tmp/hist ~/.bash_history
+	tac ~/.bash_history | awk '!x[$0]++' | tac >~/hist.tmp && \
+	mv ~/hist.tmp ~/.bash_history
 }
 
 trap histfix EXIT
