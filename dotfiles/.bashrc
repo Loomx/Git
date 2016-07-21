@@ -69,10 +69,10 @@ datain () { localmount DATA; }
 dataout () { localumount DATA; }
 
 backup-to-phone () {
-	if [ -d ~/PHONE/Linux/.backup ]; then
+	if [ -d ~/PHONE/Internal\ storage/Linux/.backup ]; then
 		rsync -axx --delete \
 		--exclude=Git/ --exclude=Music/ --exclude=.cache/ \
-		~/ ~/PHONE/Linux/.backup/$(hostname)/
+		~/ ~/PHONE/Internal\ storage/Linux/.backup/$(hostname)/
 	fi
 }
 tao () {
