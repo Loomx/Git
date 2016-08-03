@@ -29,10 +29,10 @@ bind '"\C-a":beginning-of-line'
 bind '"\C-e":end-of-line'
 bind '"\C-l":"clear; histfix; ls --color --group-directories-first\n"'
 
-l () { ls --color --group-directories-first $*; }
-la () { ls -A --color --group-directories-first $*; }
-ll () { ls -lh --color --group-directories-first $*; }
-lla () { ls -lha --color --group-directories-first $*; }
+l () { ls --color --group-directories-first "$@"; }
+la () { ls -A --color --group-directories-first "$@"; }
+ll () { ls -lh --color --group-directories-first "$@"; }
+lla () { ls -lha --color --group-directories-first "$@"; }
 
 man() {
 	env LESS_TERMCAP_md=$'\e[34m' \
