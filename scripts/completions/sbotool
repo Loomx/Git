@@ -1,4 +1,6 @@
 # bash completion for sbotool
+#
+# install into /usr/share/bash_completion/completions/
 
 _sbotool() 
 {
@@ -9,17 +11,18 @@ _sbotool()
     opts="update upgrade upgrade-all install search"
 
     case "$prev" in
-        update|upgrade-all|search)
-            # no completions available
+        update|upgrade-all|search)  # no completions available
             return
             ;;
         upgrade)
-            local pkgs=$(for i in $(ls /var/log/packages | grep SBo$ | rev | cut -d- -f4- | rev); do echo ${i}; done)
+            local pkgs=$(for i in $(ls /var/log/packages | grep SBo$ | \
+                         rev | cut -d- -f4- | rev); do echo ${i}; done)
             COMPREPLY+=( $( compgen -W "${pkgs}" -- "$cur" ) )
             return
             ;;
         install)
-            local pkgs=$(for i in $(grep NAME: /var/cache/SLACKBUILDS.TXT | cut -d" " -f3); do echo ${i}; done)
+            local pkgs=$(for i in $(grep NAME: /var/cache/SLACKBUILDS.TXT | \
+                         cut -d" " -f3); do echo ${i}; done)
             COMPREPLY+=( $( compgen -W "${pkgs}" -- "$cur" ) )
             return
             ;;
