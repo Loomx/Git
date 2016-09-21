@@ -1,0 +1,6 @@
+#!/bin/sh
+
+Level=$(cat /tmp/mon_brightness)
+
+[ "$1" = "down" ] && echo $((Level - 55)) >/tmp/mon_brightness
+[ "$1" = "up" ] && echo $((Level + 55)) >/tmp/mon_brightness
