@@ -9,6 +9,7 @@ set splitright
 set tabstop=4
 set shiftwidth=4
 set nobackup
+set noundofile
 set nohlsearch
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
