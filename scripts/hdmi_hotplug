@@ -1,0 +1,11 @@
+#!/bin/sh
+
+Status=$(cat /sys/class/drm/card0-HDMI-A-1/status)
+
+if [ "$Status" == "connected" ]; then
+	xset -dpms -display :0
+	pactl set-card-profile 0 output:hdmi-stereo
+else
+    xset +dpms -display :0
+    pactl set-card-profile 0 output:analog-stereo
+fi
