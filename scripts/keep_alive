@@ -3,5 +3,6 @@
 while sleep $1; do
 	WIN=$(xprop -root _NET_ACTIVE_WINDOW) WIN=${WIN:40:9}
 	xprop -id $WIN | grep -q STATE_FULLSCREEN && \
-		xscreensaver-command -deactivate
+		xdotool key Shift_L
+		#xscreensaver-command -deactivate
 done
