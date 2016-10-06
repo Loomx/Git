@@ -38,7 +38,7 @@ upgrade () {
 		(
 		cd /tmp/sbotool
 		rm -rf /tmp/sbotool/"$1"
-		Section=$(grep -w "$1" $Cachefile | grep LOCATION | cut -d/ -f2)
+		Section=$(grep /"$1"$ $Cachefile | grep LOCATION | cut -d/ -f2)
 		wget https://slackbuilds.org/slackbuilds/$Release/$Section/"$1".tar.gz
 		tar xf "$1".tar.gz
 		rm "$1".tar.gz
