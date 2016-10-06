@@ -1,0 +1,106 @@
+#!/bin/sh
+#
+# sbotool - tool to install, upgrade and search slackbuilds.org packages
+
+Cachefile=/var/cache/SLACKBUILDS.TXT
+Arch=$(uname -m)
+Release=$(cut -d" " -f2 /etc/slackware-version)
+
+[ $UID -eq 0 ] || exit 1
+
+usage () {
+	cat <<EOF
+sbotool - tool to install, upgrade and search slackbuilds.org packages
+Usage:
+	sbotool update | upgrade-all
+	sbottol search PACKAGE 
+	sbotool upgrade | install PACKAGE [...]
+EOF
+exit 2
+}
+
+update () {
+	rm -f $Cachefile
+	wget https://slackbuilds.org/slackbuilds/$Release/SLACKBUILDS.TXT \
+		-O $Cachefile || exit 3
+	printf "SLACKBUILDS.TXT updated\n\n"
+}
+
+search () {
+	[ -r $Cachefile ] || update
+	grep "SHORT DESCRIPTION" $Cachefile | cut -d" " -f4- | grep -i "$1"
+}
+
+upgrade () {
+	mkdir /tmp/sbotool 2>/dev/null
+	while [ "$1" ]; do
+		export "$1"
+		(
+		cd /tmp/sbotool
+		rm -rf /tmp/sbotool/"$1"
+		Section=$(grep -w "$1" $Cachefile | grep LOCATION | cut -d/ -f2)
+		wget https://slackbuilds.org/slackbuilds/$Release/$Section/"$1".tar.gz
+		tar xf "$1".tar.gz
+		rm "$1".tar.gz
+		cd "$1" || exit 4
+		. ./"$1".info
+		if [ "$REQUIRES" ] && [ -z $Dep ]; then
+			read -n 1 -p "$1 depends on: $REQUIRES
+		   	Do you want to install these now? (y/n) "
+			[ "$REPLY" = n ] && exit 5
+			upgrade $REQUIRES
+		fi
+		if [ "$Arch" = x86_64 ]; then
+			wget "$DOWNLOAD_X86_64" || wget "$DOWNLOAD" || exit 6
+		else
+			wget "$DOWNLOAD" || exit 6
+		fi
+		sh ./"$1".SlackBuild || exit 7
+		upgradepkg --install-new /tmp/"$1"-*.t?z || exit 8
+		rm -f /tmp/"$1"-*.t?z
+		cd ..
+		rm -rf /tmp/sbotool/"$1"
+		)
+		shift
+	done
+} 
+upgrade_all () {
+	export Dep=no
+	rm -f /tmp/sbotool/upgrades
+	ls -rt /var/log/packages | grep SBo | rev | cut -d- -f3- | \
+	while read -r Pkg; do
+		Name=$(echo "$Pkg" | cut -d- -f2- | rev)
+		Ver=$(echo "$Pkg" | cut -d- -f1 | rev)
+		grep -wA1 "$Name" "$Cachefile" | grep -q "$Ver"\$ || {
+			printf "%s-%s is not up to date\n" $Name $Ver
+			printf "%s " $Name >>/tmp/sbotool/upgrades
+		}
+	done
+	printf "\n" | tee -a /tmp/sbotool/upgrades
+	read -n 1 -p "Install updates? Or (e)dit list (y/n/e) "
+	printf "\n"
+	[ "$REPLY" = n ] && exit 9
+	[ "$REPLY" = e ] && vi /tmp/sbotool/upgrades
+	upgrade $(cat /tmp/sbotool/upgrades)
+}
+
+case "$1" in
+	update)
+		update
+		;;
+	upgrade|install)
+		shift
+		upgrade "$@"
+		;;
+	upgrade-all)
+		upgrade_all
+		;;
+	search)
+		search "$2"
+		;;
+	*)
+		usage
+		;;
+esac
+
+exit 0
