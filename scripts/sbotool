@@ -2,6 +2,7 @@
 #
 # sbotool - tool to install, upgrade and search slackbuilds.org packages
 
+Workdir=/tmp/sbotool
 Cachefile=/var/cache/SLACKBUILDS.TXT
 Arch=$(uname -m)
 Release=$(cut -d" " -f2 /etc/slackware-version)
@@ -32,56 +33,59 @@ search () {
 }
 
 upgrade () {
-	mkdir /tmp/sbotool 2>/dev/null
+	mkdir -p $Workdir 2>/dev/null
 	while [ "$1" ]; do
 		export "$1"
 		(
-		cd /tmp/sbotool
-		rm -rf /tmp/sbotool/"$1"
-		Section=$(grep /"$1"$ $Cachefile | grep LOCATION | cut -d/ -f2)
+		cd $Workdir
+		rm -rf $Workdir/"$1"
+		Section=$(grep /"$1"$ $Cachefile | cut -d/ -f2)
 		wget https://slackbuilds.org/slackbuilds/$Release/$Section/"$1".tar.gz
 		tar xf "$1".tar.gz
 		rm "$1".tar.gz
 		cd "$1" || exit 4
 		. ./"$1".info
-		if [ "$REQUIRES" ] && [ -z $Dep ]; then
+		if [ "$REQUIRES" ] && [ -z "$Dep" ]; then
 			read -n 1 -p "$1 depends on: $REQUIRES
 		   	Do you want to install these now? (y/n) "
 			[ "$REPLY" = n ] && exit 5
 			upgrade $REQUIRES
 		fi
 		if [ "$Arch" = x86_64 ]; then
-			wget "$DOWNLOAD_X86_64" || wget "$DOWNLOAD" || exit 6
+			wget $DOWNLOAD_X86_64 || wget $DOWNLOAD || exit 6
 		else
-			wget "$DOWNLOAD" || exit 6
+			wget $DOWNLOAD || exit 6
 		fi
 		sh ./"$1".SlackBuild || exit 7
-		upgradepkg --install-new /tmp/"$1"-*.t?z || exit 8
-		rm -f /tmp/"$1"-*.t?z
+		upgradepkg --install-new /tmp/"$1"-$VERSION-*.t?z || exit 8
+		rm -f /tmp/"$1"-$VERSION-*.t?z
 		cd ..
-		rm -rf /tmp/sbotool/"$1"
+		rm -rf $Workdir/"$1"
 		)
 		shift
 	done
 } 
 upgrade_all () {
 	export Dep=no
-	rm -f /tmp/sbotool/upgrades
+	rm -f $Workdir/upgrades
 	ls -rt /var/log/packages | grep SBo | rev | cut -d- -f3- | \
 	while read -r Pkg; do
-		Name=$(echo "$Pkg" | cut -d- -f2- | rev)
-		Ver=$(echo "$Pkg" | cut -d- -f1 | rev)
-		grep -wA1 "$Name" "$Cachefile" | grep -q "$Ver"\$ || {
+		Name=$(echo $Pkg | cut -d- -f2- | rev)
+		Ver=$(echo $Pkg | cut -d- -f1 | rev)
+		grep -A2 /$Name$ $Cachefile | grep -q $Ver$ || {
 			printf "%s-%s is not up to date\n" $Name $Ver
-			printf "%s " $Name >>/tmp/sbotool/upgrades
+			printf "%s " $Name >>$Workdir/upgrades
 		}
 	done
-	printf "\n" | tee -a /tmp/sbotool/upgrades
-	read -n 1 -p "Install updates? Or (e)dit list (y/n/e) "
+	[ -r $Workdir/upgrades ] || {
+		printf "Nothing to update\n\n"; exit 0
+	}
+	printf "\n"
+	read -n 1 -p "Install upgrades? Or (e)dit upgrade list (y/n/e) "
 	printf "\n"
 	[ "$REPLY" = n ] && exit 9
-	[ "$REPLY" = e ] && vi /tmp/sbotool/upgrades
-	upgrade $(cat /tmp/sbotool/upgrades)
+	[ "$REPLY" = e ] && ${EDITOR:-vi} $Workdir/upgrades
+	upgrade $(cat $Workdir/upgrades)
 }
 
 case "$1" in
