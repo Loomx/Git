@@ -45,10 +45,10 @@ upgrade () {
 		rm "$1".tar.gz
 		cd "$1" || exit 4
 		. ./"$1".info
-		if [ "$REQUIRES" ] && [ -z "$Dep" ]; then
+		if [ "$REQUIRES" ] && [ -z "$Skipdeps" ]; then
 			read -n 1 -p "$1 depends on: $REQUIRES
 		   	Do you want to install these now? (y/n) "
-			[ "$REPLY" = n ] && exit 5
+			[ "$REPLY" = n ] && { printf "\n"; exit 5; }
 			upgrade $REQUIRES
 		fi
 		if [ "$Arch" = x86_64 ]; then
@@ -66,7 +66,7 @@ upgrade () {
 	done
 } 
 upgrade_all () {
-	export Dep=no
+	export Skipdeps=yes
 	rm -f $Workdir/upgrades
 	ls -rt /var/log/packages | grep SBo | rev | cut -d- -f3- | \
 	while read -r Pkg; do
