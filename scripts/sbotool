@@ -29,7 +29,7 @@ update () {
 
 search () {
 	[ -r $Cachefile ] || update
-	grep "SHORT DESCRIPTION" $Cachefile | cut -d" " -f4- | grep -i "$1"
+	grep -F -e "NAME" -e "SHORT DESCRIPTION" $Cachefile | grep -i "$1"
 }
 
 upgrade () {
@@ -68,7 +68,7 @@ upgrade () {
 upgrade_all () {
 	export Skipdeps=yes
 	rm -f $Workdir/upgrades
-	ls -rt /var/log/packages | grep SBo | rev | cut -d- -f3- | \
+	ls -rt /var/log/packages | grep -F SBo | rev | cut -d- -f3- | \
 	while read -r Pkg; do
 		Name=$(echo $Pkg | cut -d- -f2- | rev)
 		Ver=$(echo $Pkg | cut -d- -f1 | rev)
