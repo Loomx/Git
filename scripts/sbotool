@@ -32,7 +32,7 @@ search () {
 	grep -F -e "NAME" -e "SHORT DESCRIPTION" $Cachefile | grep -i "$1"
 }
 
-upgrade () {
+install () {
 	mkdir -p $Workdir 2>/dev/null
 	while [ "$1" ]; do
 		export "$1"
@@ -49,7 +49,7 @@ upgrade () {
 			read -n 1 -p "$1 depends on: $REQUIRES
 		   	Do you want to install these now? (y/n) "
 			[ "$REPLY" = n ] && { printf "\n"; exit 5; }
-			upgrade $REQUIRES
+			install $REQUIRES
 		fi
 		if [ "$Arch" = x86_64 ]; then
 			wget $DOWNLOAD_X86_64 || wget $DOWNLOAD || exit 6
@@ -57,8 +57,8 @@ upgrade () {
 			wget $DOWNLOAD || exit 6
 		fi
 		sh ./"$1".SlackBuild || exit 7
-		upgradepkg --install-new /tmp/"$1"-$VERSION-*.t?z || exit 8
-		rm -f /tmp/"$1"-$VERSION-*.t?z
+		upgradepkg --install-new /tmp/"$1"-$VERSION*.t?z || exit 8
+		rm -f /tmp/"$1"-$VERSION*.t?z
 		cd ..
 		rm -rf $Workdir/"$1"
 		)
@@ -66,7 +66,6 @@ upgrade () {
 	done
 } 
 upgrade_all () {
-	export Skipdeps=yes
 	rm -f $Workdir/upgrades
 	ls -rt /var/log/packages | grep -F SBo | rev | cut -d- -f3- | \
 	while read -r Pkg; do
@@ -85,16 +84,20 @@ upgrade_all () {
 	printf "\n"
 	[ "$REPLY" = n ] && exit 9
 	[ "$REPLY" = e ] && ${EDITOR:-vi} $Workdir/upgrades
-	upgrade $(cat $Workdir/upgrades)
+	Skipdeps=yes install $(cat $Workdir/upgrades)
 }
 
 case "$1" in
 	update)
 		update
 		;;
-	upgrade|install)
+	install)
 		shift
-		upgrade "$@"
+		install "$@"
+		;;
+	upgrade)
+		shift
+		Skipdeps=yes install "$@"
 		;;
 	upgrade-all)
 		upgrade_all
