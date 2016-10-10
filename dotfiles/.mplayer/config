@@ -2,7 +2,6 @@
 
 fs=1
 framedrop=1
-stop-xscreensaver=1
 really-quiet=1
 prefer-ipv4=1
 nolirc=1
