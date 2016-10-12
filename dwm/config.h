@@ -53,8 +53,7 @@ static const char *playcmd[]      = { "player", NULL };
 static const char *stopcmd[]      = { "player", "stop", NULL };
 static const char *prevcmd[]      = { "player", "pt_step", "-1", NULL };
 static const char *nextcmd[]      = { "player", "pt_step", "1", NULL };
-static const char *mutecmd[]      = { "amixer", "-q", "set", "Master", "toggle", NULL };
-//static const char *mutecmd[]      = { "amixer", "-D", "pulse", "-q", "set", "Master", "toggle", NULL };
+static const char *mutecmd[]      = { "amixer", "-D", "pulse", "-q", "set", "Master", "toggle", NULL };
 static const char *ejectcmd[]     = { "eject", NULL };
 static const char *sleepcmd[]     = { "sudo", "/usr/sbin/pm-suspend", NULL };
 
@@ -66,10 +65,8 @@ static Key keys[] = {
 	{ 0,                   0x1008ff15,                spawn,          {.v = stopcmd } },
 	{ 0,                   0x1008ff16,                spawn,          {.v = prevcmd } },
 	{ 0,                   0x1008ff17,                spawn,          {.v = nextcmd } },
-	{ 0,                   0x1008ff11,                spawn,          SHCMD("amixer set Master 4- unmute | awk -F [][] 'END { print $2 }' >/tmp/volume") },
-	{ 0,                   0x1008ff13,                spawn,          SHCMD("amixer set Master 4+ unmute | awk -F [][] 'END { print $2 }' >/tmp/volume") },
-//	{ 0,                   0x1008ff11,                spawn,          SHCMD("amixer -D pulse set Master 5%- unmute | awk -F [][] 'END { print $2 }' >/tmp/volume") },
-//	{ 0,                   0x1008ff13,                spawn,          SHCMD("amixer -D pulse set Master 5%+ unmute | awk -F [][] 'END { print $2 }' >/tmp/volume") },
+	{ 0,                   0x1008ff11,                spawn,          SHCMD("amixer -D pulse set Master 5%- unmute | awk -F [][] 'END { print $2 }' >/tmp/volume") },
+	{ 0,                   0x1008ff13,                spawn,          SHCMD("amixer -D pulse set Master 5%+ unmute | awk -F [][] 'END { print $2 }' >/tmp/volume") },
 	{ 0,                   0x1008ff12,                spawn,          {.v = mutecmd } },
 	{ 0,                   0x1008ff2c,                spawn,          {.v = ejectcmd } },
 	{ 0,                   0x1008ff2f,                spawn,          {.v = sleepcmd } },
