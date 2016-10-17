@@ -85,6 +85,7 @@ upgrade_all () {
 	[ "$REPLY" = n ] && exit 9
 	[ "$REPLY" = e ] && ${EDITOR:-vi} $Workdir/upgrades
 	Skipdeps=yes install $(cat $Workdir/upgrades)
+	rm -f $Workdir/upgrades
 }
 
 case "$1" in
