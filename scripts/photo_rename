@@ -4,7 +4,7 @@
 #
 # Rename photos to YYYYMMDD_HHMMSS.jpg
 
-find "$PWD" -type d | \
+find . -type d | \
 while read -r Dir; do
 	cd "$Dir" || exit 1
 	{
@@ -17,7 +17,7 @@ while read -r Dir; do
 			[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
 			Name=$(identify -verbose "$i" | awk -F" " '/date:modify:/ { print $2"+.jpg" }' | tr T _ | tr -d ":" | tr -d - | cut -d+ -f1,3 --output-delimiter="")
 			[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
-			printf "No info in file:  %s\n" "$i" >>"$HOME"/photo_rename.log
+			printf "No info in file:  %s\n" "$i" >>~/photo_rename.log
 		done
 
 		for i in *.JPG; do
@@ -29,7 +29,7 @@ while read -r Dir; do
 			[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
 			Name=$(identify -verbose "$i" | awk -F" " '/date:modify:/ { print $2"+.jpg" }' | tr T _ | tr -d ":" | tr -d - | cut -d+ -f1,3 --output-delimiter="")
 			[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
-			printf "No info in file:  %s\n" "$i" >>"$HOME"/photo_rename.log
+			printf "No info in file:  %s\n" "$i" >>~/photo_rename.log
 		done
 	}
 done
