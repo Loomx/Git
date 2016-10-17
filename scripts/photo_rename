@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# /usr/local/bin/photo_rename
+#
+# Rename photos to YYYYMMDD_HHMMSS.jpg
+
+find "$PWD" -type d | \
+while read -r Dir; do
+	cd "$Dir" || exit 1
+	{
+		for i in *.jpg; do
+			[ -f "$i" ] || break
+			Name=""
+			Name=$(identify -verbose "$i" | awk -F" " '/exif:DateTimeOriginal:/ { print $2"_"$3".jpg" }' | tr -d ":")
+			[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
+			Name=$(identify -verbose "$i" | awk -F" " '/exif:DateTime:/ { print $2"_"$3".jpg" }' | tr -d ":")
+			[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
+			Name=$(identify -verbose "$i" | awk -F" " '/date:modify:/ { print $2"+.jpg" }' | tr T _ | tr -d ":" | tr -d - | cut -d+ -f1,3 --output-delimiter="")
+			[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
+			printf "No info in file:  %s\n" "$i" >>$HOME/photo_rename.log
+		done
+
+		for i in *.JPG; do
+			[ -f "$i" ] || break
+			Name=""
+			Name=$(identify -verbose "$i" | awk -F" " '/exif:DateTimeOriginal:/ { print $2"_"$3".jpg" }' | tr -d ":")
+			[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
+			Name=$(identify -verbose "$i" | awk -F" " '/exif:DateTime:/ { print $2"_"$3".jpg" }' | tr -d ":")
+			[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
+			Name=$(identify -verbose "$i" | awk -F" " '/date:modify:/ { print $2"+.jpg" }' | tr T _ | tr -d ":" | tr -d - | cut -d+ -f1,3 --output-delimiter="")
+			[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
+			printf "No info in file:  %s\n" "$i" >>$HOME/photo_rename.log
+		done
+	}
+done
