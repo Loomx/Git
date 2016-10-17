@@ -52,7 +52,7 @@ install () {
 			install $REQUIRES
 		fi
 		if [ "$Arch" = x86_64 ]; then
-			wget $DOWNLOAD_X86_64 || wget $DOWNLOAD || exit 6
+			wget $DOWNLOAD_x86_64 || wget $DOWNLOAD || exit 6
 		else
 			wget $DOWNLOAD || exit 6
 		fi
