@@ -18,5 +18,5 @@ while read -r File; do
 			*)             continue ;;
 		esac	
 		mkdir -p ~/Pictures/$Year/$Month
-		mv -nv "$File" ~/Pictures/$Year/$Month/
+		mv -nv "$File" ~/Pictures/$Year/$Month/ 2>/dev/null
 done
