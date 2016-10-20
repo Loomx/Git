@@ -1,0 +1,31 @@
+# bash completion for sbotool
+
+_sbotool() 
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="update upgrade upgrade-all install search"
+
+    case "$prev" in
+        update|upgrade-all|search)
+            # no completions available
+            return
+            ;;
+        upgrade)
+            local pkgs=$(for i in $(ls /var/log/packages | grep SBo$ | rev | cut -d- -f4- | rev); do echo ${i}; done)
+            COMPREPLY+=( $( compgen -W "${pkgs}" -- "$cur" ) )
+            return
+            ;;
+        install)
+            local pkgs=$(for i in $(grep SL...); do echo ${i}; done)
+            COMPREPLY+=( $( compgen -W "${pkgs}" -- "$cur" ) )
+            return
+            ;;
+    esac
+
+    COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+}
+
+complete -F _sbotool sbotool
