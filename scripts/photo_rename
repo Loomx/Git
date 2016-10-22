@@ -9,7 +9,7 @@ while read -r Dir; do
 	cd "$Dir" || exit 1
 	for i in *.jpg; do
 		[ -f "$i" ] || break
-		exiv2 rename "$i" && continue
+		#exiv2 rename "$i" && continue
 		Name=""
 		Name=$(identify -verbose "$i" | awk -F" " '/exif:DateTimeOriginal:/ { print $2"_"$3".jpg" }' | tr -d ":")
 		[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
@@ -22,7 +22,7 @@ while read -r Dir; do
 
 	for i in *.JPG; do
 		[ -f "$i" ] || break
-		exiv2 rename "$i" && continue
+		#exiv2 rename "$i" && continue
 		Name=""
 		Name=$(identify -verbose "$i" | awk -F" " '/exif:DateTimeOriginal:/ { print $2"_"$3".jpg" }' | tr -d ":")
 		[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
