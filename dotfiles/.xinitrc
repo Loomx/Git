@@ -10,7 +10,7 @@
 #xv -root -quit ~/Git/kdm/wallpaper.jpg
 #xv -root -quit ~/Git/kdm/wallpaper-4x3.jpg
 
-setxkbmap -option ctrl:nocaps
+setxkbmap -option ctrl:nocaps,compose:prsc
 
 xcape
 
