@@ -47,9 +47,13 @@ install () {
 		. ./"$1".info
 		if [ "$REQUIRES" ] && [ -z "$Skipdeps" ]; then
 			read -n 1 -p "$1 depends on: $REQUIRES
-		   	Do you want to install these now? (y/n) "
-			[ "$REPLY" = n ] && { printf "\n"; exit 5; }
-			install $REQUIRES
+			Install dependencies? Or (e)dit dependency list (y/n/e) "
+			printf "\n"
+			[ "$REPLY" = n ] && exit 5
+			printf "$REQUIRES\n" >$Workdir/deps
+			[ "$REPLY" = e ] && ${EDITOR:-vi} $Workdir/deps
+			install $(cat $Workdir/deps)
+			rm -rf $Workdir/deps
 		fi
 		if [ "$Arch" = x86_64 ]; then
 			wget $DOWNLOAD_x86_64 || wget $DOWNLOAD || exit 6
@@ -64,7 +68,8 @@ install () {
 		)
 		shift
 	done
-} 
+}
+
 upgrade_all () {
 	rm -f $Workdir/upgrades
 	ls -rt /var/log/packages | grep -F SBo | rev | cut -d- -f3- | \
