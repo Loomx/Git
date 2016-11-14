@@ -33,7 +33,7 @@ search () {
 }
 
 install () {
-	mkdir -p $Workdir 2>/dev/null
+	mkdir -p $Workdir
 	while [ "$1" ]; do
 		export "$1"
 		(
