@@ -4,9 +4,8 @@
 #
 # Sort photos into ~/Pictures/YYYY/MM/
 
-find . -type f | \
-while read -r File; do
-		Name=$(basename "$File")
+for i in *.jpg; do
+		Name=$(basename "$i")
 		Year="${Name:0:4}"
 		Month="${Name:4:2}"
 		case $Year in
@@ -18,5 +17,5 @@ while read -r File; do
 			*)             continue ;;
 		esac	
 		mkdir -p ~/Pictures/$Year/$Month
-		mv -nv "$File" ~/Pictures/$Year/$Month/ 2>/dev/null
+		mv -nv "$i" ~/Pictures/$Year/$Month/ 2>/dev/null
 done
