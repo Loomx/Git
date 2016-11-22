@@ -5,7 +5,7 @@
 # Rename photos to YYYYMMDD_HHMMSS.jpg
 
 for i in *.jpg *.JPG; do
-	[ -f "$i" ] || break
+	[ -f "$i" ] || continue
 	#exiv2 rename "$i" && continue
 	Name=""
 	Name=$(identify -verbose "$i" | awk -F" " '/exif:DateTimeOriginal:/ { print $2"_"$3".jpg" }' | tr -d ":")
