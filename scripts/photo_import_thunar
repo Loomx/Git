@@ -22,7 +22,7 @@ photo_rename || exit 4
 photo_sort || exit 5
 cd ~
 
-rmdir $Tempdir 2>/dev/null && printf "Done\n\n" || {
-	printf "Some photos still in %s\nto deal with manually\n\n" $Tempdir
+rmdir $Tempdir 2>/dev/null && printf "\nDone\n\n" || {
+	printf "\nSome photos still in %s\nto deal with manually\n\n" $Tempdir
 }
 read -n1 -p "Press any key to finish"
