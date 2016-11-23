@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# /usr/local/bin/photo_import_thunar
+#
+# Import photos from current directory, requires photo_rename and photo_sort
+
+read -n1 -p "Do you want to import all pictures from this folder?
+	(Press any key to continue or Ctrl-C to exit) "
+
+Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX) || exit 1
+trap 'rmdir $Tempdir 2>/dev/null' INT EXIT
+
+find . -type f -iname '*.jpg' -exec cp -vt $Tempdir '{}' + || exit 2
+
+read -p "Do you want to delete pictures from this folder?
+	(Type yes if you do, otherwise press enter to keep files) "
+[ "$REPLY" = yes ] && \
+find . -type f -iname '*.jpg' -delete || exit 3
+
+photo_rename || exit 4
+photo_sort || exit 5
+
+rmdir $Tempdir 2>/dev/null || {
+	printf "Some photos still in %s to deal with manually\n" $Tempdir
+	exit 6
+}
+printf "Done\n\n"
