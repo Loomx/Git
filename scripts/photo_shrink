@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for i; do
+	convert "$i" -resize 1000 "$i".jpg
+	shift
+done
