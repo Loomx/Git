@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# /usr/local/bin/photo_shrink
+#
+# Thunar custom action to shrink photos
 
 for i; do
 	convert "$i" -resize 1000 "$i".jpg

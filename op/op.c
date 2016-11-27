@@ -38,11 +38,11 @@ main(int argc, char *argv[])
 	else if (!strcasecmp(suffix, ".doc")
 	      || !strcasecmp(suffix, ".docx")
 	      || !strcasecmp(suffix, ".dot")
-	      || !strcasecmp(suffix, ".dotx"))
+	      || !strcasecmp(suffix, ".dotx")
 	      || !strcasecmp(suffix, ".ppt")
 	      || !strcasecmp(suffix, ".pptx")
 	      || !strcasecmp(suffix, ".xls")
-	      || !strcasecmp(suffix, ".xlsx")
+	      || !strcasecmp(suffix, ".xlsx"))
 		execlp("setsid", "setsid", DOC_OPEN, argv[1], NULL);
 
 	else
