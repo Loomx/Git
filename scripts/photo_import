@@ -29,7 +29,7 @@ photo_sort || exit 5
 
 cd ~
 rmdir $Tempdir 2>/dev/null || {
-	printf "Some photos still in %s to deal with manually\n\n" $Tempdir
+	printf "\nSome photos still in %s to deal with manually\n\n" $Tempdir
 	exit 6
 }
 read -n1 -p "Press any key to finish"
