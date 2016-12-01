@@ -9,10 +9,31 @@ for i in *.jpg *.JPG; do
 	#exiv2 rename "$i" && continue
 	Name=""
 	Name=$(identify -verbose "$i" | awk -F" " '/exif:DateTimeOriginal:/ { print $2"_"$3".jpg" }' | tr -d ":")
-	[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
+	if [ "$Name" ]; then
+		[ -f "$Name" ] || { mv -v "$i" "$Name"; continue; }
+		while true; do
+			Name="${Name/.jpg/x.jpg}" 
+			[ -f "$Name" ] || { mv -v "$i" "$Name"; break; }
+		done
+		continue
+	fi
 	Name=$(identify -verbose "$i" | awk -F" " '/exif:DateTime:/ { print $2"_"$3".jpg" }' | tr -d ":")
-	[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
+	if [ "$Name" ]; then
+		[ -f "$Name" ] || { mv -v "$i" "$Name"; continue; }
+		while true; do
+			Name="${Name/.jpg/x.jpg}" 
+			[ -f "$Name" ] || { mv -v "$i" "$Name"; break; }
+		done
+		continue
+	fi
 	Name=$(identify -verbose "$i" | awk -F" " '/date:modify:/ { print $2"+.jpg" }' | tr T _ | tr -d ":" | tr -d - | cut -d+ -f1,3 --output-delimiter="")
-	[ "$Name" ] && { mv -nv "$i" "$Name"; continue; }
+	if [ "$Name" ]; then
+		[ -f "$Name" ] || { mv -v "$i" "$Name"; continue; }
+		while true; do
+			Name="${Name/.jpg/x.jpg}" 
+			[ -f "$Name" ] || { mv -v "$i" "$Name"; break; }
+		done
+		continue
+	fi
 	printf "No info in file:  %s\n" "$i" >>~/photo_rename.log
 done

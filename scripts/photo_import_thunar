@@ -10,19 +10,18 @@ read -n1 -p "Do you want to import all pictures from this folder?
 Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX) || exit 1
 trap 'rmdir $Tempdir 2>/dev/null' INT EXIT
 
-find . -type f -iname '*.jpg' -exec cp -vt $Tempdir '{}' + || exit 2
+for i in *.jpg *.JPG; do
+	[ -f "$i" ] && cp -vt $Tempdir "$i" || exit 2
 
-read -p "Do you want to delete pictures from this folder?
-	(Type yes if you do, otherwise press enter to keep files) "
-[ "$REPLY" = yes ] && \
-find . -type f -iname '*.jpg' -delete
+read -p "Do you want to delete all pictures from this folder?
+	(Type yes if you do, otherwise press enter to keep pictures) "
+[ "$REPLY" = yes ] && rm -f *.jpg *.JPG
 
 cd $Tempdir || exit 3
 photo_rename || exit 4
 photo_sort || exit 5
-cd ~
 
-rmdir $Tempdir 2>/dev/null && printf "\nDone\n\n" || {
+cd ~
+rmdir $Tempdir 2>/dev/null && printf "\nDone\n\n" || \
 	printf "\nSome photos still in %s\nto deal with manually\n\n" $Tempdir
-}
 read -n1 -p "Press any key to finish"

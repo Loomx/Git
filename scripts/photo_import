@@ -6,21 +6,19 @@
 
 Photodir=""
 gphoto2 --auto-detect | grep -q Samsung && Photodir=Camera
-
 gphoto2 -f /store_00010001/DCIM/$Photodir --list-files || exit 1
 
-read -n1 -p "Do you want to import all pictures?
+read -n1 -p "Do you want to import all pictures from this camera?
 	(Press any key to continue or Ctrl-C to exit) "
 
-cd ~
-Tempdir=$(mktemp -dtp Pictures)
+Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX) || exit 2
 trap 'rmdir $Tempdir 2>/dev/null' INT EXIT
-cd $Tempdir || exit 2
 
-gphoto2 -f /store_00010001/DCIM/$Photodir --get-all-files || exit 3
+cd $Tempdir || exit 3
+gphoto2 -f /store_00010001/DCIM/$Photodir --get-all-files || exit 4
 
-read -p "Do you want to delete pictures from phone?
-	(Type yes if you do, otherwise press enter to keep files) "
+read -p "Do you want to delete all pictures from camera?
+	(Type yes if you do, otherwise press enter to keep pictures) "
 [ "$REPLY" = yes ] && \
 	gphoto2 -f /store_00010001/DCIM/$Photodir --delete-all-files --recurse
 
@@ -28,8 +26,6 @@ photo_rename || exit 4
 photo_sort || exit 5
 
 cd ~
-rmdir $Tempdir 2>/dev/null || {
-	printf "\nSome photos still in %s to deal with manually\n\n" $Tempdir
-	exit 6
-}
+rmdir $Tempdir 2>/dev/null && printf "\nDone\n\n" || \
+	printf "\nSome photos still in %s\nto deal with manually\n\n" $Tempdir
 read -n1 -p "Press any key to finish"
