@@ -4,26 +4,28 @@
 #
 # Import photos from phone, requires photo_rename and photo_sort
 
+set -e
+
 Photodir=""
 gphoto2 --auto-detect | grep -q Samsung && Photodir=Camera
-gphoto2 -f /store_00010001/DCIM/$Photodir --list-files || exit 1
+gphoto2 -f /store_00010001/DCIM/$Photodir --list-files
 
 read -n1 -p "Do you want to import all pictures from this camera?
 	(Press any key to continue or Ctrl-C to exit) "
 
-Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX) || exit 2
-trap 'rmdir $Tempdir 2>/dev/null' INT EXIT
+Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX)
+trap 'rmdir $Tempdir 2>/dev/null' INT EXIT ERR
 
-cd $Tempdir || exit 3
-gphoto2 -f /store_00010001/DCIM/$Photodir --get-all-files || exit 4
+cd $Tempdir
+gphoto2 -f /store_00010001/DCIM/$Photodir --get-all-files
 
 read -p "Do you want to delete all pictures from camera?
 	(Type yes if you do, otherwise press enter to keep pictures) "
 [ "$REPLY" = yes ] && \
 	gphoto2 -f /store_00010001/DCIM/$Photodir --delete-all-files --recurse
 
-photo_rename || exit 4
-photo_sort || exit 5
+photo_rename
+photo_sort
 
 cd ~
 rmdir $Tempdir 2>/dev/null && printf "\nDone\n\n" || \

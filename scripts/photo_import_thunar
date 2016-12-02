@@ -4,22 +4,24 @@
 #
 # Import photos from current directory, requires photo_rename and photo_sort
 
+set -e
+
 read -n1 -p "Do you want to import all pictures from this folder?
 	(Press any key to continue or Ctrl-C to exit) "
 
-Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX) || exit 1
-trap 'rmdir $Tempdir 2>/dev/null' INT EXIT
+Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX)
+trap 'rmdir $Tempdir 2>/dev/null' INT EXIT ERR
 
 for i in *.jpg *.JPG; do
-	[ -f "$i" ] && cp -v "$i" $Tempdir || exit 2
+	[ -f "$i" ] && cp -v "$i" $Tempdir
 
 read -p "Do you want to delete all pictures from this folder?
 	(Type yes if you do, otherwise press enter to keep pictures) "
 [ "$REPLY" = yes ] && rm -f *.jpg *.JPG
 
-cd $Tempdir || exit 3
-photo_rename || exit 4
-photo_sort || exit 5
+cd $Tempdir
+photo_rename
+photo_sort
 
 cd ~
 rmdir $Tempdir 2>/dev/null && printf "\nDone\n\n" || \
