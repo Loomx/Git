@@ -11,7 +11,7 @@ Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX) || exit 1
 trap 'rmdir $Tempdir 2>/dev/null' INT EXIT
 
 for i in *.jpg *.JPG; do
-	[ -f "$i" ] && cp -vt $Tempdir "$i" || exit 2
+	[ -f "$i" ] && cp -v "$i" $Tempdir || exit 2
 
 read -p "Do you want to delete all pictures from this folder?
 	(Type yes if you do, otherwise press enter to keep pictures) "

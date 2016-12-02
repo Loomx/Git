@@ -17,5 +17,5 @@ for i in *.jpg; do
 			*)             continue ;;
 		esac	
 		mkdir -p ~/Pictures/$Year/$Month
-		mv -nv "$i" ~/Pictures/$Year/$Month/ 2>/dev/null
+		mv -nv "$i" ~/Pictures/$Year/$Month/
 done
