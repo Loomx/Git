@@ -10,7 +10,6 @@ read -n1 -p "Do you want to import all pictures from this folder?
 	(Press any key to continue or Ctrl-C to exit) "
 
 Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX)
-trap 'rmdir $Tempdir 2>/dev/null' INT EXIT ERR
 
 for i in *.jpg *.JPG; do
 	[ -f "$i" ] && cp -v "$i" $Tempdir

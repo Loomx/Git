@@ -14,8 +14,6 @@ read -n1 -p "Do you want to import all pictures from this camera?
 	(Press any key to continue or Ctrl-C to exit) "
 
 Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX)
-trap 'rmdir $Tempdir 2>/dev/null' INT EXIT ERR
-
 cd $Tempdir
 gphoto2 -f /store_00010001/DCIM/$Photodir --get-all-files
 
