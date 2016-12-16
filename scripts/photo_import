@@ -6,6 +6,13 @@
 
 set -e
 
+Num=$( gphoto2 --auto-detect | wc -l )
+[ $Num -le 2 ] && {
+	read -n1 -p "No camera connected
+	Press any key to exit "
+	exit
+}
+
 Photodir=""
 gphoto2 --auto-detect | grep -q Samsung && Photodir=Camera
 gphoto2 -f /store_00010001/DCIM/$Photodir --list-files
