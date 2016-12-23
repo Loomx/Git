@@ -6,8 +6,8 @@
 
 set -e
 
-read -n1 -p "Do you want to import all pictures from this folder?
-	(Press any key to continue or Ctrl-C to exit) "
+read -n1 -p "Do you want to import all pictures from this folder? (y/n) "
+[ "$REPLY" = "n" ] && exit
 
 Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX)
 
@@ -25,5 +25,5 @@ photo_sort
 
 cd ~
 rmdir $Tempdir 2>/dev/null && printf "\nDone\n\n" || \
-	printf "\nSome photos still in %s\nto deal with manually\n\n" $Tempdir
+	printf "\nSome photos still in Pictures/%s\nto deal with manually\n\n" $Tempdir
 read -n1 -p "Press any key to finish"

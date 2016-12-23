@@ -2,7 +2,7 @@
 #
 # /usr/local/bin/photo_import
 #
-# Import photos from phone, requires photo_rename and photo_sort
+# Import photos from camera, requires photo_rename and photo_sort
 
 set -e
 
@@ -19,8 +19,8 @@ Photodir=${Photodir:-/store_00010001/DCIM}
 
 gphoto2 -f $Photodir --list-files
 
-read -n1 -p "Do you want to import all pictures from this camera?
-	(Press any key to continue or Ctrl-C to exit) "
+read -n1 -p "Do you want to import all pictures from this camera? (y/n) "
+[ "$REPLY" = "n" ] && exit
 
 Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX)
 cd $Tempdir
@@ -36,5 +36,5 @@ photo_sort
 
 cd ~
 rmdir $Tempdir 2>/dev/null && printf "\nDone\n\n" || \
-	printf "\nSome photos still in %s\nto deal with manually\n\n" $Tempdir
+	printf "\nSome photos still in Pictures/%s\nto deal with manually\n\n" $Tempdir
 read -n1 -p "Press any key to finish"
