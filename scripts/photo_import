@@ -4,8 +4,6 @@
 #
 # Import photos from camera, requires photo_rename and photo_sort
 
-set -e
-
 Num=$( gphoto2 --auto-detect | wc -l )
 if [ $Num -le 2 ]; then
 	read -n1 -p "No camera connected
@@ -21,9 +19,10 @@ gphoto2 -f $Photodir --list-files
 
 read -n1 -p "Do you want to import all pictures from this camera? (y/n) "
 [ "$REPLY" = "n" ] && exit
+printf "\n"
 
 Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX)
-cd $Tempdir
+cd $Tempdir || exit 1
 gphoto2 -f $Photodir --get-all-files
 
 read -p "Do you want to delete all pictures from camera?
@@ -36,5 +35,5 @@ photo_sort
 
 cd ~
 rmdir $Tempdir 2>/dev/null && printf "\nDone\n\n" || \
-	printf "\nSome photos still in Pictures/%s\nto deal with manually\n\n" $Tempdir
+	printf "\nSome files still in Pictures/%s\nto deal with manually\n\n" $Tempdir
 read -n1 -p "Press any key to finish"
