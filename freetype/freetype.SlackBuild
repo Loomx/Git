@@ -23,7 +23,8 @@
 
 PKGNAM=freetype
 VERSION=${VERSION:-$(echo $PKGNAM-*.tar.xz | cut -d - -f 2 | rev | cut -f 3- -d . | rev)}
-BUILD=${BUILD:-custom}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_custom}
 
 NUMJOBS=${NUMJOBS:-" -j2 "}
 
@@ -119,5 +120,5 @@ mkdir $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
 
 cd $PKG
-/sbin/makepkg -l y -c n $TMP/freetype-$VERSION-$ARCH-$BUILD.txz
+/sbin/makepkg -l y -c n $TMP/freetype-$VERSION-$ARCH-$BUILD$TAG.txz
 
