@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+# Create video hard links in current directory
+
+for i; do
+	ln -v "$i" $(ffprobe -v quiet -show_format "$i" | awk -F "[=.]" '/creation_time/ { print $2}' | tr -d :- | tr T _ )
+done
