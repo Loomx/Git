@@ -27,8 +27,9 @@ gphoto2 -f $Photodir --get-all-files
 
 read -p "Do you want to delete all pictures from camera?
 	(Type yes if you do, otherwise press enter to keep pictures) "
-[ "$REPLY" = yes ] && \
-	gphoto2 -f $Photodir --delete-all-files --recurse
+[ "$REPLY" = yes ] && gphoto2 -f $Photodir --delete-all-files --recurse
+
+printf "\nIt is now safe to unplug the camera\n\n"
 
 photo_rename
 photo_sort
