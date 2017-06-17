@@ -9,6 +9,7 @@ Release=$(cut -d" " -f2 /etc/slackware-version)
 
 [ $UID -eq 0 ] || exit 1
 mkdir -p $Workdir
+rm -f $Workdir/{deps,upgrades}
 
 usage () {
 	cat <<EOF
@@ -16,7 +17,7 @@ sbotool - tool to install, upgrade and search slackbuilds.org packages
 Usage:
 	sbotool update | upgrade-all
 	sbottol search PACKAGE 
-	sbotool upgrade | install PACKAGE [...]
+	sbotool install | upgrade PACKAGE [...]
 EOF
 exit 2
 }
@@ -34,22 +35,26 @@ search () {
 
 install () {
 	while [ "$1" ]; do
-		export "$1"
+		export Pkg="$1"
 		(
 		cd $Workdir
-		rm -rf $Workdir/"$1"
-		Section=$(grep /"$1"$ $Cachefile | cut -d/ -f2)
-		wget https://slackbuilds.org/slackbuilds/$Release/$Section/"$1".tar.gz
-		tar xf "$1".tar.gz
-		rm "$1".tar.gz
-		cd "$1" || exit 4
-		. ./"$1".info
-		if [ "$REQUIRES" ] && [ -z "$Skipdeps" ]; then
-			read -n 1 -p "$1 depends on: $REQUIRES
+		rm -rf $Workdir/"$Pkg"
+		Section=$(grep /"$Pkg"$ $Cachefile | cut -d/ -f2)
+		wget https://slackbuilds.org/slackbuilds/$Release/$Section/"$Pkg".tar.gz
+		tar xf "$Pkg".tar.gz
+		rm "$Pkg".tar.gz
+		cd "$Pkg" || exit 4
+		. ./"$Pkg".info
+		if [ "$REQUIRES" ]; then
+			ls -rt /var/log/packages | grep -F SBo | rev | cut -d- -f4- | \
+			while read -r Dep; do
+				REQUIRES=${REQUIRES/$Dep}
+				printf "$REQUIRES\n" >$Workdir/deps
+			done
+			read -n 1 -p "$Pkg depends on: $(cat $Workdir/deps)
 			Install dependencies? Or (e)dit dependency list (y/n/e) "
 			printf "\n"
 			[ "$REPLY" = n ] && exit 5
-			printf "$REQUIRES\n" >$Workdir/deps
 			[ "$REPLY" = e ] && ${EDITOR:-vi} $Workdir/deps
 			install $(cat $Workdir/deps)
 			rm -rf $Workdir/deps
@@ -59,11 +64,11 @@ install () {
 		else
 			wget $DOWNLOAD || exit 6
 		fi
-		sh ./"$1".SlackBuild || exit 7
-		upgradepkg --install-new /tmp/"$1"-$VERSION*.t?z || exit 8
-		rm -f /tmp/"$1"-$VERSION*.t?z
+		sh ./"$Pkg".SlackBuild || exit 7
+		upgradepkg --install-new /tmp/"$Pkg"-$VERSION*.t?z || exit 8
+		rm -f /tmp/"$Pkg"-$VERSION*.t?z
 		cd ..
-		rm -rf $Workdir/"$1"
+		rm -rf $Workdir/"$Pkg"
 		)
 		shift
 	done
@@ -88,7 +93,7 @@ upgrade_all () {
 	printf "\n"
 	[ "$REPLY" = n ] && exit 9
 	[ "$REPLY" = e ] && ${EDITOR:-vi} $Workdir/upgrades
-	Skipdeps=yes install $(cat $Workdir/upgrades)
+	install $(cat $Workdir/upgrades)
 	rm -f $Workdir/upgrades
 }
 
@@ -96,13 +101,9 @@ case "$1" in
 	update)
 		update
 		;;
-	install)
+	install | upgrade)
 		shift
 		install "$@"
-		;;
-	upgrade)
-		shift
-		Skipdeps=yes install "$@"
 		;;
 	upgrade-all)
 		upgrade_all
