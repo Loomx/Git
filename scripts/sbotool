@@ -8,6 +8,7 @@ Arch=$(uname -m)
 Release=$(cut -d" " -f2 /etc/slackware-version)
 
 [ $UID -eq 0 ] || exit 1
+mkdir -p $Workdir
 
 usage () {
 	cat <<EOF
@@ -33,7 +34,6 @@ search () {
 }
 
 install () {
-	mkdir -p $Workdir
 	while [ "$1" ]; do
 		export "$1"
 		(
