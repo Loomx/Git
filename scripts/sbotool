@@ -22,10 +22,9 @@ exit 2
 }
 
 update () {
-	rm -f $Cachefile
-	wget https://slackbuilds.org/slackbuilds/$Release/SLACKBUILDS.TXT \
-		-O $Cachefile || exit 3
-	printf "SLACKBUILDS.TXT updated\n\n"
+	wget -N https://slackbuilds.org/slackbuilds/$Release/SLACKBUILDS.TXT \
+		-P /var/cache || exit 3
+	printf "SLACKBUILDS.TXT up to date\n\n"
 }
 
 search () {
