@@ -44,7 +44,7 @@ install () {
 		rm "$1".tar.gz
 		cd "$1" || exit 4
 		. ./"$1".info
-		if [ "$REQUIRES" ] && [ -z "$Skipdeps" ]; then
+		if [ "$REQUIRES" ]; then
 			read -n 1 -p "$1 depends on: $REQUIRES
 			Install dependencies? Or (e)dit dependency list (y/n/e) "
 			printf "\n"
@@ -88,7 +88,7 @@ upgrade_all () {
 	printf "\n"
 	[ "$REPLY" = n ] && exit 9
 	[ "$REPLY" = e ] && ${EDITOR:-vi} $Workdir/upgrades
-	Skipdeps=yes install $(cat $Workdir/upgrades)
+	install $(cat $Workdir/upgrades)
 	rm -f $Workdir/upgrades
 }
 
@@ -96,13 +96,9 @@ case "$1" in
 	update)
 		update
 		;;
-	install)
+	install | upgrade)
 		shift
 		install "$@"
-		;;
-	upgrade)
-		shift
-		Skipdeps=yes install "$@"
 		;;
 	upgrade-all)
 		upgrade_all
