@@ -64,7 +64,7 @@ install () {
 		rm -f /tmp/"$1"-$VERSION*.t?z
 		cd ..
 		rm -rf $Workdir/"$1"
-		)
+		) || exit $(echo $?)
 		shift
 	done
 }
