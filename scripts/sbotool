@@ -16,7 +16,7 @@ sbotool - tool to install, upgrade and search slackbuilds.org packages
 Usage:
 	sbotool update | upgrade-all
 	sbottol search PACKAGE 
-	sbotool upgrade | install PACKAGE [...]
+	sbotool install | upgrade PACKAGE [...]
 EOF
 exit 2
 }
