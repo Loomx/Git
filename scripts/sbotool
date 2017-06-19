@@ -34,7 +34,6 @@ search () {
 
 install () {
 	while [ "$1" ]; do
-		export "$1"
 		(
 		cd $Workdir
 		rm -rf $Workdir/"$1"
