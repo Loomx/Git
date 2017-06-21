@@ -16,7 +16,8 @@ sbotool - tool to install, upgrade and search slackbuilds.org packages
 Usage:
 	sbotool update | upgrade-all
 	sbottol search PACKAGE 
-	sbotool install | upgrade PACKAGE [...]
+	sbotool install PACKAGE [...]
+	sbotool upgrade PACKAGE [...]
 EOF
 exit 2
 }
@@ -49,8 +50,12 @@ install () {
 			printf "\n"
 			[ "$REPLY" = n ] && exit 5
 			printf "$REQUIRES\n" >$Workdir/deps
+			printf "\n====================" >>$Workdir/deps
+			printf "\nCurrently installed:\n\n" >>$Workdir/deps
+			ls /var/log/packages | grep -F SBo \
+				| rev | cut -d- -f3- | rev >>$Workdir/deps
 			[ "$REPLY" = e ] && ${EDITOR:-vi} $Workdir/deps
-			install $(cat $Workdir/deps)
+			install $(head -n1 $Workdir/deps)
 			rm -rf $Workdir/deps
 		fi
 		if [ "$Arch" = x86_64 ]; then
