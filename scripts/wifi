@@ -3,8 +3,21 @@
 # /usr/local/bin/wifi
 
 # Add '$USER ALL=NOPASSWD: /usr/bin/wpa_gui, /etc/rc.d/rc.inet1' to /etc/sudoers
-sudo /usr/bin/wpa_gui
-sudo /etc/rc.d/rc.inet1 restart
+if [ "$(basename $0)" != "wifi" ]; then
+	echo "Starting ethernet: /etc/rc.d/rc.inet1 eth0_restart"
+	sudo /etc/rc.d/rc.inet1 eth0_restart
+	exit
+fi
+
+pgrep wpa_gui >/dev/null || sudo /usr/bin/wpa_gui
+
+if grep -q eth1 /proc/net/wireless; then
+	echo "Starting wifi: /etc/rc.d/rc.inet1 eth1_restart"
+	sudo /etc/rc.d/rc.inet1 eth1_restart
+else
+	echo "Starting wifi: /etc/rc.d/rc.inet1 wlan0_restart"
+	sudo /etc/rc.d/rc.inet1 wlan0_restart
+fi
 
 
 # Add '$USER ALL=NOPASSWD: /usr/bin/nm-applet, /bin/killall nm-applet' to /etc/sudoers
