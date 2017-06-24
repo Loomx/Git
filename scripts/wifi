@@ -11,7 +11,7 @@ fi
 
 pgrep wpa_gui >/dev/null || sudo /usr/bin/wpa_gui
 
-if grep -q eth1 /proc/net/wireless; then
+if grep -q eth1 /proc/net/dev; then
 	echo "Starting wifi: /etc/rc.d/rc.inet1 eth1_restart"
 	sudo /etc/rc.d/rc.inet1 eth1_restart
 else
