@@ -12,7 +12,7 @@ if [ $Num -le 2 ]; then
 fi
 
 gphoto2 --auto-detect | grep -q Samsung && Photodir=/store_00010001/DCIM/Camera
-gphoto2 --auto-detect | grep -q LCAMERA && Photodir=/DCIM/100CANON
+gphoto2 --auto-detect | grep -q EOS_DIGITAL && Photodir=/DCIM/100CANON
 Photodir=${Photodir:-/store_00010001/DCIM}
 
 gphoto2 -f $Photodir --list-files
