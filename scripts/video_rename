@@ -2,6 +2,10 @@
 #
 # Create video hard links in current directory
 
+[ "$1" ] || {
+	printf "Provide videos as arguments\n"; exit 1
+}
+
 for i; do
 	ln -v "$i" $(ffprobe -v quiet -show_format "$i" | awk -F "[=.]" '/creation_time/ { print $2}' | tr -d :- | tr T _ )
 done
