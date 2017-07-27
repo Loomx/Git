@@ -78,6 +78,7 @@ histfix () {
 	history -a
 	tac ~/.bash_history | awk '!x[$0]++' | tac >~/hist.tmp && \
 	mv ~/hist.tmp ~/.bash_history
+	history -c; history -r
 }
 
 trap histfix EXIT
