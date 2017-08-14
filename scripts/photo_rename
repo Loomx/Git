@@ -6,7 +6,7 @@
 
 for i in *.jpg *.jpeg *.JPG; do
 	[ -f "$i" ] || continue
-	#exiv2 rename "$i" && continue
+	#exiv2 -vtF rename "$i" && continue
 	Name=""
 	Name=$(identify -verbose "$i" | awk -F" " '/exif:DateTimeOriginal:/ { print $2"_"$3".jpg" }' | tr -d ":")
 	[ "$Name" ] || \
