@@ -15,11 +15,11 @@ gphoto2 --auto-detect | grep -q Samsung && Photodir=/store_00010001/DCIM/Camera
 gphoto2 --auto-detect | grep -q EOS_DIGITAL && Photodir=/DCIM/100CANON
 Photodir=${Photodir:-/store_00010001/DCIM}
 
-gphoto2 -f $Photodir --list-files
+gphoto2 -f $Photodir --list-files || exit 1
 
 read -n1 -p "Do you want to import all pictures from this camera? (y/n) "
-[ "$REPLY" = "n" ] && exit
 printf "\n"
+[ "$REPLY" = "n" ] && exit
 
 Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX)
 cd $Tempdir || exit 1
