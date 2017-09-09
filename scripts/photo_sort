@@ -4,7 +4,7 @@
 #
 # Sort photos into ~/Pictures/YYYY/MM/
 
-for i in *.jpg; do
+for i in *.jpg *.JPG; do
 		Name=$(basename "$i")
 		Year="${Name:0:4}"
 		Month="${Name:4:2}"
