@@ -23,6 +23,7 @@ printf "\n"
 
 Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX)
 cd $Tempdir || exit 1
+
 gphoto2 -f $Photodir --get-all-files
 
 read -p "Do you want to delete all pictures from camera?
@@ -30,6 +31,7 @@ read -p "Do you want to delete all pictures from camera?
 [ "$REPLY" = yes ] && gphoto2 -f $Photodir --delete-all-files --recurse
 
 printf "\nIt is now safe to unplug the camera\n\n"
+sleep 2
 
 photo_rename
 photo_sort
