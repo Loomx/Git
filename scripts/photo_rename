@@ -4,7 +4,7 @@
 #
 # Rename photos to YYYYMMDD_HHMMSS.jpg
 
-for i in *.jpg *.jpeg *.JPG; do
+for i in *.jpg *.JPG; do
 	[ -f "$i" ] || continue
 	exiv2 -vtF rename "$i" && continue
 	Name=""
