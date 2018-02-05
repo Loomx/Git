@@ -49,7 +49,7 @@ install () {
 			Install dependencies? Or (e)dit dependency list (y/n/e) "
 			printf "\n"
 			[ "$REPLY" = n ] && exit 5
-			printf "$REQUIRES\n" >$Workdir/deps
+			printf "%s\n" "$REQUIRES" >$Workdir/deps
 			printf "\n====================" >>$Workdir/deps
 			printf "\nCurrently installed:\n\n" >>$Workdir/deps
 			ls /var/log/packages | grep -F SBo \
