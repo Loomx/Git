@@ -80,7 +80,8 @@ upgrade_all () {
 		Name=$(echo $Pkg | cut -d- -f2- | rev)
 		Ver=$(echo $Pkg | cut -d- -f1 | rev)
 		grep -A2 /$Name$ $Cachefile | grep -q $Ver$ || {
-			printf "%s-%s is not up to date\n" $Name $Ver
+			New=$(grep -A2 /$Name$ $Cachefile | grep VERSION | cut -d" " -f3)
+			printf "%-12s  Installed: %-12s  Available: %-12s\n" $Name $Ver $New
 			printf "%s " $Name >>$Workdir/upgrades
 		}
 	done
