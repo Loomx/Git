@@ -10,7 +10,7 @@
 
 #define PDF_OPEN "xpdf"
 #define PIC_OPEN "xv"
-#define DOC_OPEN "libreoffice"
+#define DOC_OPEN "soffice"
 #define DEFAULT  "mplayer"
 
 int
