@@ -45,7 +45,7 @@ install () {
 		cd "$1" || exit 4
 		. ./"$1".info
 		if [ "$REQUIRES" ]; then
-			read -n 1 -p "$1 depends on: $REQUIRES
+			read -p "$1 depends on: $REQUIRES
 			Install dependencies? Or (e)dit dependency list (y/n/e) "
 			printf "\n"
 			[ "$REPLY" = n ] && exit 5
@@ -89,7 +89,7 @@ upgrade_all () {
 		printf "Nothing to update\n\n"; exit 0
 	}
 	printf "\n"
-	read -n 1 -p "Install upgrades? Or (e)dit upgrade list (y/n/e) "
+	read -p "Install upgrades? Or (e)dit upgrade list (y/n/e) "
 	printf "\n"
 	[ "$REPLY" = n ] && exit 9
 	[ "$REPLY" = e ] && ${EDITOR:-vi} $Workdir/upgrades
