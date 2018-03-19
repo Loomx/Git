@@ -17,7 +17,7 @@ Photodir=${Photodir:-/store_00010001/DCIM}
 
 gphoto2 -f $Photodir --list-files || exit 1
 
-read -n1 -p "Do you want to import all pictures from this camera? (y/n) "
+read -p "Do you want to import all pictures from this camera? (y/n) "
 printf "\n"
 [ "$REPLY" = "n" ] && exit
 

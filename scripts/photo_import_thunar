@@ -4,7 +4,7 @@
 #
 # Import photos from current directory, requires photo_rename and photo_sort
 
-read -n1 -p "Do you want to import all pictures from this folder? (y/n) "
+read -p "Do you want to import all pictures from this folder? (y/n) "
 [ "$REPLY" = "n" ] && exit
 printf "\n"
 
