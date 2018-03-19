@@ -14,7 +14,8 @@ usage () {
 	cat <<EOF
 sbotool - tool to install, upgrade and search slackbuilds.org packages
 Usage:
-	sbotool update | upgrade-all
+	sbotool update
+	sbotool upgrade-all
 	sbottol search PACKAGE 
 	sbotool install PACKAGE [...]
 	sbotool upgrade PACKAGE [...]
