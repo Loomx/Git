@@ -76,6 +76,8 @@ install () {
 
 upgrade_all () {
 	rm -f $Workdir/upgrades
+	printf "Looking for packages to upgrade...\n\n"
+	sleep 2
 	ls -rt /var/log/packages | grep -F SBo | rev | cut -d- -f3- | \
 	while read -r Pkg; do
 		Name=$(echo $Pkg | cut -d- -f2- | rev)
