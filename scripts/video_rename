@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# /usr/local/bin/video_rename
+#
+# Rename videos in current directory based on creation time
+
+[ "$1" ] || {
+	printf "Provide videos as arguments\n"; exit 1
+}
+
+for i; do
+	Newname=$(ffprobe -v quiet -show_format "$i" | awk -F "[=.]" '/creation_time/ { print $2}' | tr -d :- | tr T _ )
+	Type=${i##*.}
+	mv -v "$i" "$Newname"."$Type"
+done
