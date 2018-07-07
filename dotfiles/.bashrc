@@ -46,12 +46,12 @@ man() {
 
 # mount/unmount helper functions
 localmount () {
-	mkdir ~/"$1" 2>/dev/null
+	mkdir -p ~/"$1"
 	mount ~/"$1" && cd ~/"$1" || rmdir ~/"$1"
 }
 localumount () {
 	[[ "$PWD" == ~/"$1"* ]] && cd ~
-	umount ~/"$1"; rmdir ~/"$1"
+	umount ~/"$1" && rmdir ~/"$1"
 }
 
 # generic mounts
