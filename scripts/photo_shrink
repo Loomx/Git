@@ -5,6 +5,6 @@
 # Thunar custom action to shrink photos
 
 for i; do
-	convert "$i" -resize 1000 "$i".jpg
+	convert "$i" -resize 1000 "${i/.jpg/-mini.jpg}"
 	shift
 done

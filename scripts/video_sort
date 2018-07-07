@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Sort video hard links into ~/Pictures/YYYY/MM/
+# Sort videos into ~/Pictures/YYYY/MM/
 
 for i in 20*; do
 		Name=$(basename "$i")

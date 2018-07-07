@@ -14,7 +14,8 @@ usage () {
 	cat <<EOF
 sbotool - tool to install, upgrade and search slackbuilds.org packages
 Usage:
-	sbotool update | upgrade-all
+	sbotool update
+	sbotool upgrade-all
 	sbottol search PACKAGE 
 	sbotool install PACKAGE [...]
 	sbotool upgrade PACKAGE [...]
@@ -75,6 +76,8 @@ install () {
 
 upgrade_all () {
 	rm -f $Workdir/upgrades
+	printf "Looking for packages to upgrade...\n\n"
+	sleep 2
 	ls -rt /var/log/packages | grep -F SBo | rev | cut -d- -f3- | \
 	while read -r Pkg; do
 		Name=$(echo $Pkg | cut -d- -f2- | rev)
@@ -86,7 +89,7 @@ upgrade_all () {
 		}
 	done
 	[ -r $Workdir/upgrades ] || {
-		printf "Nothing to update\n\n"; exit 0
+		printf "All SlackBuilds are up to date\n\n"; exit 0
 	}
 	printf "\n"
 	read -p "Install upgrades? Or (e)dit upgrade list (y/n/e) "

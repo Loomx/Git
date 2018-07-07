@@ -2,7 +2,9 @@
 #
 # /usr/local/bin/photo_import
 #
-# Import photos from camera, requires photo_rename and photo_sort
+# Import media from camera
+#
+# Requires: photo_rename photo_sort video_relink video_sort
 
 Num=$( gphoto2 --auto-detect | wc -l )
 if [ $Num -le 2 ]; then
@@ -17,7 +19,7 @@ Photodir=${Photodir:-/store_00010001/DCIM}
 
 gphoto2 -f $Photodir --list-files || exit 1
 
-read -n1 -p "Do you want to import all pictures from this camera? (y/n) "
+read -p "Do you want to import all pictures from this camera? (y/n) "
 printf "\n"
 [ "$REPLY" = "n" ] && exit
 
@@ -35,6 +37,12 @@ sleep 2
 
 photo_rename
 photo_sort
+
+for i in *.mp4; do
+	[ -f "$i" ] || break
+	video_relink
+	video_sort
+done
 
 cd ~
 rmdir $Tempdir 2>/dev/null && printf "\nDone\n\n" || \

@@ -1,11 +1,9 @@
 #!/bin/sh
 #
-# Create video hard links in current directory
-
-[ "$1" ] || {
-	printf "Provide videos as arguments\n"; exit 1
-}
+# /usr/local/bin/video_relink
+#
+# Create video hard links in ~/Videos/
 
 for i; do
-	ln -v "$i" $(ffprobe -v quiet -show_format "$i" | awk -F "[=.]" '/creation_time/ { print $2}' | tr -d :- | tr T _ )
+	ln -v "$i" ~/Videos/
 done
