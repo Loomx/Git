@@ -15,10 +15,10 @@ usage () {
 sbotool - tool to install, upgrade and search slackbuilds.org packages
 Usage:
 	sbotool update
-	sbotool upgrade-all
 	sbottol search PACKAGE 
 	sbotool install PACKAGE [...]
 	sbotool upgrade PACKAGE [...]
+	sbotool upgrade-all
 EOF
 exit 2
 }
@@ -45,7 +45,7 @@ install () {
 		rm "$1".tar.gz
 		cd "$1" || exit 4
 		. ./"$1".info
-		if [ "$REQUIRES" ]; then
+		if [ "$REQUIRES" ] && [ "$INSTALL_DEPS" ]; then
 			read -p "$1 depends on: $REQUIRES
 			Install dependencies? Or (e)dit dependency list (y/n/e) "
 			printf "\n"
@@ -77,7 +77,7 @@ install () {
 upgrade_all () {
 	rm -f $Workdir/upgrades
 	printf "Looking for packages to upgrade...\n\n"
-	sleep 2
+	sleep 1
 	ls -rt /var/log/packages | grep -F SBo | rev | cut -d- -f3- | \
 	while read -r Pkg; do
 		Name=$(echo $Pkg | cut -d- -f2- | rev)
@@ -104,7 +104,12 @@ case "$1" in
 	update)
 		update
 		;;
-	install | upgrade)
+	install)
+		INSTALL_DEPS=yes
+		shift
+		install "$@"
+		;;
+	upgrade)
 		shift
 		install "$@"
 		;;
