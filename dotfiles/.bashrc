@@ -34,7 +34,7 @@ la () { ls -A --color --group-directories-first "$@"; }
 ll () { ls -lh --color --group-directories-first "$@"; }
 lla () { ls -lha --color --group-directories-first "$@"; }
 
-man() {
+man () {
 	env LESS_TERMCAP_md=$'\e[34m' \
 	LESS_TERMCAP_me=$'\e[0m' \
 	LESS_TERMCAP_so=$'\e[32m' \
@@ -61,14 +61,16 @@ sdcardin () { localmount SDCARD; }
 sdcardout () { localumount SDCARD; }
 
 # specific device mounts
-phonein () { localmount PHONE; }
-phoneout () { localumount PHONE; }
-sdin () { localmount SD; }
-sdout () { localumount SD; }
 datain () { localmount DATA; }
 dataout () { localumount DATA; }
 data2in () { localmount DATA2; }
 data2out () { localumount DATA2; }
+
+phone-list () { adb shell ls sdcard/DCIM/Camera/; }
+
+phone-get () { adb pull sdcard/DCIM/Camera/; }
+
+phone-upload () { adb push "$@" sdcard/Download/; }
 
 tao () {
 	awk -v verse=$((RANDOM%80+2)) 'RS=""; NR==verse' ~/Documents/tao.txt
