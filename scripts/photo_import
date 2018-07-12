@@ -40,7 +40,8 @@ photo_sort
 
 for i in *.mp4; do
 	[ -f "$i" ] || break
-	video_relink
+	video_rename "$i"
+	video_relink "$i"
 	video_sort
 done
 
