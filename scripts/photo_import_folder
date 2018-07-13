@@ -7,8 +7,8 @@
 # Requires: photo_rename video_rename photo_video_sort
 
 read -p "Do you want to import all pictures from this folder? (y/n) "
-[ "$REPLY" = "n" ] && exit
 printf "\n"
+[ "$REPLY" = "n" ] && exit
 
 Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX)
 
