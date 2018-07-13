@@ -14,12 +14,10 @@ for i in *.jpg *.JPG; do
 	[ "$Name" ] || \
 		Name=$(identify -verbose "$i" | awk -F" " '/date:modify:/ { print $2"+.jpg" }' | tr T _ | tr -d ":" | tr -d - | cut -d+ -f1,3 --output-delimiter="")
 	if [ "$Name" ]; then
-		[ -f "$Name" ] || { mv -v "$i" "$Name"; continue; }
-		while true; do
+		until [ ! -f "$Name" ]; do
 			Name="${Name/.jpg/x.jpg}" 
-			[ -f "$Name" ] || { mv -v "$i" "$Name"; break; }
 		done
-		continue
+		mv -nv "$i" "$Name" && continue
 	fi
 	printf "No info in file:  %s\n" "$i" >>~/photo_rename.log
 done

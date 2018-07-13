@@ -4,7 +4,7 @@
 #
 # Import media from current directory
 #
-# Requires: photo_rename photo_sort video_relink video_sort
+# Requires: photo_rename video_rename photo_video_sort
 
 read -p "Do you want to import all pictures from this folder? (y/n) "
 [ "$REPLY" = "n" ] && exit
@@ -21,15 +21,10 @@ read -p "Do you want to delete all pictures from this folder?
 [ "$REPLY" = yes ] && rm -f *.jpg *.JPG *.mp4
 
 cd $Tempdir || exit 1
-photo_rename
-photo_sort
 
-for i in *.mp4; do
-	[ -f "$i" ] || break
-	video_rename "$i"
-	video_relink "$i"
-	video_sort
-done
+photo_rename
+video_rename *mp4 && ln -vt ~/Videos *mp4
+photo_video_sort
 
 cd ~
 rmdir $Tempdir 2>/dev/null && printf "\nDone\n\n" || \
