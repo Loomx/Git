@@ -17,6 +17,7 @@ Usage:
 	sbotool update
 	sbottol search PACKAGE 
 	sbotool install PACKAGE [...]
+	sbotool install-custom PACKAGE [...]  # edit *.SlackBuild script
 	sbotool upgrade PACKAGE [...]
 	sbotool upgrade-all
 EOF
@@ -44,6 +45,7 @@ install () {
 		tar xf "$1".tar.gz
 		rm "$1".tar.gz
 		cd "$1" || exit 4
+		[ "$CUSTOMISE" ] && ${EDITOR:-vi} ./"$1".SlackBuild
 		. ./"$1".info
 		if [ "$REQUIRES" ] && [ "$INSTALL_DEPS" ]; then
 			read -p "$1 depends on: $REQUIRES
@@ -105,6 +107,12 @@ case "$1" in
 		update
 		;;
 	install)
+		INSTALL_DEPS=yes
+		shift
+		install "$@"
+		;;
+	install-custom)
+		CUSTOMISE=yes
 		INSTALL_DEPS=yes
 		shift
 		install "$@"
