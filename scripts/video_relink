@@ -1,9 +1,0 @@
-#!/bin/sh
-#
-# /usr/local/bin/video_relink
-#
-# Create video hard links in ~/Videos/
-
-for i; do
-	ln -v "$i" ~/Videos/
-done
