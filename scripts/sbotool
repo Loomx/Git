@@ -5,7 +5,7 @@
 Workdir=/tmp/sbotool
 Cachefile=/var/cache/SLACKBUILDS.TXT
 Arch=$(uname -m)
-Release=$(cut -d" " -f2 /etc/slackware-version)
+Release=$(cut -d" " -f2 /etc/slackware-version | tr -d +)
 
 [ $UID -eq 0 ] || exit 1
 mkdir -p $Workdir
