@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# This will package the latest version of Calibre for Slackware. Run it
+# as root. It will download Calibre, package it, and give you a correctly-
+# named, ready-to-install Slackware package in /tmp.
+
+set -e
+
+VERSION=$(wget -O - -o /dev/null http://status.calibre-ebook.com/latest)
+TMP=${TMP:-/tmp}
+PKG=$TMP/package-calibre
+TAG=static
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i486 ;;
+    arm*) ARCH=arm ;;
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+
+rm -rf "$PKG"
+rm -rf "$TMP/calibre-installer-cache"
+
+mkdir -p "$PKG/usr/share"
+mkdir -p "$PKG/usr/bin"
+
+#wget -nv -O- https://download.calibre-ebook.com/linux-installer.py | python -c "import sys; main=lambda:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main(install_dir='$PKG/opt', isolated=True)"
+wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sh /dev/stdin install_dir="$PKG/opt" isolated=y
+LD_LIBRARY_PATH="$PKG/opt/calibre/lib" "$PKG/opt/calibre/bin/calibre_postinstall" --root="$PKG/usr"
+
+for symlink in $(find "$PKG/usr/bin" -maxdepth 1 -type l)
+do
+  (
+  cd "$PKG/usr/bin"
+  ln -sf "/opt/calibre/$(basename "$symlink")" .
+  )
+done
+
+mkdir -p "$PKG/install"
+wget -O "$PKG/install/slack-desc" https://slackbuilds.org/slackbuilds/14.2/office/calibre/slack-desc
+
+cd "$PKG"
+/sbin/makepkg -l y -c n "$TMP/calibre-$VERSION-$ARCH-$TAG.txz"
