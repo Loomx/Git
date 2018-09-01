@@ -68,7 +68,7 @@ fi
 TARNAME="LibreOffice_${SRCVERSION}_Linux_${SRCARCH}_rpm.tar.gz"
 
 if [ ! -r $TARNAME ]; then
-  wget -c https://downloadarchive.documentfoundation.org/libreoffice/old/${SRCVERSION}/rpm/${SRCARCH}/${TARNAME} \
+  wget -c https://downloadarchive.documentfoundation.org/libreoffice/old/${SRCVERSION}/rpm/${ARCH}/${TARNAME} \
   || exit 1
 fi
 
