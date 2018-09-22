@@ -26,7 +26,7 @@ int
 main(void) {
 	Display *dpy;
 	int num;
-	long lnum1, lnum2, lnumX, lnum3, lnum4;
+	long lnum1, lnum2, lnum3, lnum4;
 	char track[50], status[100], *str;
 	time_t current;
 	FILE *fp;
@@ -48,8 +48,8 @@ main(void) {
 
 		/* Memory */
 		if ((fp = fopen(MEM_FILE, "r"))) {
-			fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nMemAvailable: %ld kB\nBuffers: %ld kB\nCached: %ld kB\n",
-			            &lnum1, &lnum2, &lnumX, &lnum3, &lnum4);
+			fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nMemAvailable: %*d kB\nBuffers: %ld kB\nCached: %ld kB\n",
+			            &lnum1, &lnum2, &lnum3, &lnum4);
 			fclose(fp);
 			str += sprintf(str, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));
 		}
