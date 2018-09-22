@@ -241,7 +241,7 @@ filter(void)
 void
 gettrackname(const pid_t cpid)
 {
-	char junk[PATH_MAX], link[PATH_MAX], proc[NAME_MAX], *track;
+	char junk[PATH_MAX], link[PATH_MAX], proc[NAME_MAX], *suffix, *track;
 	int len;
 	FILE *fp;
 
@@ -249,9 +249,11 @@ gettrackname(const pid_t cpid)
 	sprintf(proc, "/proc/%d/fd/4", cpid);
 	while ((len = readlink(proc, link, sizeof(link)-1)) > 1) {
 		link[len] = '\0';
+		track = strrchr(link, '/');
+		if ((suffix = strrchr(track, '.')))
+			*suffix = '\0';
 		if (!(fp = fopen(STATUSMSG, "w")))
 			die("fopen failed");
-		track = strrchr(link, '/');
 		fprintf(fp, "%s\n", ++track);
 		fclose(fp);
 		read(0, junk, sizeof(junk));
