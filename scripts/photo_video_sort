@@ -5,17 +5,17 @@
 # Sort photos and videos into ~/Pictures/YYYY/MM/
 
 for i in 20*; do
-		Name=$(basename "$i")
-		Year="${Name:0:4}"
-		Month="${Name:4:2}"
-		case $Year in
-			20[0-9][0-9])           ;;
-			*)             continue ;;
-		esac	
-		case $Month in
-			[0-1][0-9])             ;;
-			*)             continue ;;
-		esac	
-		mkdir -p ~/Pictures/$Year/$Month
-		mv -nv "$i" ~/Pictures/$Year/$Month/
+	Name=$(basename "$i")
+	Year="${Name:0:4}"
+	Month="${Name:4:2}"
+	case $Year in
+		20[0-9][0-9])           ;;
+		*)             continue ;;
+	esac	
+	case $Month in
+		[0-1][0-9])             ;;
+		*)             continue ;;
+	esac	
+	mkdir -p ~/Pictures/$Year/$Month
+	mv -nv "$i" ~/Pictures/$Year/$Month/
 done
