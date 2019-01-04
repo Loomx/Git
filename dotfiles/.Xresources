@@ -36,3 +36,5 @@ xterm*background:         #002b36
 xterm*foreground:         #839496
 xterm*titeInhibit:        true
 xterm*tiXtraScroll:       true
+xterm*metaSendsEscape:    true
+xterm*decTerminalID	:     vt340
