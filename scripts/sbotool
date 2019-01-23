@@ -25,8 +25,9 @@ exit 2
 }
 
 update () {
-	wget -N https://slackbuilds.org/slackbuilds/$Release/SLACKBUILDS.TXT \
+	wget https://slackbuilds.org/slackbuilds/$Release/SLACKBUILDS.TXT.gz \
 		-P /var/cache || exit 3
+	gunzip -f ${Cachefile}.gz
 	printf "SLACKBUILDS.TXT up to date\n\n"
 }
 
