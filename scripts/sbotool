@@ -50,7 +50,7 @@ install () {
 		. ./"$1".info
 		if [ "$REQUIRES" ] && [ "$INSTALL_DEPS" ]; then
 			read -p "$1 depends on: $REQUIRES
-			Install dependencies? Or (e)dit dependency list (y/n/e) "
+			Install dependencies? Or (e)dit dependency list (Y/n/e) "
 			printf "\n"
 			[ "$REPLY" = n ] && exit 5
 			printf "%s\n" "$REQUIRES" >$Workdir/deps
@@ -95,7 +95,7 @@ upgrade_all () {
 		printf "All SlackBuilds are up to date\n\n"; exit 0
 	}
 	printf "\n"
-	read -p "Install upgrades? Or (e)dit upgrade list (y/n/e) "
+	read -p "Install upgrades? Or (e)dit upgrade list (Y/n/e) "
 	printf "\n"
 	[ "$REPLY" = n ] && exit 9
 	[ "$REPLY" = e ] && ${EDITOR:-vi} $Workdir/upgrades
