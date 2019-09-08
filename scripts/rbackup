@@ -21,6 +21,7 @@ ssh $Server mountpoint -q $Drive && printf "done\n" || \
 printf "#### Making rbackup snapshot $Hostname-$Date ####\n"
 rsync -aHxv --delete-after \
 	--exclude=.cache/ \
+	--exclude="VirtualBox VMs"/ \
 	--exclude=.thunderbird/Profiles/$USER.default/ImapMail/ \
 	--link-dest=../$Hostname \
 	~/ $Server:$Drive/$Hostname-$Date
