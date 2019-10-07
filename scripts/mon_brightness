@@ -2,5 +2,5 @@
 
 Level=$(cat /tmp/mon_brightness)
 
-[ "$1" = "down" ] && echo $((Level - 55)) >/tmp/mon_brightness
-[ "$1" = "up" ] && echo $((Level + 55)) >/tmp/mon_brightness
+[ "$1" = "down" ] && echo $((Level - 2200)) >/tmp/mon_brightness
+[ "$1" = "up" ] && echo $((Level + 2200)) >/tmp/mon_brightness
