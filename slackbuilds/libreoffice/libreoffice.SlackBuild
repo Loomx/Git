@@ -25,7 +25,7 @@
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 PRGNAM=libreoffice
-VERSION=${VERSION:-"6.3.2"}
+VERSION=${VERSION:-"6.3.3"}
 BUILD=${BUILD:-0}
 TAG=${TAG:-_custom}
 
@@ -68,7 +68,8 @@ fi
 TARNAME="LibreOffice_${SRCVERSION}_Linux_${SRCARCH}_rpm.tar.gz"
 
 if [ ! -r $TARNAME ]; then
-  wget -c https://downloadarchive.documentfoundation.org/libreoffice/old/${SRCVERSION}/rpm/${ARCH}/${TARNAME} \
+ #wget -c https://downloadarchive.documentfoundation.org/libreoffice/old/${SRCVERSION}/rpm/${ARCH}/${TARNAME} \
+  wget -c https://download.documentfoundation.org/libreoffice/stable/${SRCVERSION}/rpm/${ARCH}/${TARNAME} \
   || exit 1
 fi
 
