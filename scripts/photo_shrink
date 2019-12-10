@@ -4,7 +4,14 @@
 #
 # Thunar custom action to shrink photos
 
-for i; do
+shopt -s nullglob
+
+for i in *.jpg; do
 	convert "$i" -resize 1000 "${i/.jpg/-mini.jpg}"
+	shift
+done
+
+for i in *.JPG; do
+	convert "$i" -resize 1000 "${i/.JPG/-mini.jpg}"
 	shift
 done

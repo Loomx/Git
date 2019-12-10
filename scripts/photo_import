@@ -13,6 +13,9 @@ case $Camera in
 		read -n1 -p "No camera connected. Press any key to exit"
 		exit
 		;;
+	*Canon*)
+		Photodir=/store_00020001/DCIM/100CANON
+		;;
 	*Samsung*)
 		Photodir=/store_00010001/DCIM/Camera
 		read -n1 -p "Select \"Allow\" on phone then press any key"
