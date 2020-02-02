@@ -23,7 +23,7 @@
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 PRGNAM=shotcut
-VERSION=${VERSION:-18.08.14}
+VERSION=${VERSION:-19.12.31}
 VERSN=$(echo $VERSION | tr -d .)
 TAG=${TAG:-static}
 
@@ -59,7 +59,7 @@ fi
 
 set -e
 
-wget -c https://github.com/mltframework/shotcut/releases/download/v$VERSION/$PRGNAM-linux-$BITS-$VERSN.tar.bz2
+wget -c https://github.com/mltframework/shotcut/releases/download/v$VERSION/$PRGNAM-linux-$BITS-$VERSN.txz
 
 rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT
