@@ -13,7 +13,7 @@ PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; P
 
 . /etc/profile.d/bash_completion.sh
 CDPATH=".:~"
-shopt -s autocd cdspell checkwinsize
+shopt -s autocd cdspell checkwinsize globstar nullglob
 HISTCONTROL=erasedups
 HISTSIZE=5000
 HISTFILESIZE=5000
