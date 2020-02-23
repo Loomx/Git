@@ -12,18 +12,18 @@ printf "\n"
 
 Tempdir=$(mktemp -d ~/Pictures/tmp.XXXXXX)
 
-for i in *.jpg *.JPG *.mp4; do
+for i in *.jpg *.JPG *.mp4 *.MP4; do
 	[ -f "$i" ] && cp -v "$i" $Tempdir
 done
 
 read -p "Do you want to delete all pictures from this folder?
 	(Type yes if you do, otherwise press enter to keep pictures) "
-[ "$REPLY" = yes ] && rm -f *.jpg *.JPG *.mp4
+[ "$REPLY" = yes ] && rm -f *.jpg *.JPG *.mp4 *.MP4
 
 cd $Tempdir || exit 1
 
 photo_rename
-video_rename *mp4 && ln -vt ~/Videos *mp4
+video_rename *mp4 *MP4 && ln -vt ~/Videos *mp4 *MP4
 photo_video_sort
 
 cd ~

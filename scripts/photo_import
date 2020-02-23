@@ -47,7 +47,7 @@ printf "\nIt is now safe to unplug the camera\n\n"
 sleep 2
 
 photo_rename
-video_rename *mp4 && ln -vt ~/Videos *mp4
+video_rename *mp4 *MP4 && ln -vt ~/Videos *mp4 *MP4
 photo_video_sort
 
 cd ~
