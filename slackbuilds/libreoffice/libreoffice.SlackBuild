@@ -113,10 +113,22 @@ cd $PKG/usr/bin
       rm -f $FILE
       ln -sf ../../opt/libreoffice$SRCSHORT/program/$FILE $FILE ;
   done
-
 cd -
+
 # Remove DejaVu and Liberation fonts - these are included in other packages
 rm -f opt/libreoffice$SRCSHORT/share/fonts/truetype/{DejaVu,Liberation}*.ttf
+
+## Remove non-English fonts
+rm -f opt/libreoffice$SRCSHORT/share/fonts/truetype/{Alef,Amiri,David,Frank,Kacst}*.?tf
+rm -f opt/libreoffice$SRCSHORT/share/fonts/truetype/{Miriam,Nachlieli,Scheherazade}*.?tf
+rm -f opt/libreoffice$SRCSHORT/share/fonts/truetype/*{Arabic,Armenian,Georgian,Hebrew,Lao,Lisu}*.?tf
+
+## Make dummy avahi files
+gcc -x c -shared -o opt/libreoffice$SRCSHORT/program/libavahi-common.so.3 - </dev/null
+gcc -x c -shared -o opt/libreoffice$SRCSHORT/program/libavahi-client.so.3 - </dev/null
+
+## Add older Impress templates
+cp $CWD/presnt/*.otp opt/libreoffice$SRCSHORT/share/template/common/presnt/
 
 # Fix Exec commands in the desktop files
 # See http://bugzilla.xfce.org/show_bug.cgi?id=2430
