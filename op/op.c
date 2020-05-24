@@ -8,8 +8,8 @@
 #include <strings.h>
 #include <unistd.h>
 
-#define PDF_OPEN "xpdf"
-#define PIC_OPEN "xv"
+#define PDF_OPEN "atril"
+#define PIC_OPEN "gthumb"
 #define DOC_OPEN "soffice"
 #define DEFAULT  "mplayer"
 
