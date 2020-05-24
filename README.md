@@ -1,3 +1,5 @@
 Slackware
+
 =========
-Configs, scripts, code for Linux.
+
+Configs, scripts, code for Slackware Linux.
