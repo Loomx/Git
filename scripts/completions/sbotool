@@ -1,6 +1,6 @@
 # bash completion for sbotool
 #
-# install into /usr/share/bash_completion/completions/
+# install into /etc/bash_completion.d/
 
 _sbotool() 
 {
