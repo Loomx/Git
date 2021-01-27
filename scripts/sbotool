@@ -68,7 +68,7 @@ install () {
 			wget $DOWNLOAD || exit 6
 		fi
 		sh ./"$1".SlackBuild || exit 7
-		upgradepkg --install-new /tmp/"$1"-$VERSION*.t?z || exit 8
+		upgradepkg --reinstall --install-new /tmp/"$1"-$VERSION*.t?z || exit 8
 		rm -f /tmp/"$1"-$VERSION*.t?z
 		cd ..
 		rm -rf $Workdir/"$1"
