@@ -77,6 +77,7 @@ install () {
 		fi
 		cd ..
 		rm -rf $Workdir/"$1"
+		rm -rf /tmp/SBo/*"$1"*
 		) || exit $(echo $?)
 		shift
 	done
