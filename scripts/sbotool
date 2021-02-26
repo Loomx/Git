@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# sbotool - tool to install, upgrade and search slackbuilds.org packages
+# sbotool - tool to build, install, upgrade and search SlackBuilds.org packages
 
 Workdir=/tmp/sbotool
 Cachefile=/var/cache/SLACKBUILDS.TXT
@@ -12,14 +12,16 @@ mkdir -p $Workdir
 
 usage () {
 	cat <<EOF
-sbotool - tool to install, upgrade and search slackbuilds.org packages
+sbotool - tool to build, install, upgrade and search SlackBuilds.org packages
 Usage:
-	sbotool update
-	sbottol search PACKAGE 
-	sbotool install PACKAGE [...]
-	sbotool install-custom PACKAGE [...]  # edit *.SlackBuild script
-	sbotool upgrade PACKAGE [...]
-	sbotool upgrade-all
+	sbotool update                        # refresh the database
+	sbotool build PACKAGE [...]           # build PACKAGE only
+	sbotool build-custom PACKAGE [...]    # edit *.SlackBuild then build
+	sbotool install PACKAGE [...]         # build and install PACKAGE
+	sbotool install-custom PACKAGE [...]  # edit *.SlackBuild then install
+	sbotool upgrade PACKAGE [...]         # upgrade PACKAGE only
+	sbotool upgrade-all                   # upgrade all SBo packages
+	sbottol search PACKAGE                # get info about PACKAGE
 EOF
 exit 2
 }
@@ -68,8 +70,11 @@ install () {
 			wget $DOWNLOAD || exit 6
 		fi
 		sh ./"$1".SlackBuild || exit 7
-		upgradepkg --reinstall --install-new /tmp/"$1"-$VERSION*.t?z || exit 8
-		rm -f /tmp/"$1"-$VERSION*.t?z
+		if [ -z "$BUILDONLY" ]; then
+			upgradepkg --reinstall --install-new /tmp/"$1"-$VERSION*.t?z \
+				|| exit 8
+			rm -f /tmp/"$1"-$VERSION*.t?z
+		fi
 		cd ..
 		rm -rf $Workdir/"$1"
 		) || exit $(echo $?)
@@ -106,6 +111,17 @@ upgrade_all () {
 case "$1" in
 	update)
 		update
+		;;
+	build)
+		BUILDONLY=yes
+		shift
+		install "$@"
+		;;
+	build-custom)
+		BUILDONLY=yes
+		CUSTOMISE=yes
+		shift
+		install "$@"
 		;;
 	install)
 		INSTALL_DEPS=yes
