@@ -67,6 +67,7 @@ CXXFLAGS="$SLKCFLAGS" \
   --infodir=/usr/info \
   --enable-static=no \
   --docdir=/usr/doc/$PRGNAM-$VERSION \
+  --disable-exiv2 \
   --build=$ARCH-slackware-linux
 
 make
