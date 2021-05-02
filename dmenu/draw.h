@@ -7,7 +7,7 @@ enum { ColBG, ColFG, ColBorder, ColLast };
 
 typedef struct {
 	int x, y, w, h;
-	Bool invert;
+	int invert;
 	Display *dpy;
 	GC gc;
 	Pixmap canvas;
@@ -21,7 +21,7 @@ typedef struct {
 	} font;
 } DC;  /* draw context */
 
-void drawrect(DC *dc, int x, int y, unsigned int w, unsigned int h, Bool fill, unsigned long color);
+void drawrect(DC *dc, int x, int y, unsigned int w, unsigned int h, int fill, unsigned long color);
 void drawtext(DC *dc, const char *text, unsigned long col[ColLast]);
 void drawtextn(DC *dc, const char *text, size_t n, unsigned long col[ColLast]);
 void eprintf(const char *fmt, ...);

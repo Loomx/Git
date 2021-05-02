@@ -1,6 +1,5 @@
 /* See LICENSE file for copyright and license details. */
 #include <dirent.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,8 +10,8 @@
 
 static void test(const char *, const char *);
 
-static bool match = false;
-static bool flag[26];
+static int match = 0;
+static int flag[26];
 static struct stat old, new;
 
 int
@@ -30,7 +29,7 @@ main(int argc, char *argv[]) {
 				perror(optarg);
 			break;
 		default:  /* miscellaneous operators */
-			FLAG(opt) = true;
+			FLAG(opt) = 1;
 			break;
 		case '?': /* error: unknown flag */
 			fprintf(stderr, "usage: %s [-abcdefghlpqrsuvwx] [-n file] [-o file] [file...]\n", argv[0]);
@@ -78,7 +77,7 @@ test(const char *path, const char *name) {
 	&& (!FLAG('x') || access(path, X_OK) == 0)) != FLAG('v')) {   /* executable        */
 		if(FLAG('q'))
 			exit(0);
-		match = true;
+		match = 1;
 		puts(name);
 	}
 }

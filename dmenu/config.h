@@ -5,7 +5,7 @@
 
 #define CACHE  ".cache/dmenu_run"
 
-static Bool topbar = True;
+static int topbar = 1;
 static const char *font = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";
 static const char *prompt = NULL;
 static const char *normbgcolor = "#222222";

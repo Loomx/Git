@@ -24,7 +24,7 @@ typedef struct Item Item;
 struct Item {
 	char *text;
 	Item *left, *right;
-	Bool out;
+	int out;
 };
 
 static void appenditem(Item *item, Item **list, Item **last);
@@ -72,12 +72,11 @@ static char *(*fstrstr)(const char *, const char *) = strstr;
 
 int
 main(int argc, char *argv[]) {
-	Bool fast = False;
-	int i;
+	int i, fast = 0;
 
     if (!strcmp(argv[0], "dmenu_run")) {
         dmenurun = 1;
-		fast = True;
+		fast = 1;
         updatecache();
     }
 
@@ -88,9 +87,9 @@ main(int argc, char *argv[]) {
 			exit(EXIT_SUCCESS);
 		}
 		else if (!strcmp(argv[i], "-b"))   /* appears at the bottom of the screen */
-			topbar = False;
+			topbar = 0;
 		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
-			fast = True;
+			fast = 1;
 		else if (!strcmp(argv[i], "-i")) { /* case-insensitive item matching */
 			fstrncmp = strncasecmp;
 			fstrstr = cistrstr;
@@ -292,7 +291,7 @@ drawmenu(void) {
 	dc->x = 0;
 	dc->y = 0;
 	dc->h = bh;
-	drawrect(dc, 0, 0, mw, mh, True, BG(dc, normcol));
+	drawrect(dc, 0, 0, mw, mh, 1, BG(dc, normcol));
 
 	if (prompt && *prompt) {
 		dc->w = promptw;
@@ -303,7 +302,7 @@ drawmenu(void) {
 	dc->w = (lines > 0 || !matches) ? mw - dc->x : inputw;
 	drawtext(dc, text, normcol);
 	if ((curpos = textnw(dc, text, cursor) + dc->h/2 - 2) < dc->w)
-		drawrect(dc, curpos, 2, 1, dc->h - 4, True, FG(dc, normcol));
+		drawrect(dc, curpos, 2, 1, dc->h - 4, 1, FG(dc, normcol));
 
 	if (lines > 0) {
 		/* draw vertical list */
@@ -340,7 +339,7 @@ grabkeyboard(void) {
 
 	/* try to grab keyboard, we may have to wait for another process to ungrab */
 	for (i = 0; i < 1000; i++) {
-		if (XGrabKeyboard(dc->dpy, DefaultRootWindow(dc->dpy), True,
+		if (XGrabKeyboard(dc->dpy, DefaultRootWindow(dc->dpy), 1,
 		                 GrabModeAsync, GrabModeAsync, CurrentTime) == GrabSuccess)
 			return;
 		usleep(1000);
@@ -402,6 +401,7 @@ keypress(XKeyEvent *ev) {
 				insert(NULL, nextrune(-1) - cursor);
 			break;
 		case XK_y: /* paste selection */
+		case XK_Y:
 			XConvertSelection(dc->dpy, (ev->state & ShiftMask) ? clip : XA_PRIMARY,
 			                  utf8, utf8, win, CurrentTime);
 			return;
@@ -501,7 +501,7 @@ keypress(XKeyEvent *ev) {
 		if (!(ev->state & ControlMask))
 			exit(EXIT_SUCCESS);
 		if (sel)
-			sel->out = True;
+			sel->out = 1;
 		break;
 	case XK_Right:
 		if (text[cursor] != '\0') {
@@ -600,7 +600,7 @@ paste(void) {
 	Atom da;
 
 	/* we have been given the current selection, now insert it into input */
-	XGetWindowProperty(dc->dpy, win, utf8, 0, (sizeof text / 4) + 1, False,
+	XGetWindowProperty(dc->dpy, win, utf8, 0, (sizeof text / 4) + 1, 0,
 	                   utf8, &da, &di, &dl, &dl, (unsigned char **)&p);
 	insert(p, (q = strchr(p, '\n')) ? q-p : (ssize_t)strlen(p));
 	XFree(p);
@@ -631,7 +631,7 @@ readstdin(void) {
 			*p = '\0';
 		if (!(items[i].text = strdup(buf)))
 			eprintf("cannot strdup %u bytes:", strlen(buf)+1);
-		items[i].out = False;
+		items[i].out = 0;
 		if (strlen(items[i].text) > max)
 			max = strlen(maxstr = items[i].text);
 	}
@@ -729,8 +729,8 @@ setup(void) {
 	outcol[ColBG]  = getcolor(dc, outbgcolor);
 	outcol[ColFG]  = getcolor(dc, outfgcolor);
 
-	clip = XInternAtom(dc->dpy, "CLIPBOARD",   False);
-	utf8 = XInternAtom(dc->dpy, "UTF8_STRING", False);
+	clip = XInternAtom(dc->dpy, "CLIPBOARD",   0);
+	utf8 = XInternAtom(dc->dpy, "UTF8_STRING", 0);
 
 	/* calculate menu geometry */
 	bh = dc->font.height + 2;
@@ -783,7 +783,7 @@ setup(void) {
 	match();
 
 	/* create menu window */
-	swa.override_redirect = True;
+	swa.override_redirect = 1;
 	swa.background_pixel = normcol[ColBG];
 	swa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask |
 	                 ButtonPressMask;

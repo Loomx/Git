@@ -11,10 +11,10 @@
 #define MIN(a, b)  ((a) < (b) ? (a) : (b))
 #define DEFAULTFN  "fixed"
 
-static Bool loadfont(DC *dc, const char *fontstr);
+static int loadfont(DC *dc, const char *fontstr);
 
 void
-drawrect(DC *dc, int x, int y, unsigned int w, unsigned int h, Bool fill, unsigned long color) {
+drawrect(DC *dc, int x, int y, unsigned int w, unsigned int h, int fill, unsigned long color) {
 	XSetForeground(dc->dpy, dc->gc, color);
 	if(fill)
 		XFillRectangle(dc->dpy, dc->canvas, dc->gc, dc->x + x, dc->y + y, w, h);
@@ -35,7 +35,7 @@ drawtext(DC *dc, const char *text, unsigned long col[ColLast]) {
 	if(mn < n)
 		for(n = MAX(mn-3, 0); n < mn; buf[n++] = '.');
 
-	drawrect(dc, 0, 0, dc->w, dc->h, True, BG(dc, col));
+	drawrect(dc, 0, 0, dc->w, dc->h, 1, BG(dc, col));
 	drawtextn(dc, buf, mn, col);
 }
 
@@ -118,14 +118,14 @@ initfont(DC *dc, const char *fontstr) {
 	dc->font.height = dc->font.ascent + dc->font.descent;
 }
 
-Bool
+int
 loadfont(DC *dc, const char *fontstr) {
 	char *def, **missing, **names;
 	int i, n;
 	XFontStruct **xfonts;
 
 	if(!*fontstr)
-		return False;
+		return 0;
 	if((dc->font.set = XCreateFontSet(dc->dpy, fontstr, &missing, &n, &def))) {
 		n = XFontsOfFontSet(dc->font.set, &xfonts, &names);
 		for(i = 0; i < n; i++) {
