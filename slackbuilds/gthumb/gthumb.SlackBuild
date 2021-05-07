@@ -56,6 +56,9 @@ find -L . \
 # allow use of arrow keys in browser mode
 patch -p1 <$CWD/arrow-keys.patch
 
+# fix vertical scroll jump when changing directories
+patch -p1 <$CWD/vertical-scroll-reset.patch
+
 CFLAGS="$SLKCFLAGS" \
 CXXFLAGS="$SLKCFLAGS" \
 ./configure \
