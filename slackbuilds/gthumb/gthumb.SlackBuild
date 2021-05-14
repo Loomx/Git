@@ -56,6 +56,9 @@ find -L . \
 # allow use of arrow keys in browser mode
 patch -p1 <$CWD/arrow-keys.patch
 
+# remove "Empty" tag in tree view
+patch -p1 <$CWD/remove-empty-tag.patch
+
 CFLAGS="$SLKCFLAGS" \
 CXXFLAGS="$SLKCFLAGS" \
 ./configure \
