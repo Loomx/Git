@@ -20,7 +20,7 @@
 #define MEM_STR         "Mem:%ld  "
 #define VOL_STR         "Vol:%d  "
 #define BAT_STR         "Bat:%ld  "
-#define TIME_STR        "%b_%d  %H:%M"
+#define TIME_STR        "%b-%d  %H:%M"
 
 int
 main(void) {
