@@ -20,7 +20,7 @@
 #define MEM_STR         "Mem:%ld  "
 #define VOL_STR         "Vol:%d  "
 #define BAT_STR         "Bat:%ld  "
-#define TIME_STR        "%H:%M"
+#define TIME_STR        "%b-%d  %H:%M"
 
 int
 main(void) {
@@ -73,7 +73,7 @@ main(void) {
 
 		/* Time */
 		time(&current);
-		str += strftime(str, 10, TIME_STR, localtime(&current));
+		str += strftime(str, 14, TIME_STR, localtime(&current));
 
 	XStoreName(dpy, DefaultRootWindow(dpy), status);
 	XSync(dpy, False);
