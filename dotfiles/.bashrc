@@ -36,6 +36,7 @@ lla () { ls -lha --color --group-directories-first "$@"; }
 cd () { 
 	case $1 in 
 		"")   pushd $HOME >/dev/null ;;
+		"-")  pushd >/dev/null       ;;
 		*)    pushd "$1" >/dev/null  ;;
 	esac
 }
