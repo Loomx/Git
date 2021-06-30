@@ -12,7 +12,7 @@ fi
 PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; Prev="$PWD"'
 
 . /etc/profile.d/bash_completion.sh
-shopt -s autocd cdspell checkwinsize globstar
+shopt -s cdspell checkwinsize globstar
 HISTCONTROL=erasedups
 HISTSIZE=20000
 HISTFILESIZE=20000
@@ -33,6 +33,18 @@ la () { ls -A --color --group-directories-first "$@"; }
 ll () { ls -lh --color --group-directories-first "$@"; }
 lla () { ls -lha --color --group-directories-first "$@"; }
 
+cd () { 
+	case $1 in 
+		"")   pushd $HOME >/dev/null ;;
+		"-")  pushd >/dev/null       ;;
+		*)    pushd "$1" >/dev/null  ;;
+	esac
+}
+
+bd () { popd >/dev/null; }
+
+fd () { find . -type f -iname *"$1"*; }
+
 man () {
 	env LESS_TERMCAP_md=$'\e[34m' \
 	LESS_TERMCAP_me=$'\e[0m' \
@@ -46,10 +58,10 @@ man () {
 # mount/unmount helper functions
 localmount () {
 	mkdir -p ~/"$1"
-	mount ~/"$1" && cd ~/"$1" || rmdir ~/"$1"
+	mount ~/"$1" && builtin cd ~/"$1" || rmdir ~/"$1"
 }
 localumount () {
-	[[ "$PWD" == ~/"$1"* ]] && cd ~
+	[[ "$PWD" == ~/"$1"* ]] && builtin cd ~
 	umount ~/"$1" && rmdir ~/"$1"
 }
 
