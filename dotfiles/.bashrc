@@ -12,7 +12,6 @@ fi
 PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; Prev="$PWD"'
 
 . /etc/profile.d/bash_completion.sh
-CDPATH=".:~"
 shopt -s autocd cdspell checkwinsize globstar
 HISTCONTROL=erasedups
 HISTSIZE=20000
