@@ -12,7 +12,7 @@ fi
 PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; Prev="$PWD"'
 
 . /etc/profile.d/bash_completion.sh
-shopt -s cdspell checkwinsize globstar
+shopt -s autocd cdspell checkwinsize globstar
 HISTCONTROL=erasedups
 HISTSIZE=20000
 HISTFILESIZE=20000
@@ -36,6 +36,7 @@ lla () { ls -lha --color --group-directories-first "$@"; }
 cd () { 
 	case $1 in 
 		"")   pushd $HOME >/dev/null ;;
+		--)   pushd "$2" >/dev/null  ;;
 		-)    pushd >/dev/null       ;;
 		*)    pushd "$1" >/dev/null  ;;
 	esac
