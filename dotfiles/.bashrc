@@ -44,7 +44,7 @@ cd () {
 
 .. () { pushd .. >/dev/null; }
 
-d () { dirs -v; }
+d () { dirs -v | head -n ${1:-20}; }
 
 fd () { find . -type f -iname *"$1"*; }
 
