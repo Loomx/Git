@@ -18,16 +18,15 @@
 
 #define TRACK_STR       "%s   "
 #define MEM_STR         "Mem:%ld  "
-#define VOL_STR         "Vol:%d  "
+#define VOL_STR         "Vol:%s  "
 #define BAT_STR         "Bat:%ld  "
 #define TIME_STR        "%b-%d  %H:%M"
 
 int
 main(void) {
 	Display *dpy;
-	int num;
 	long lnum1, lnum2, lnum3, lnum4;
-	char track[50], status[100], *str;
+	char vol[5], track[50], status[100], *str;
 	time_t current;
 	FILE *fp;
 
@@ -41,7 +40,8 @@ main(void) {
 
 		/* Track */
 		if ((fp = fopen(TRACK_FILE, "r"))) {
-			fscanf(fp, "%49[^\n]", track);
+			fgets(track, 49, fp);
+			track[strcspn(track, "\n")] = 0;
 			fclose(fp);
 			str += sprintf(str, TRACK_STR, track);
 		}
@@ -56,9 +56,10 @@ main(void) {
 
 		/* Volume */
 		if ((fp = fopen(VOL_FILE, "r"))) {
-			fscanf(fp, "%d", &num);
+			fgets(vol, 4, fp);
+			vol[strcspn(vol, "\n")] = 0;
 			fclose(fp);
-			str += sprintf(str, VOL_STR, num);
+			str += sprintf(str, VOL_STR, vol);
 		}
 
 		/* Battery */
