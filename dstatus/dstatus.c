@@ -57,7 +57,7 @@ main(void) {
 		/* Volume */
 		if ((fp = fopen(VOL_FILE, "r"))) {
 			fgets(vol, 4, fp);
-			vol[strcspn(vol, "\n")] = 0;
+			vol[strcspn(vol, "%\n")] = 0;
 			fclose(fp);
 			str += sprintf(str, VOL_STR, vol);
 		}
