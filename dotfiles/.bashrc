@@ -80,9 +80,7 @@ data2in () { localmount DATA2; }
 data2out () { localumount DATA2; }
 
 phone-list () { adb shell ls /sdcard/DCIM/Camera/; }
-
 phone-get () { adb pull /sdcard/DCIM/Camera/; }
-
 phone-upload () { adb push "$@" /sdcard/Download/; }
 
 tao () {
