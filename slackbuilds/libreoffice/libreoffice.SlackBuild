@@ -171,4 +171,4 @@ find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | gr
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
 
 /sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-${VERSION}-$PKGARCH-$BUILD$TAG.${PKGTYPE:-txz} \
-&& rm $CWD/$TARNAME 
+	&& rm $CWD/$TARNAME 
