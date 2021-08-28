@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Run Sweet Home 3D
+exec java -Xmx2g -jar /usr/share/SweetHome3D/SweetHome3D.jar
