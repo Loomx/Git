@@ -23,10 +23,11 @@
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 PRGNAM=shotcut
-#VERSION=${VERSION:-20.11.28}
-VERSION=${VERSION:-21.01.29}
+#VERSION=${VERSION:-21.01.29}
+VERSION=${VERSION:-21.03.21}
 VERSN=$(echo $VERSION | tr -d .)
-TAG=${TAG:-static}
+BUILD=${BUILD:-0}
+TAG=${TAG:-_custom}
 
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
@@ -96,5 +97,5 @@ cat $CWD/slack-desc > $PKG/install/slack-desc
 cat $CWD/doinst.sh > $PKG/install/doinst.sh
 
 cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$TAG.txz
-rm $CWD/$PRGNAM-linux-$BITS-$VERSN.*
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.txz \
+	&& rm $CWD/$PRGNAM-linux-$BITS-$VERSN.txz
