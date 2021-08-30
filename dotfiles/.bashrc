@@ -45,7 +45,7 @@ cd () {
 
 d () { dirs -v | head -n ${1:-20}; }
 
-fd () { find . -type f -iname *"$1"*; }
+fd () { find . -type f -iname \*$1\*; }
 
 man () {
 	env LESS_TERMCAP_md=$'\e[34m' \
