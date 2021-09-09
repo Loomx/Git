@@ -5,7 +5,7 @@
 # Sort photos and videos into ~/Pictures/YYYY/MM/
 # and hardlink videos into ~/Videos/
 
-for i in *mp4 *MP4; do
+for i in 20*mp4 20*MP4; do
 	[ -f "$i" ] && ln -v "$i" ~/Videos/
 done
 
