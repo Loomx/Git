@@ -23,7 +23,7 @@ read -p "Do you want to delete all pictures from this folder?
 cd $Tempdir || exit 1
 
 photo_rename
-video_rename *mp4 *MP4 && ln -vt ~/Videos *mp4 *MP4
+video_rename *mp4 *MP4
 photo_video_sort
 
 cd ~

@@ -3,6 +3,11 @@
 # /usr/local/bin/photo_video_sort
 #
 # Sort photos and videos into ~/Pictures/YYYY/MM/
+# and hardlink videos into ~/Videos/
+
+for i in *mp4 *MP4; do
+	[ -f "$i" ] && ln -v "$i" ~/Videos/
+done
 
 for i in 20*; do
 	Name=$(basename "$i")
