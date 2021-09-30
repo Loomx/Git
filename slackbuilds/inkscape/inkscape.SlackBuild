@@ -23,7 +23,7 @@
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 PRGNAM=inkscape
-VERSION=${VERSION:-1.1}
+VERSION=${VERSION:-1.1.1}
 BUILD=${BUILD:-0}
 TAG=${TAG:-_custom}
 
@@ -56,7 +56,8 @@ fi
 
 set -e
 
-wget -c https://media.inkscape.org/dl/resources/file/inkscape-${VERSION}.tar.xz
+wget -c https://inkscape.org/gallery/item/29255/inkscape-1.1.1_2021-09-20_3bf5ae0d25.tar.xz \
+	-O $CWD/$PRGNAM-$VERSION.tar.xz
 
 rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT
