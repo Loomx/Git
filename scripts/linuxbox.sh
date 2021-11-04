@@ -4,7 +4,7 @@
 # based on https://github.com/ivandavidov/minimal-linux-script/blob/master/minimal.sh
 # and Slackware's huge kernel config
 
-KERNEL=5.14.15
+KERNEL=5.15
 BUSYBOX=1.34.1
 
 set -xe
@@ -37,9 +37,9 @@ cd ..
 tar xf linux-$KERNEL.tar.xz
 cd linux-$KERNEL
 cp ../config-huge-$KERNEL.x64 .config
+sed -i 's/.*INITRAMFS.*/CONFIG_INITRAMFS_SOURCE="_install"/' .config 
+make olddefconfig
 cp -a ../busybox-$BUSYBOX/_install/ .
-make menuconfig
-grep -q "_install" .config
 make -j7 bzImage
 cp arch/x86/boot/bzImage ../bootx64.efi
 cd ..
