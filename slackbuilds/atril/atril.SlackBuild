@@ -104,6 +104,7 @@ CPPFLAGS="-I/usr/share/texmf/include" \
   --enable-introspection \
   $epub \
   --disable-caja \
+  --disable-synctex \
   --build=$ARCH-slackware-linux
 
 make
