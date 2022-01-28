@@ -55,7 +55,6 @@ static const char *prevcmd[]      = { "player", "pt_step", "-1", NULL };
 static const char *nextcmd[]      = { "player", "pt_step", "1", NULL };
 static const char *mutecmd[]      = { "amixer", "-D", "pulse", "-q", "set", "Master", "toggle", NULL };
 static const char *ejectcmd[]     = { "eject", NULL };
-static const char *sleepcmd[]     = { "sudo", "/usr/sbin/pm-suspend", NULL };
 
 static Key keys[] = {
 	/* modifier            key                        function        argument */
@@ -69,7 +68,6 @@ static Key keys[] = {
 	{ 0,                   0x1008ff13,                spawn,          SHCMD("amixer -D pulse set Master 5%+ unmute | awk -F [][] 'END { print $2 }' >/tmp/volume") },
 	{ 0,                   0x1008ff12,                spawn,          {.v = mutecmd } },
 	{ 0,                   0x1008ff2c,                spawn,          {.v = ejectcmd } },
-	{ 0,                   0x1008ff2f,                spawn,          {.v = sleepcmd } },
 //	{ 0,                   0x1008ff03,                spawn,          SHCMD("Mon=$(cat ~/.mon_brightness); echo $((Mon-440)) >~/.mon_brightness") },
 //	{ 0,                   0x1008ff02,                spawn,          SHCMD("Mon=$(cat ~/.mon_brightness); echo $((Mon+440)) >~/.mon_brightness") },
 //	{ 0,                   0x1008ff06,                spawn,          SHCMD("Kbd=$(cat ~/.kbd_brightness); echo $((Kbd-2)) >~/.kbd_brightness") },
