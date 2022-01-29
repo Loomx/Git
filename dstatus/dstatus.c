@@ -15,18 +15,20 @@
 #define VOL_FILE        "/tmp/volume"
 #define BAT_NOW         "/sys/class/power_supply/BAT0/charge_now"
 #define BAT_FULL        "/sys/class/power_supply/BAT0/charge_full"
+#define NET_FILE        "/sys/class/net/wlan0/operstate"
 
 #define TRACK_STR       "%s   "
 #define MEM_STR         "Mem:%ld  "
 #define VOL_STR         "Vol:%s  "
 #define BAT_STR         "Bat:%ld  "
+#define NET_STR         "Net:%s  "
 #define TIME_STR        "%b-%d  %H:%M"
 
 int
 main(void) {
 	Display *dpy;
 	long lnum1, lnum2, lnum3, lnum4;
-	char vol[5], track[50], status[100], *str;
+	char vol[5], net[5], track[50], status[100], *str;
 	time_t current;
 	FILE *fp;
 
@@ -70,6 +72,13 @@ main(void) {
 			fscanf(fp, "%ld\n", &lnum2);
 			fclose(fp);
 			str += sprintf(str, BAT_STR, (lnum1/(lnum2/100)));
+		}
+
+		/* Network */
+		if ((fp = fopen(NET_FILE, "r"))) {
+			fscanf(fp, "%4s", net);
+			fclose(fp);
+			str += sprintf(str, NET_STR, net);
 		}
 
 		/* Time */
