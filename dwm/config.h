@@ -18,8 +18,8 @@ static const Bool topbar            = True;      /* False means bottom bar */
 static const char *tags[] = { "Here", "There" };
 
 static const Rule rules[] = {
-	/* class      instance      title     tags mask     isfloating   monitor */
-	{  NULL,     "galculator",  NULL,     0,            True,        -1 },
+	/* class  instance  title                tags mask  isfloating  monitor */
+	{  NULL,  NULL,    "Picture-in-Picture", 0,         True,       -1 },
 };
 
 /* layout(s) */
