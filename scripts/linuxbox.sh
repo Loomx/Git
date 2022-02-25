@@ -5,7 +5,7 @@
 # and Slackware's huge kernel config
 
 KERNEL=5.15.19
-BUSYBOX=1.34.1
+BUSYBOX=1.35.0
 
 set -xe
 
