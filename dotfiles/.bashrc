@@ -84,7 +84,7 @@ phone-get () { adb pull /sdcard/DCIM/Camera/; }
 phone-upload () { adb push "$@" /sdcard/Download/; }
 
 tao () {
-	awk -v verse=$((RANDOM%80+2)) 'RS=""; NR==verse' ~/Documents/tao.txt
+	sed -n "/-$((RANDOM%81+1))-/,/^$/p" ~/Documents/tao.txt
 }
 
 histfix () {
