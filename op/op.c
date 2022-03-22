@@ -8,10 +8,11 @@
 #include <strings.h>
 #include <unistd.h>
 
-#define PDF_OPEN "atril"
-#define PIC_OPEN "gthumb"
-#define DOC_OPEN "soffice"
-#define DEFAULT  "mplayer"
+#define PDF_OPEN   "atril"
+#define PIC_OPEN   "gthumb"
+#define DOC_OPEN   "soffice"
+#define MEDIA_OPEN "mplayer"
+#define DEFAULT    "vi"
 
 int
 main(int argc, char *argv[])
@@ -24,7 +25,7 @@ main(int argc, char *argv[])
 	freopen("/dev/null", "w", stderr);
 
 	if (!(suffix = strrchr(argv[1], '.')))
-		execlp("setsid", "setsid", DEFAULT, argv[1], NULL);
+		return 0;
 
 	else if (!strcasecmp(suffix, ".pdf"))
 		execlp("setsid", "setsid", PDF_OPEN, argv[1], NULL);
@@ -45,6 +46,14 @@ main(int argc, char *argv[])
 	      || !strcasecmp(suffix, ".xlsx"))
 		execlp("setsid", "setsid", DOC_OPEN, argv[1], NULL);
 
+	else if (!strcasecmp(suffix, ".mp3")
+	      || !strcasecmp(suffix, ".m4a")
+	      || !strcasecmp(suffix, ".ogg")
+	      || !strcasecmp(suffix, ".mp4")
+	      || !strcasecmp(suffix, ".mov")
+	      || !strcasecmp(suffix, ".avi"))
+		execlp("setsid", "setsid", MEDIA_OPEN, argv[1], NULL);
+
 	else
-		execlp("setsid", "setsid", DEFAULT, argv[1], NULL);
+		execlp(DEFAULT, DEFAULT, argv[1], NULL);
 }
