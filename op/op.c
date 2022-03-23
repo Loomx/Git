@@ -24,9 +24,11 @@ main(int argc, char *argv[])
 
 	freopen("/dev/null", "w", stderr);
 
-	if (!(suffix = strrchr(argv[1], '.')))
+	if (!(suffix = strrchr(argv[1], '.'))) {
+		if (!(access(argv[1], F_OK)))
+			execlp(DEFAULT, DEFAULT, argv[1], NULL);
 		return 0;
-
+	}
 	else if (!strcasecmp(suffix, ".pdf"))
 		execlp("setsid", "setsid", PDF_OPEN, argv[1], NULL);
 
