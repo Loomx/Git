@@ -121,15 +121,13 @@ dmenu(const int m)
 	size_t nread;
 	static char sel[NAME_MAX];
 
-	if (pipe(pipe1) == -1 || pipe(pipe2) == -1 || pipe(pipe3) == -1 )
+	if (pipe(pipe1) == -1 || pipe(pipe2) == -1 || pipe(pipe3) == -1)
 		die("pipe failed");
-	cpid = fork();
-	if (cpid == -1)
+	if ((cpid = fork()) == -1)
 		die("fork failed");
 
 	if (cpid == 0) {  /* child */
-		cpid = fork();
-		if (cpid == -1)
+		if ((cpid = fork()) == -1)
 			die("inner fork failed");
 		if (cpid == 0) {  /* grandchild */
 			close(pipe1[0]);  /* unused */
@@ -144,18 +142,18 @@ dmenu(const int m)
 			_exit(0);
 		}
 		else {  /* child */
-		close(pipe1[1]);  /* unused */
-		close(pipe2[0]);  /* unused */
-		close(pipe2[1]);  /* unused */
-		close(pipe3[0]);  /* unused */
-		dup2(pipe1[0], 0);
-		close(pipe1[0]);  /* dup2ed */
-		dup2(pipe3[1], 1);
-		close(pipe3[1]);  /* dup2ed */
-		if (m == 1)
-			execlp("dmenu", "dmenu", "-p", "Filters?", NULL);
-		else
-			execlp("dmenu", "dmenu", "-i", "-l", "40", NULL);
+			close(pipe1[1]);  /* unused */
+			close(pipe2[0]);  /* unused */
+			close(pipe2[1]);  /* unused */
+			close(pipe3[0]);  /* unused */
+			dup2(pipe1[0], 0);
+			close(pipe1[0]);  /* dup2ed */
+			dup2(pipe3[1], 1);
+			close(pipe3[1]);  /* dup2ed */
+			if (m == 1)
+				execlp("dmenu", "dmenu", "-p", "Filters?", NULL);
+			else
+				execlp("dmenu", "dmenu", "-i", "-l", "40", NULL);
 		}
 	}
 	else {  /* parent */
@@ -212,7 +210,7 @@ dmenuinput(const int m)
 			write(1, "\n", 1);
 			fprintf(fp, "%s/%s/%s/%s\n", HOME, MUSICDIR, album, tracklist[i]);
 			free(tracklist[i]);
-			}
+		}
 		fclose(fp);
 		free(tracklist);
 	}
@@ -273,8 +271,7 @@ mplayer(const int m)
 
 	if (pipe(pipe1) == -1)
 		die("pipe failed");
-	cpid = fork();
-	if (cpid == -1)
+	if ((cpid = fork()) == -1)
 		die("fork failed");
 
 	if (cpid == 0) {  /* child */
@@ -400,3 +397,4 @@ uptodate(void)
 	closedir(dp);
 	return 1;
 }
+
