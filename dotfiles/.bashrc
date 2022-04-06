@@ -24,6 +24,8 @@ bind -m vi-command '"k":history-search-backward'
 bind -m vi-command '"j":history-search-forward'
 bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
+bind '"\C-f":forward-search-history'
+bind '"\C-]":insert-last-argument'
 bind '"\C-k":kill-line'
 bind '"\C-l":"clear; histfix; ls --color --group-directories-first\n"'
 
