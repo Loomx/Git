@@ -338,7 +338,10 @@ scan(void)
 		die("fopen failed");
 	if (!(cache2 = fopen(TRACKCACHE, "w")))
 		die("fopen2 failed");
-	fprintf(cache, "Jukebox\nDVD\n");
+	if (!(access("/dev/dvd", F_OK)))
+		fprintf(cache, "Jukebox\nDVD\n");
+	else
+		fprintf(cache, "Jukebox\n");
 	for (i = 0; i < count; i++) {
 		fprintf(cache, "%s\n", dir[i]);
 
@@ -397,4 +400,3 @@ uptodate(void)
 	closedir(dp);
 	return 1;
 }
-
