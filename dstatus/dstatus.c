@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <time.h>
+#include <fcntl.h>
 #include <X11/Xlib.h>
 
 #define TRACK_FILE      "/tmp/status_msg"
@@ -15,18 +16,24 @@
 #define VOL_FILE        "/tmp/volume"
 #define BAT_NOW         "/sys/class/power_supply/BAT0/charge_now"
 #define BAT_FULL        "/sys/class/power_supply/BAT0/charge_full"
+#define FIFO            "/tmp/mp_pipe"
 #define NET_FILE        "/sys/class/net/wlan0/operstate"
+
+#define LOW_BAT_LVL     5
+#define NOTIFIER        "xmessage"
+#define MESSAGE         "Battery low!"
 
 #define TRACK_STR       "%s   "
 #define MEM_STR         "Mem:%ld  "
 #define VOL_STR         "Vol:%s  "
-#define BAT_STR         "Bat:%ld  "
+#define BAT_STR         "Bat:%d  "
 #define NET_STR         "Net:%s  "
 #define TIME_STR        "%b-%d  %H:%M"
 
 int
 main(void) {
 	Display *dpy;
+	int bat, cpid, fd, reset;
 	long lnum1, lnum2, lnum3, lnum4;
 	char vol[5], net[5], track[50], status[100], *str;
 	time_t current;
@@ -71,7 +78,21 @@ main(void) {
 			fp = fopen(BAT_FULL, "r");
 			fscanf(fp, "%ld\n", &lnum2);
 			fclose(fp);
-			str += sprintf(str, BAT_STR, (lnum1/(lnum2/100)));
+			bat = lnum1/(lnum2/100);
+			if (bat > LOW_BAT_LVL)
+				reset = 0;
+			if (bat <= LOW_BAT_LVL && reset == 0) {
+				reset = 1;
+				if ((fd = open(FIFO, O_WRONLY | O_NONBLOCK)) != -1) {  /* mplayer running */
+					write(fd, "vo_fullscreen 0\n", 17);
+					close(fd);
+				}
+				if ((cpid = fork()) == -1)
+					exit(2);
+				if (cpid == 0)
+					execlp(NOTIFIER, NOTIFIER, MESSAGE, NULL);
+			}
+			str += sprintf(str, BAT_STR, bat);
 		}
 
 		/* Network */
