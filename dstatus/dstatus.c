@@ -21,6 +21,7 @@
 
 #define LOW_BAT_LVL     5
 #define NOTIFIER        "xmessage"
+#define OPTION          "-center"
 #define MESSAGE         "Battery low!"
 
 #define TRACK_STR       "%s   "
@@ -90,7 +91,7 @@ main(void) {
 				if ((cpid = fork()) == -1)
 					exit(2);
 				if (cpid == 0)
-					execlp(NOTIFIER, NOTIFIER, MESSAGE, NULL);
+					execlp(NOTIFIER, NOTIFIER, OPTION, MESSAGE, NULL);
 			}
 			str += sprintf(str, BAT_STR, bat);
 		}
