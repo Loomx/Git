@@ -14,8 +14,7 @@
 #define TRACK_FILE      "/tmp/status_msg"
 #define MEM_FILE        "/proc/meminfo"
 #define VOL_FILE        "/tmp/volume"
-#define BAT_NOW         "/sys/class/power_supply/BAT0/charge_now"
-#define BAT_FULL        "/sys/class/power_supply/BAT0/charge_full"
+#define BAT_FILE        "/sys/class/power_supply/BAT0/capacity"
 #define FIFO            "/tmp/mp_pipe"
 #define NET_FILE        "/sys/class/net/wlan0/operstate"
 
@@ -73,13 +72,9 @@ main(void) {
 		}
 
 		/* Battery */
-		if ((fp = fopen(BAT_NOW, "r"))) {
-			fscanf(fp, "%ld\n", &lnum1);
+		if ((fp = fopen(BAT_FILE, "r"))) {
+			fscanf(fp, "%d\n", &bat);
 			fclose(fp);
-			fp = fopen(BAT_FULL, "r");
-			fscanf(fp, "%ld\n", &lnum2);
-			fclose(fp);
-			bat = lnum1/(lnum2/100);
 			if (bat > LOW_BAT_LVL)
 				reset = 0;
 			if (bat <= LOW_BAT_LVL && reset == 0) {
