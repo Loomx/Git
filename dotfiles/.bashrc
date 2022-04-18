@@ -62,10 +62,10 @@ man () {
 # mount/unmount helper functions
 localmount () {
 	mkdir -p ~/"$1"
-	mount ~/"$1" && builtin cd ~/"$1" || rmdir ~/"$1"
+	mount ~/"$1" && cd ~/"$1" || rmdir ~/"$1"
 }
 localumount () {
-	[[ "$PWD" == ~/"$1"* ]] && builtin cd ~
+	[[ "$PWD" == ~/"$1"* ]] && cd ~
 	umount ~/"$1" && rmdir ~/"$1"
 }
 
