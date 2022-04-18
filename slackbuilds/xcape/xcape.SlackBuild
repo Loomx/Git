@@ -16,7 +16,7 @@ if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
     i?86) ARCH=i486 ;;
     arm*) ARCH=arm ;;
-    *) ARCH=$( uname -m ) ;;
+       *) ARCH=$( uname -m ) ;;
   esac
 fi
 
@@ -24,8 +24,8 @@ fi
 # the name of the created package would be, and then exit. This information
 # could be useful to other scripts.
 if [ ! -z "${PRINT_PACKAGE_NAME}" ]; then
-	echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
-	exit 0
+  echo "$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE"
+  exit 0
 fi
 
 TMP=${TMP:-/tmp/SBo}
@@ -70,7 +70,7 @@ find -L . \
 # Use "-j1" to avoid some warnings
 
 make -j1 LIBDIR=/usr/lib${LIBDIRSUFFIX}
-make install LIBDIR=/usr/lib${LIBDIRSUFFIX} DESTDIR=$PKG MANDIR=/man
+make install LIBDIR=/usr/lib${LIBDIRSUFFIX} DESTDIR=$PKG MANDIR=/man/man1
 
 find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | grep ELF \
   | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
@@ -87,4 +87,4 @@ cat $CWD/slack-desc > $PKG/install/slack-desc
 
 cd $PKG
 /sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.$PKGTYPE
-rm $CWD/$PRGNAM-$VERSION.tar.gz
+rm $CWD/v$VERSION.tar.gz || rm $CWD/$PRGNAM-$VERSION.tar.gz
