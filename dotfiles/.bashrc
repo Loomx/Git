@@ -45,7 +45,7 @@ cd () {
 
 .. () { pushd .. >/dev/null; }
 
-d () { dirs -v | head -n ${1:-20}; }
+d () { dest=$(dirs -v | head | fzy) && eval cd ~${dest:1}; }
 
 fd () { find . -type f -iname \*"$1"\*; }
 
@@ -85,9 +85,7 @@ phone-list () { adb shell ls /sdcard/DCIM/Camera/; }
 phone-get () { adb pull /sdcard/DCIM/Camera/; }
 phone-upload () { adb push "$@" /sdcard/Download/; }
 
-tao () {
-	sed -n "/-$((RANDOM%81+1))-/,/^$/p" ~/Documents/tao.txt
-}
+tao () { sed -n "/-$((RANDOM%81+1))-/,/^$/p" ~/Documents/tao.txt; }
 
 histfix () {
 	history -a
