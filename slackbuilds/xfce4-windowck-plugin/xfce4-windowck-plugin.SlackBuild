@@ -24,6 +24,7 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 PRGNAM=xfce4-windowck-plugin
+#VERSION=${VERSION:-0.4.10}
 VERSION=${VERSION:-master}
 BUILD=${BUILD:-0}
 TAG=${TAG:-_custom}
@@ -57,6 +58,7 @@ fi
 
 set -e
 
+#wget -c https://github.com/invidian/xfce4-windowck-plugin/archive/v$VERSION/xfce4-windowck-plugin-$VERSION.tar.gz
 wget -c https://gitlab.xfce.org/panel-plugins/xfce4-windowck-plugin/-/archive/$VERSION/xfce4-windowck-plugin-$VERSION.tar.gz
 
 rm -rf $PKG
@@ -71,6 +73,9 @@ find -L . \
   -o -perm 511 \) -exec chmod 755 {} \; -o \
  \( -perm 666 -o -perm 664 -o -perm 640 -o -perm 600 -o -perm 444 \
   -o -perm 440 -o -perm 400 \) -exec chmod 644 {} \;
+
+# Fix crash on no active window
+patch -p1 <$CWD/no-active-window.patch
 
 CFLAGS="$SLKCFLAGS" \
 CXXFLAGS="$SLKCFLAGS" \

@@ -1,0 +1,10 @@
+--- ./panel-plugin/title/windowck-title.c.old	2021-01-05 09:00:46.054569943 +1300
++++ ./panel-plugin/title/windowck-title.c	2021-01-05 09:01:23.365570891 +1300
+@@ -124,6 +124,7 @@
+     const gchar *title_text;
+ 
+     if (controlwindow
++      && wnck_window_get_pid(controlwindow)  // if active window has been closed, pid is 0	
+         && ((wnck_window_get_window_type (controlwindow) != WNCK_WINDOW_DESKTOP)
+             || wckp->prefs->show_on_desktop))
+     {
