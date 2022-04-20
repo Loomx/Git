@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=SweetHome3D
-GenericName=Free interior design
-Comment=Interior design furniture on a house 2D plan, with a 3D preview
-Icon=SweetHome3D
-Exec=SweetHome3D
-Categories=Graphics;
-StartupNotify=true
