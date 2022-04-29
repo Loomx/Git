@@ -23,13 +23,6 @@
 #define OPTION          "-center"
 #define MESSAGE         "Battery low!"
 
-#define TRACK_STR       "%s   "
-#define MEM_STR         "Mem:%ld  "
-#define VOL_STR         "Vol:%s  "
-#define BAT_STR         "Bat:%d  "
-#define NET_STR         "Net:%s  "
-#define TIME_STR        "%b-%d  %H:%M"
-
 int
 main(void) {
 	Display *dpy;
@@ -52,7 +45,7 @@ main(void) {
 			fgets(track, 49, fp);
 			track[strcspn(track, "\n")] = 0;
 			fclose(fp);
-			str += sprintf(str, TRACK_STR, track);
+			str += sprintf(str, "%s   ", track);
 		}
 
 		/* Memory */
@@ -60,7 +53,7 @@ main(void) {
 			fscanf(fp, "MemTotal: %ld kB\nMemFree: %ld kB\nMemAvailable: %*d kB\nBuffers: %ld kB\nCached: %ld kB\n",
 			            &lnum1, &lnum2, &lnum3, &lnum4);
 			fclose(fp);
-			str += sprintf(str, MEM_STR, (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));
+			str += sprintf(str, "Mem:%ld  ", (lnum1-(lnum2+lnum3+lnum4))/(lnum1/100));
 		}
 
 		/* Volume */
@@ -68,7 +61,7 @@ main(void) {
 			fgets(vol, 4, fp);
 			vol[strcspn(vol, "%\n")] = 0;
 			fclose(fp);
-			str += sprintf(str, VOL_STR, vol);
+			str += sprintf(str, "Vol:%s  ", vol);
 		}
 
 		/* Battery */
@@ -88,19 +81,19 @@ main(void) {
 				if (cpid == 0)
 					execlp(NOTIFIER, NOTIFIER, OPTION, MESSAGE, NULL);
 			}
-			str += sprintf(str, BAT_STR, bat);
+			str += sprintf(str, "Bat:%d  ", bat);
 		}
 
 		/* Network */
 		if ((fp = fopen(NET_FILE, "r"))) {
 			fscanf(fp, "%4s", net);
 			fclose(fp);
-			str += sprintf(str, NET_STR, net);
+			str += sprintf(str, "Net:%s  ", net);
 		}
 
 		/* Time */
 		time(&current);
-		str += strftime(str, 14, TIME_STR, localtime(&current));
+		str += strftime(str, 14, "%b-%d  %H:%M", localtime(&current));
 
 	XStoreName(dpy, DefaultRootWindow(dpy), status);
 	XSync(dpy, False);
