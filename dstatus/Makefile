@@ -1,7 +1,7 @@
 PKG = dstatus
 SRC = dstatus.c
 CC  = cc
-CFLAGS = -std=c99 -pedantic -Wall -lX11
+CFLAGS = -std=c99 -pedantic -Wall -lX11 -lasound
 PREFIX = /usr/local
 
 ${PKG}: ${SRC}
