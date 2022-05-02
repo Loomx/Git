@@ -63,6 +63,7 @@ static Key keys[] = {
 	{ 0,                   0xffeb,                    spawn,          {.v = dmenucmd } },
 	{ 0,                   0xffec,                    spawn,          {.v = termcmd } },
 	{ 0,                   0x1008ff14,                spawn,          {.v = playcmd } },
+	{ MODKEY,              0x1008ff14,                spawn,          {.v = stopcmd } },
 	{ 0,                   0x1008ff15,                spawn,          {.v = stopcmd } },
 	{ 0,                   0x1008ff16,                spawn,          {.v = prevcmd } },
 	{ 0,                   0x1008ff17,                spawn,          {.v = nextcmd } },
@@ -98,4 +99,3 @@ static Button buttons[] = {
 	{ ClkTagBar,            0,              Button3,        tag,            {0} },
 	{ ClkTagBar,            ControlMask,    Button3,        toggletag,      {0} },
 };
-
