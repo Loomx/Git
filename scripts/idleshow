@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# /usr/local/bin/idleshow
+
+mkdir -p ~/.cache/pictures/ 
+
+while sleep 30; do
+
+	# is there a fullscreen window? If so, keep waiting
+	WIN=$(xprop -root _NET_ACTIVE_WINDOW | cut -c 41-49)
+	xprop -id "$WIN" | grep -q STATE_FULLSCREEN && continue
+
+	# has it been over 300s idle (5 min)? If so, update picture cache...
+	if (( $(xidle) > 300 )); then
+		rm -f ~/.cache/pictures/*
+		find ~/Pictures/ -type f -print0 | shuf -z | head -zn 10000 | \
+			xargs -0 ln -st ~/.cache/pictures/
+
+		# ... then start slideshow
+		gthumb -s ~/.cache/pictures/ 2>/dev/null
+	fi
+done
