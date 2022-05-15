@@ -1,7 +1,0 @@
-#!/bin/sh
-
-while sleep "${1:-110}"; do
-	WIN=$(xprop -root _NET_ACTIVE_WINDOW | cut -c 41-49)
-	xprop -id $WIN | grep -q STATE_FULLSCREEN && \
-		xscreensaver-command -deactivate
-done
