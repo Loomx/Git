@@ -13,7 +13,7 @@ while sleep 30; do
 	# has it been over 300s idle (5 min)? If so, update picture cache...
 	if (( $(xidle) > 300 )); then
 		rm -f ~/.cache/pictures/*
-		find ~/Pictures/ -type f -print0 | head -zn 10000 | \
+		find ~/Pictures/ -type f -print0 | shuf -z | head -zn 10000 | \
 			xargs -0 ln -st ~/.cache/pictures/
 
 		# ... then start slideshow
