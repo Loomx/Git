@@ -618,10 +618,10 @@ readstdin(void) {
 	size_t i, max = 0, size = 0;
 	FILE *cache;
 
-    if (dmenurun)
+    if (dmenurun) {
         if (!(cache = fopen(CACHE, "r")))
             eprintf("open failed");
-
+	}
 	/* read each line from stdin or cache and add it to the item list */
 	for (i = 0; fgets(buf, sizeof buf, (dmenurun) ? cache : stdin); i++) {
 		if (i+1 >= size / sizeof *items)
@@ -763,7 +763,7 @@ setup(void) {
 		/* no focused window is on screen, so use pointer location instead */
 		if (mon == -1 && !area && XQueryPointer(dc->dpy, root, &dw, &dw, &x, &y, &di, &di, &du))
 			for (i = 0; i < n; i++)
-				if (INTERSECT(x, y, 1, 1, info[i]))
+				if (INTERSECT(x, y, 1, 1, info[i]) != 0)
 					break;
 
 		x = info[i].x_org;
