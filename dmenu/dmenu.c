@@ -88,6 +88,8 @@ main(int argc, char *argv[]) {
 		}
 		else if (!strcmp(argv[i], "-b"))   /* appears at the bottom of the screen */
 			topbar = 0;
+		else if (!strcmp(argv[i], "-c"))   /* centers dmenu on screen */
+			centered = 1;
 		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
 			fast = 1;
 		else if (!strcmp(argv[i], "-i")) { /* case-insensitive item matching */
@@ -583,6 +585,15 @@ match(void) {
 	calcoffsets();
 }
 
+int
+max_textw(void)
+{
+	int len = 0;
+	for (Item *item = items; item && item->text; item++)
+		len = MAX(strlen(item->text), len);
+	return len;
+}
+
 size_t
 nextrune(int inc) {
 	ssize_t n;
@@ -736,6 +747,7 @@ setup(void) {
 	bh = dc->font.height + 2;
 	lines = MAX(lines, 0);
 	mh = (lines + 1) * bh;
+	promptw = (prompt && *prompt) ? strlen(prompt) : 0;
 #ifdef XINERAMA
 	if ((info = XineramaQueryScreens(dc->dpy, &n))) {
 		int a, j, di, i = 0, area = 0;
@@ -766,19 +778,30 @@ setup(void) {
 				if (INTERSECT(x, y, 1, 1, info[i]) != 0)
 					break;
 
-		x = info[i].x_org;
-		y = info[i].y_org + (topbar ? 0 : info[i].height - mh);
-		mw = info[i].width;
+		if (centered) {
+			mw = MIN(MAX(max_textw() + promptw, min_width), info[i].width);
+			x = info[i].x_org + ((info[i].width  - mw) / 2);
+			y = info[i].y_org + ((info[i].height - mh) / 2);
+		} else {
+			x = info[i].x_org;
+			y = info[i].y_org + (topbar ? 0 : info[i].height - mh);
+			mw = info[i].width;
+		}
 		XFree(info);
 	}
 	else
 #endif
 	{
-		x = 0;
-		y = topbar ? 0 : DisplayHeight(dc->dpy, screen) - mh;
-		mw = DisplayWidth(dc->dpy, screen);
+		if (centered) {
+			mw = MIN(MAX(max_textw() + promptw, min_width), DisplayWidth(dc->dpy, screen));
+			x = (DisplayWidth(dc->dpy, screen)  - mw) / 2;
+			y = (DisplayHeight(dc->dpy, screen) - mh) / 2;
+		} else {
+			x = 0;
+			y = topbar ? 0 : DisplayHeight(dc->dpy, screen) - mh;
+			mw = DisplayWidth(dc->dpy, screen);
+		}
 	}
-	promptw = (prompt && *prompt) ? textw(dc, prompt) : 0;
 	inputw = MIN(inputw, mw/3);
 	match();
 
@@ -834,7 +857,7 @@ uptodate(void) {
 
 void
 usage(void) {
-	fputs("usage: dmenu [-b] [-f] [-i] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
+	fputs("usage: dmenu [-b] [-c] [-f] [-i] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
 	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-v]\n"
 	      "       dmenu_run\n", stderr);
 	exit(EXIT_FAILURE);
