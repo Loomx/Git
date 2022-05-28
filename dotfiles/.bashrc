@@ -45,8 +45,11 @@ cd () {
 
 .. () { pushd .. >/dev/null; }
 
-d () { dest=$(dirs -v | awk '!seen[$2]++' | head | fzy) &&
-	   eval cd ${dest:4}; }
+d () {
+	dstack=( $(dirs -p | awk '!seen[$0]++' | head) )
+	dest=$(for i in "${!dstack[@]}"; do printf "$i ${dstack[i]}\n"; done | fzy) &&
+		eval cd ${dest:2}
+}
 
 fd () { find . -type f -iname \*"$1"\*; }
 
