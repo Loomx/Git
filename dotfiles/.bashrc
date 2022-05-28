@@ -45,7 +45,8 @@ cd () {
 
 .. () { pushd .. >/dev/null; }
 
-d () { dest=$(dirs -v | head | fzy) && eval cd ~${dest:1}; }
+d () { dest=$(dirs -v | awk '!seen[$2]++' | head | fzy) &&
+	   eval cd ~${dest:1}; }
 
 fd () { find . -type f -iname \*"$1"\*; }
 
