@@ -46,12 +46,10 @@ cd () {
 .. () { pushd .. >/dev/null; }
 
 d () {
-	ifs="$IFS"
-	IFS=$'\n'
+	local IFS=$'\n'
 	dstack=( $(dirs -l -p | awk '!seen[$0]++' | head) )
 	dest=$(for i in ${!dstack[@]}; do printf "$i ${dstack[i]}\n"; done | fzy | cut -c 3-) &&
 		eval cd ${dest@Q}
-	IFS="$ifs"
 }
 
 fd () { find . -type f -iname \*"$1"\*; }
