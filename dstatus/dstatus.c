@@ -21,9 +21,6 @@
 #define NET_FILE        "/sys/class/net/wlan0/operstate"
 
 #define LOW_BAT_LVL     5
-#define NOTIFIER        "xmessage"
-#define OPTION          "-center"
-#define MESSAGE         "Battery low!"
 
 int
 main(void) {
@@ -94,7 +91,8 @@ main(void) {
 				if ((cpid = fork()) == -1)
 					exit(2);
 				if (cpid == 0)
-					execlp(NOTIFIER, NOTIFIER, OPTION, MESSAGE, NULL);
+					execl("/bin/sh", "sh", "-c",
+						"printf \"\n\n\n\" | dmenu -c -l 3 -p \"Battery low!\"", (char *) NULL);
 			}
 			str += sprintf(str, "Bat:%d  ", bat);
 		}
