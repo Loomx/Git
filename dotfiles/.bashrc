@@ -48,8 +48,8 @@ cd () {
 d () {
 	local IFS=$'\n'
 	dstack=( $(dirs -l -p | awk '!seen[$0]++' | head) )
-	dest=$(for i in ${!dstack[@]}; do printf "$i ${dstack[i]}\n"; done | fzy | cut -c 3-) &&
-		eval cd ${dest@Q}
+	dest=$(for i in ${!dstack[@]}; do printf "$i ${dstack[i]}\n"; done | fzy | cut -c 3-)
+	[ "$dest" ] && eval cd ${dest@Q}
 }
 
 fd () { find . -type f -iname \*"$1"\*; }
