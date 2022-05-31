@@ -92,7 +92,7 @@ main(void) {
 					exit(2);
 				if (cpid == 0)
 					execl("/bin/sh", "sh", "-c",
-						"printf \"\n\n\n\" | dmenu -c -l 3 -p \"Battery low!\"", (char *) NULL);
+						"dmenu -c -l 3 -p 'Battery low!' <<<$'\n\n'", (char *) NULL);
 			}
 			str += sprintf(str, "Bat:%d  ", bat);
 		}
