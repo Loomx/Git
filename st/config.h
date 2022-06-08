@@ -7,7 +7,7 @@
  */
 static char font[]      = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";
 static int borderpx     = 2;
-static int histsize     = 2000;
+static int histsize     = 20000;
 static char shell[]     = "/bin/sh";
 static char *utmp       = NULL;
 static char stty_args[] = "stty raw -echo -iexten echonl";
