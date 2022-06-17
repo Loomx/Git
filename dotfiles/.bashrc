@@ -15,7 +15,6 @@ PROMPT_COMMAND='[ "$PWD" != "$Prev" ] && ls --color --group-directories-first; P
 shopt -s autocd cdspell checkwinsize globstar
 HISTCONTROL=erasedups
 HISTSIZE=20000
-HISTFILESIZE=20000
 set -o vi
 
 bind '"\t":menu-complete'
