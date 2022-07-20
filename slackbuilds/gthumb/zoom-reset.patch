@@ -1,0 +1,13 @@
+diff -Naur gthumb-3.2.8.orig/gthumb/gth-image-viewer.c gthumb-3.2.8/gthumb/gth-image-viewer.c
+--- gthumb-3.2.8.orig/gthumb/gth-image-viewer.c	2013-09-28 03:38:40.000000000 +1200
++++ gthumb-3.2.8/gthumb/gth-image-viewer.c	2022-07-20 15:01:50.384332082 +1200
+@@ -1482,6 +1482,9 @@
+ 	gtk_binding_entry_add_signal (binding_set, GDK_KEY_x, 0,
+ 				      "set_fit_mode", 1,
+ 				      GTH_TYPE_FIT, GTH_FIT_SIZE_IF_LARGER);
++	gtk_binding_entry_add_signal (binding_set, GDK_KEY_0, 0,
++				      "set_fit_mode", 1,
++				      GTH_TYPE_FIT, GTH_FIT_SIZE_IF_LARGER);
+ 	gtk_binding_entry_add_signal (binding_set, GDK_KEY_KP_Multiply, 0,
+ 				      "set_fit_mode", 1,
+ 				      GTH_TYPE_FIT, GTH_FIT_SIZE_IF_LARGER);
