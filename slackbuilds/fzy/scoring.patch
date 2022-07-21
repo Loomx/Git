@@ -1,0 +1,12 @@
+diff -Naur fzy-1.0.orig/src/bonus.h fzy-1.0/src/bonus.h
+--- fzy-1.0.orig/src/bonus.h	2018-09-24 10:05:55.000000000 +1200
++++ fzy-1.0/src/bonus.h	2022-07-22 11:06:42.115257111 +1200
+@@ -77,7 +77,7 @@
+ 		['/'] = SCORE_MATCH_SLASH,
+ 		['-'] = SCORE_MATCH_WORD,
+ 		['_'] = SCORE_MATCH_WORD,
+-		[' '] = SCORE_MATCH_WORD,
++		[' '] = SCORE_MATCH_SLASH,
+ 		['.'] = SCORE_MATCH_DOT,
+ 	},
+ 	{
