@@ -92,6 +92,9 @@ cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
 
+mkdir -p $PKG/etc
+cat $CWD/main.conf > $PKG/etc/main.conf
+
 cd $PKG
 /sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-txz} \
   && rm $CWD/$PRGNAM-$VERSION.tar.xz
