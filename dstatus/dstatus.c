@@ -9,13 +9,11 @@
 #include <string.h>
 #include <time.h>
 #include <fcntl.h>
-#include <alloca.h>
-#include <alsa/asoundlib.h>
-#include <alsa/control.h>
 #include <X11/Xlib.h>
 
 #define TRACK_FILE      "/tmp/status_msg"
 #define MEM_FILE        "/proc/meminfo"
+#define VOL_FILE        "/tmp/volume"
 #define BAT_FILE        "/sys/class/power_supply/BAT0/capacity"
 #define FIFO            "/tmp/mp_pipe"
 #define NET_FILE        "/sys/class/net/wlan0/operstate"
@@ -25,31 +23,16 @@
 int
 main(void) {
 	Display *dpy;
-	int bat, cpid, fd, reset, vol;
+	int bat, cpid, fd, reset;
 	long lnum1, lnum2, lnum3, lnum4;
-	char net[5], track[50], status[100], *str;
+	char vol[5], net[5], track[50], status[100], *str;
 	time_t current;
 	FILE *fp;
-	snd_hctl_t *hctl;
-	snd_ctl_elem_id_t *id;
-	snd_ctl_elem_value_t *control;
 
 	if (!(dpy = XOpenDisplay(NULL))) {
 		fprintf(stderr, "ERROR: could not open display\n");
 		exit(1);
 	}
-
-	if ((snd_hctl_open(&hctl, "hw:0", 0))) {
-		fprintf(stderr, "ERROR: could not open soundcard\n");
-		exit(2);
-	}
-	snd_hctl_load(hctl);
-	snd_ctl_elem_id_alloca(&id);
-	snd_ctl_elem_id_set_interface(id, SND_CTL_ELEM_IFACE_MIXER);
-	snd_ctl_elem_id_set_name(id, "Master Playback Volume");
-	snd_hctl_elem_t *elem = snd_hctl_find_elem(hctl, id);
-	snd_ctl_elem_value_alloca(&control);
-	snd_ctl_elem_value_set_id(control, id);
 
 	for (;;sleep(1)) {
 		str = status;
@@ -71,9 +54,11 @@ main(void) {
 		}
 
 		/* Volume */
-		if (!(snd_hctl_elem_read(elem, control))) {
-			vol = (int)snd_ctl_elem_value_get_integer(control,0);
-			str += sprintf(str, "Vol:%d  ", vol);
+		if ((fp = fopen(VOL_FILE, "r"))) {
+			fgets(vol, 4, fp);
+			vol[strcspn(vol, "%\n")] = 0;
+			fclose(fp);
+			str += sprintf(str, "Vol:%s   ", vol);
 		}
 
 		/* Battery */
@@ -113,6 +98,5 @@ main(void) {
 	}
 
 	XCloseDisplay(dpy);
-	snd_hctl_close(hctl);
 	return 0;
 }

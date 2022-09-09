@@ -4,13 +4,14 @@ dstatus is a simple statusbar for dwm.
 
 It displays the following:
 
-string from /tmp/status_msg | memory % | volume % | battery % | date/time
+string from /tmp/status_msg | memory % | volume % from /tmp/volume | battery % | date/time
 
 If any of the files don't exist, it will silently omit them.
 
-If battery level drops below 5% an alert is displayed.
+If battery level drops below 8% an alert is displayed.
 
 See ../player for /tmp/status_msg & /tmp/mp_pipe
+See ../dwm/config.h for /tmp/volume
 
 
 Installation
