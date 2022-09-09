@@ -71,6 +71,7 @@ static Key keys[] = {
 	{ 0,                   0x1008ff02,                spawn,          SHCMD("Mon=$(cat /sys/class/backlight/intel_backlight/brightness); echo $((Mon+1920)) >/sys/class/backlight/intel_backlight/brightness") },
 //	{ 0,                   0x1008ff06,                spawn,          SHCMD("Kbd=$(cat ~/.kbd_brightness); echo $((Kbd-2)) >~/.kbd_brightness") },
 //	{ 0,                   0x1008ff05,                spawn,          SHCMD("Kbd=$(cat ~/.kbd_brightness); echo $((Kbd+2)) >~/.kbd_brightness") },
+	{ MODKEY,              XK_b,                      togglebar,      {0} },
 	{ MODKEY,              XK_Tab,                    focusstack,     {.i = +1 } },
 	{ MODKEY,              XK_space,                  setlayout,      {0} },
 	{ MODKEY,              XK_z,                      zoom,           {0} },
