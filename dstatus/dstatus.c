@@ -20,7 +20,7 @@
 #define FIFO            "/tmp/mp_pipe"
 #define NET_FILE        "/sys/class/net/wlan0/operstate"
 
-#define LOW_BAT_LVL     5
+#define LOW_BAT_LVL     8
 
 int
 main(void) {
