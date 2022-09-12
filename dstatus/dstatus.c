@@ -58,7 +58,7 @@ main(void) {
 			fgets(vol, 4, fp);
 			vol[strcspn(vol, "%\n")] = 0;
 			fclose(fp);
-			str += sprintf(str, "Vol:%s   ", vol);
+			str += sprintf(str, "Vol:%s  ", vol);
 		}
 
 		/* Battery */
