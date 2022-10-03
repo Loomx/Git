@@ -19,7 +19,7 @@ _sbotool()
 			return
 			;;
 		upgrade)
-			local pkgs=$(for i in $(ls /var/log/packages | grep SBo$ | \
+			local pkgs=$(for i in $(ls /var/log/packages/ | grep SBo$ | \
 			             rev | cut -d- -f4- | rev); do echo ${i}; done)
 			COMPREPLY+=( $( compgen -W "${pkgs}" -- "$2" ) )
 			return
