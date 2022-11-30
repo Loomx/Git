@@ -4,13 +4,13 @@
 # based on https://github.com/ivandavidov/minimal-linux-script/blob/master/minimal.sh
 # and Slackware's huge kernel config
 
-KERNEL=5.19.17
+KERNEL=5.15.80
 BUSYBOX=1.35.0
 
 set -xe
 
 wget -c https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-$KERNEL.tar.xz
-wget -c https://mirrors.slackware.com/slackware/slackware64-current/source/k/kernel-configs/config-huge-$KERNEL.x64
+wget -c https://mirrors.slackware.com/slackware/slackware64-15.0/patches/source/linux-$KERNEL/kernel-configs/config-huge-$KERNEL.x64
 wget -c https://busybox.net/downloads/busybox-$BUSYBOX.tar.bz2
 
 tar xf busybox-$BUSYBOX.tar.bz2
