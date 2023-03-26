@@ -106,9 +106,18 @@ main(void) {
 
 		/* Time */
 		current = time(NULL);
-		ptr = ltoa(current);
-		str += strlcpy(str, "  ", 8);
-		str += strlcpy(str, ptr, 64);
+		//lnum1 = current % 60;  // secs
+		current /= 60;
+		lnum2 = current % 60;  // minutes
+		current /= 60;
+		current += 13;  /* summer = 13, winter = 12 */
+		lnum3 = current % 24;  // hours
+		str += strlcpy(str, "  ", 2);
+		str += strlcpy(str, ltoa(lnum3), 2);
+		str += strlcpy(str, ":", 1);
+		if (lnum2 < 10)
+			str += strlcpy(str, "0", 1);
+		str += strlcpy(str, ltoa(lnum2), 2);
 
 //		XStoreName(dpy, DefaultRootWindow(dpy), status);
 //		XSync(dpy, False);
