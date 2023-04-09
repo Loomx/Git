@@ -10,15 +10,16 @@ Hostname=$HOSTNAME
 
 exec > >(tee -a $Logfile) 2>&1
 
-printf "\n#### Starting rbackup script - $(date) ####\n"
+printf "\n################################################################\n\n"
+printf "#### Starting rbackup script - $(date) ####\n\n"
 
 printf "Checking DATA drive is mounted... "
 ssh $Server mkdir -p $Drive 
 ssh $Server mount $Drive
 ssh $Server mountpoint -q $Drive && printf "done\n" || \
-	{ printf "DATA drive not accessible - exiting\n"; exit 1; }
+	{ printf "DATA drive not accessible - exiting\n\n"; exit 1; }
 
-printf "#### Making rbackup snapshot $Hostname-$Date ####\n"
+printf "#### Making rbackup snapshot $Hostname-$Date ####\n\n"
 rsync -aHxv --delete-after \
 	--exclude=.cache/ \
 	--exclude=.thunderbird/Profiles/$USER.default/ImapMail/ \
@@ -31,12 +32,11 @@ ssh $Server "
 	cd $Drive
 	rm $Hostname
 	ln -sv $Hostname-$Date $Hostname || \
-		printf \"linking snapshot $Hostname-$Date failed\" "
+		printf \"Linking snapshot $Hostname-$Date failed\n\n\" "
 
 printf "\nUnmounting DATA drive... "
 ssh $Server umount $Drive
-ssh $Server rmdir $Drive && printf "done" 
+ssh $Server rmdir $Drive && printf "done\n" 
 
 printf "\nEnd rbackup script - $(date) ####\n"
-printf "\n################################################################\n\n"
 sleep 1
