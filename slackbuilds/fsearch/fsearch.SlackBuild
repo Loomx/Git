@@ -3,7 +3,7 @@
 # Slackware build script for fsearch
 
 PRGNAM=fsearch
-VERSION=${VERSION:-0.2}
+VERSION=${VERSION:-0.2.2}
 BUILD=${BUILD:-0}
 TAG=${TAG:-_custom}
 
