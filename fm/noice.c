@@ -252,7 +252,8 @@ info(char *fmt, ...)
 	vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
 	move(LINES - 2, 0);
-	wprintw(Text0, "%s\n", buf);
+	wprintw(Text1, "%s\n", buf);
+	wrefresh(Text1);
 }
 
 /* Display warning as a message */
@@ -266,7 +267,8 @@ warn(char *fmt, ...)
 	vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
 	move(LINES - 2, 0);
-	wprintw(Text0, "%s: %s\n", buf, strerror(errno));
+	wprintw(Text1, "%s: %s\n", buf, strerror(errno));
+	wrefresh(Text1);
 }
 
 /* Kill curses and display error before exiting */
@@ -380,7 +382,7 @@ mkpath(char *dir, char *name, char *out, size_t n)
 }
 
 void
-printent(struct entry *ent, int active, int preview)
+printent(struct entry *ent, int active)
 {
 	char name[PATH_MAX];
 	unsigned int len = (COLS / 2) - strlen(CURSR) - 3;
@@ -422,12 +424,6 @@ printent(struct entry *ent, int active, int preview)
 	wattron(Text0, attr);
 	wprintw(Text0, "%s%s\n", active ? CURSR : EMPTY, name);
 	wattroff(Text0, attr);
-
-	if (preview) {
-		wattron(Text1, attr);
-		wprintw(Text1, "%s%s\n", active ? CURSR : EMPTY, name);
-		wattroff(Text1, attr);
-	}
 }
 
 int
@@ -528,70 +524,29 @@ populate(char *path, char *oldpath, char *fltr)
 }
 
 void
-drawbox(void)
-{
-	Box0 = newwin(LINES, COLS / 2, 0, 0);
-	box(Box0, 0, 0);
-	Text0 = newwin(LINES - 2, (COLS / 2) - 2, 1, 1);
-	wrefresh(Box0);
-	wrefresh(Text0);
-
-	Box1 = newwin(LINES, COLS / 2, 0, COLS / 2);
-	box(Box1, 0, 0);
-	Text1 = newwin(LINES - 2, (COLS / 2) - 2, 1, (COLS / 2) + 1);
-	wrefresh(Box1);
-	wrefresh(Text1);
-}
-
-void
-peek(char* path)
-{
-	char cwd[PATH_MAX], newpath[PATH_MAX];
-	struct stat sb;
-	int r, fd;
-
-	mkpath(cwd, dents[cur].name, newpath, sizeof(newpath));
-	DPRINTF_S(newpath);
-
-	/* Get path info */
-	fd = open(newpath, O_RDONLY | O_NONBLOCK);
-	if (fd == -1) {
-		warn("open");
-	}
-	r = fstat(fd, &sb);
-	if (r == -1) {
-		warn("fstat");
-		close(fd);
-	}
-	close(fd);
-	DPRINTF_U(sb.st_mode);
-
-	switch (sb.st_mode & S_IFMT) {
-		case S_IFDIR:
-			if (canopendir(newpath) == 0) {
-				warn("canopendir");
-			}
-			wprintw(Text1, CWD "%s\n", newpath);
-
-		case S_IFREG:
-			wprintw(Text1, CWD "%s\n", newpath);
-		default:
-			info("Unsupported file");
-	}
-}
-
-void
 redraw(char *path)
 {
-	char cwd[PATH_MAX], cwdresolved[PATH_MAX];
+	char cwd[PATH_MAX], cwdresolved[PATH_MAX]; 
+	char newpath[PATH_MAX];
 	size_t ncols;
+	struct stat sb;
 	int nlines, odd;
 	int i;
+	int r, fd;
 
 	nlines = MIN(LINES - 5, ndents);
 
 	/* Set up screen */
-	drawbox();
+	Box0 = newwin(LINES, COLS / 2, 0, 0);
+	box(Box0, 0, 0);
+	wrefresh(Box0);
+
+	Box1 = newwin(LINES, COLS / 2, 0, COLS / 2);
+	box(Box1, 0, 0);
+	wrefresh(Box1);
+
+	Text0 = newwin(LINES - 2, (COLS / 2) - 2, 1, 1);
+	Text1 = newwin(LINES - 2, (COLS / 2) - 2, 1, (COLS / 2) + 1);
 
 	/* Strip trailing slashes */
 	for (i = strlen(path) - 1; i > 0; i--)
@@ -617,20 +572,54 @@ redraw(char *path)
 	odd = ISODD(nlines);
 	if (cur < nlines / 2) {
 		for (i = 0; i < nlines; i++)
-			printent(&dents[i], i == cur, 0);
+			printent(&dents[i], i == cur);
 	} else if (cur >= ndents - nlines / 2) {
 		for (i = ndents - nlines; i < ndents; i++)
-			printent(&dents[i], i == cur, 0);
+			printent(&dents[i], i == cur);
 	} else {
 		for (i = cur - nlines / 2;
 		     i < cur + nlines / 2 + odd; i++)
-			printent(&dents[i], i == cur, 0);
+			printent(&dents[i], i == cur);
 	}
 	wrefresh(Text0);
+
+	/* Print preview */
+	if (ndents == 0)
+		return;
+	mkpath(path, dents[cur].name, newpath, sizeof(newpath));
 	
-	//for (i = 0; i < nlines; i++)
-		//printent(&dents[i], 0, 1);
-	peek(path);
+	fd = open(newpath, O_RDONLY | O_NONBLOCK);
+	if (fd == -1) {
+		warn("open");
+		return;
+	}
+	r = fstat(fd, &sb);
+	if (r == -1) {
+		warn("fstat");
+		close(fd);
+		return;
+	}
+	close(fd);
+
+	switch (sb.st_mode & S_IFMT) {
+	case S_IFDIR:
+		if (canopendir(newpath) == 0) {
+			warn("canopendir");
+			return;
+		}
+		wprintw(Text1, CWD "Dir: %s\n\n", newpath);
+		break;
+		
+	case S_IFREG:
+		wprintw(Text1, CWD "File: %s\n\n", newpath);
+		break;
+
+	default:
+		info("Unsupported file");
+		break;
+	}
+	
+	//wprintw(Text1, CWD "%s\n\n", newpath);
 	wrefresh(Text1);
 }
 
