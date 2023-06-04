@@ -561,12 +561,12 @@ void
 redraw(char *path)
 {
 	char cwd[PATH_MAX], cwdresolved[PATH_MAX]; 
-	char newpath[PATH_MAX];
-	size_t ncols;
+	char newpath[PATH_MAX], line[LINE_MAX];
 	struct stat sb;
-	int nlines, nplines, odd;
+	int ncols, nlines, nplines, odd;
 	int i;
 	int r, fd;
+	FILE *fp;
 
 	nlines = MIN(LINES - 5, ndents);
 
@@ -620,9 +620,7 @@ redraw(char *path)
 	wrefresh(Text0);
 
 	/* Print preview */
-
 	mkpath(path, dents[cur].name, newpath, sizeof(newpath));
-	
 	fd = open(newpath, O_RDONLY | O_NONBLOCK);
 	if (fd == -1) {
 		warn("open");
@@ -635,6 +633,8 @@ redraw(char *path)
 		return;
 	}
 	close(fd);
+
+	wclear(Text1);
 
 	switch (sb.st_mode & S_IFMT) {
 	case S_IFDIR:
@@ -657,14 +657,20 @@ redraw(char *path)
 		break;
 		
 	case S_IFREG:
-		wprintw(Text1, CWD " File: %s\n\n", newpath);
+		//wprintw(Text1, CWD " File: %s\n\n", newpath);
+		fp = fopen(newpath, "r");
+		for (i = 0; i < LINES - 3; i++) {
+			if (!(fgets(line, COLS / 2 - 2, fp)))
+				break;
+			wprintw(Text1, "  %.*s", ncols, line);
+		}
+		fclose(fp);
 		break;
 
 	default:
 		info("Unsupported file");
 		break;
 	}
-	
 	//wprintw(Text1, CWD "%s\n\n", newpath);
 	wrefresh(Text1);
 }
