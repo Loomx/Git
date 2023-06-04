@@ -451,10 +451,10 @@ dentfill(char *path, struct entry **dents,
 		if (strcmp(dp->d_name, ".") == 0 ||
 		    strcmp(dp->d_name, "..") == 0)
 			continue;
-		if (win == 0) {
+//		if (win == 0) {
 			if (filter(re, dp->d_name) == 0)
 				continue;
-		}
+//		}
 		*dents = xrealloc(*dents, (n + 1) * sizeof(**dents));
 		strlcpy((*dents)[n].name, dp->d_name, sizeof((*dents)[n].name));
 		/* Get mode flags */
@@ -534,16 +534,21 @@ populate(char *path, char *oldpath, char *fltr)
 int
 ppopulate(char *path)
 {
+	regex_t re;
+
 	/* Can fail when permissions change while browsing */
 	if (canopendir(path) == 0)
 		return -1;
+
+	setfilter(&re, "^[^.]");
 
 	dentfree(pdents);
 
 	npdents = 0;
 	pdents = NULL;
 
-	npdents = dentfill(path, &pdents, visible, NULL, 1);
+	npdents = dentfill(path, &pdents, visible, &re, 1);
+	freefilter(&re);
 	if (npdents == 0)
 		return 0; /* Empty result */
 
@@ -595,7 +600,7 @@ redraw(char *path)
 	cwd[ncols - strlen(CWD) - 1] = '\0';
 	realpath(cwd, cwdresolved);
 
-	wprintw(Text0, CWD "%s\n\n", cwdresolved);
+	wprintw(Text0, CWD " %s\n\n", cwdresolved);
 
 	/* Print listing */
 	odd = ISODD(nlines);
@@ -610,6 +615,8 @@ redraw(char *path)
 		     i < cur + nlines / 2 + odd; i++)
 			printent(&dents[i], i == cur, 0);
 	}
+	if (ndents > LINES - 3)
+		wprintw(Text0, "   %s\n", "...");
 	wrefresh(Text0);
 
 	/* Print preview */
@@ -645,10 +652,12 @@ redraw(char *path)
 		nplines = MIN(LINES - 3, npdents);
 		for (i = 0; i < nplines; i++)
 			printent(&pdents[i], 0, 1);
+		if (npdents > LINES - 3)
+			wprintw(Text1, "   %s\n", "...");
 		break;
 		
 	case S_IFREG:
-		wprintw(Text1, CWD "File: %s\n\n", newpath);
+		wprintw(Text1, CWD " File: %s\n\n", newpath);
 		break;
 
 	default:
