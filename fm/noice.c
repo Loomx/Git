@@ -72,9 +72,9 @@ struct entry {
 
 /* Global context */
 WINDOW *Box0, *Box1, *Text0, *Text1;
-struct entry *dents;
+struct entry *dents, *pdents;
 char *argv0;
-int ndents, cur;
+int ndents, npdents, cur;
 int idle;
 
 /*
@@ -382,7 +382,7 @@ mkpath(char *dir, char *name, char *out, size_t n)
 }
 
 void
-printent(struct entry *ent, int active)
+printent(struct entry *ent, int active, int win)
 {
 	char name[PATH_MAX];
 	unsigned int len = (COLS / 2) - strlen(CURSR) - 3;
@@ -421,14 +421,20 @@ printent(struct entry *ent, int active)
 		name[len] = '\0';
 	}
 
-	wattron(Text0, attr);
-	wprintw(Text0, "%s%s\n", active ? CURSR : EMPTY, name);
-	wattroff(Text0, attr);
+	if (win == 0) {
+		wattron(Text0, attr);
+		wprintw(Text0, "%s%s\n", active ? CURSR : EMPTY, name);
+		wattroff(Text0, attr);
+	} else {
+		wattron(Text1, attr);
+		wprintw(Text1, "%s%s\n", EMPTY, name);
+		wattroff(Text1, attr);
+	}
 }
 
 int
 dentfill(char *path, struct entry **dents,
-	 int (*filter)(regex_t *, char *), regex_t *re)
+	 int (*filter)(regex_t *, char *), regex_t *re, int win)
 {
 	char newpath[PATH_MAX];
 	DIR *dirp;
@@ -445,8 +451,10 @@ dentfill(char *path, struct entry **dents,
 		if (strcmp(dp->d_name, ".") == 0 ||
 		    strcmp(dp->d_name, "..") == 0)
 			continue;
-		if (filter(re, dp->d_name) == 0)
-			continue;
+		if (win == 0) {
+			if (filter(re, dp->d_name) == 0)
+				continue;
+		}
 		*dents = xrealloc(*dents, (n + 1) * sizeof(**dents));
 		strlcpy((*dents)[n].name, dp->d_name, sizeof((*dents)[n].name));
 		/* Get mode flags */
@@ -511,7 +519,7 @@ populate(char *path, char *oldpath, char *fltr)
 	ndents = 0;
 	dents = NULL;
 
-	ndents = dentfill(path, &dents, visible, &re);
+	ndents = dentfill(path, &dents, visible, &re, 0);
 	freefilter(&re);
 	if (ndents == 0)
 		return 0; /* Empty result */
@@ -523,6 +531,27 @@ populate(char *path, char *oldpath, char *fltr)
 	return 0;
 }
 
+int
+ppopulate(char *path)
+{
+	/* Can fail when permissions change while browsing */
+	if (canopendir(path) == 0)
+		return -1;
+
+	dentfree(pdents);
+
+	npdents = 0;
+	pdents = NULL;
+
+	npdents = dentfill(path, &pdents, visible, NULL, 1);
+	if (npdents == 0)
+		return 0; /* Empty result */
+
+	qsort(pdents, npdents, sizeof(*pdents), entrycmp);
+
+	return 0;
+}
+
 void
 redraw(char *path)
 {
@@ -530,7 +559,7 @@ redraw(char *path)
 	char newpath[PATH_MAX];
 	size_t ncols;
 	struct stat sb;
-	int nlines, odd;
+	int nlines, nplines, odd;
 	int i;
 	int r, fd;
 
@@ -572,20 +601,19 @@ redraw(char *path)
 	odd = ISODD(nlines);
 	if (cur < nlines / 2) {
 		for (i = 0; i < nlines; i++)
-			printent(&dents[i], i == cur);
+			printent(&dents[i], i == cur, 0);
 	} else if (cur >= ndents - nlines / 2) {
 		for (i = ndents - nlines; i < ndents; i++)
-			printent(&dents[i], i == cur);
+			printent(&dents[i], i == cur, 0);
 	} else {
 		for (i = cur - nlines / 2;
 		     i < cur + nlines / 2 + odd; i++)
-			printent(&dents[i], i == cur);
+			printent(&dents[i], i == cur, 0);
 	}
 	wrefresh(Text0);
 
 	/* Print preview */
-	if (ndents == 0)
-		return;
+
 	mkpath(path, dents[cur].name, newpath, sizeof(newpath));
 	
 	fd = open(newpath, O_RDONLY | O_NONBLOCK);
@@ -607,7 +635,16 @@ redraw(char *path)
 			warn("canopendir");
 			return;
 		}
-		wprintw(Text1, CWD "Dir: %s\n\n", newpath);
+		r = ppopulate(newpath);
+		if (r == -1) {
+			warn("ppopulate");
+			return;
+		}
+		if (npdents == 0)
+			return;
+		nplines = MIN(LINES - 3, npdents);
+		for (i = 0; i < nplines; i++)
+			printent(&pdents[i], 0, 1);
 		break;
 		
 	case S_IFREG:
