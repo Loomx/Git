@@ -71,6 +71,7 @@ struct entry {
 };
 
 /* Global context */
+WINDOW *Box0, *Box1, *Text0, *Text1;
 struct entry *dents;
 char *argv0;
 int ndents, cur;
@@ -78,16 +79,16 @@ int idle;
 
 /*
  * Layout:
- * .---------
- * | /mnt/path
- * |
- * |    file0
- * |    file1
- * |  > file2
- * |    file3
- * |    file4
- *      ...
- * |    filen
+ * .---------                .----------------.
+ * | /mnt/path               |                |
+ * |                         |                |
+ * |    file0                |                |
+ * |    file1                |                |
+ * |  > file2                |                |
+ * |    file3                |                |
+ * |    file4                |                |
+ *      ...                  |                |
+ * |    filen                |                |
  * |
  * | Permission denied
  * '------
@@ -142,7 +143,7 @@ setfilter(regex_t *regex, char *filter)
 
 	r = regcomp(regex, filter, REG_NOSUB | REG_EXTENDED | REG_ICASE);
 	if (r != 0) {
-		len = COLS;
+		len = (COLS / 2);
 		if (len > sizeof(errbuf))
 			len = sizeof(errbuf);
 		regerror(r, regex, errbuf, len);
@@ -250,8 +251,8 @@ info(char *fmt, ...)
 	va_start(ap, fmt);
 	vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
-	move(LINES - 1, 0);
-	printw("%s\n", buf);
+	move(LINES - 2, 0);
+	wprintw(Text0, "%s\n", buf);
 }
 
 /* Display warning as a message */
@@ -264,8 +265,8 @@ warn(char *fmt, ...)
 	va_start(ap, fmt);
 	vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
-	move(LINES - 1, 0);
-	printw("%s: %s\n", buf, strerror(errno));
+	move(LINES - 2, 0);
+	wprintw(Text0, "%s: %s\n", buf, strerror(errno));
 }
 
 /* Kill curses and display error before exiting */
@@ -302,7 +303,7 @@ xgetch(void)
 {
 	int c;
 
-	c = getch();
+	c = wgetch(Text0);
 	if (c == -1)
 		idle++;
 	else
@@ -339,7 +340,7 @@ readln(void)
 	echo();
 	curs_set(TRUE);
 	memset(ln, 0, sizeof(ln));
-	wgetnstr(stdscr, ln, sizeof(ln) - 1);
+	wgetnstr(Text0, ln, sizeof(ln) - 1);
 	noecho();
 	curs_set(FALSE);
 	timeout(1000);
@@ -379,10 +380,10 @@ mkpath(char *dir, char *name, char *out, size_t n)
 }
 
 void
-printent(struct entry *ent, int active)
+printent(struct entry *ent, int active, int preview)
 {
 	char name[PATH_MAX];
-	unsigned int len = COLS - strlen(CURSR) - 1;
+	unsigned int len = (COLS / 2) - strlen(CURSR) - 3;
 	char cm = 0;
 	int attr = 0;
 
@@ -418,9 +419,15 @@ printent(struct entry *ent, int active)
 		name[len] = '\0';
 	}
 
-	attron(attr);
-	printw("%s%s\n", active ? CURSR : EMPTY, name);
-	attroff(attr);
+	wattron(Text0, attr);
+	wprintw(Text0, "%s%s\n", active ? CURSR : EMPTY, name);
+	wattroff(Text0, attr);
+
+	if (preview) {
+		wattron(Text1, attr);
+		wprintw(Text1, "%s%s\n", active ? CURSR : EMPTY, name);
+		wattroff(Text1, attr);
+	}
 }
 
 int
@@ -521,6 +528,59 @@ populate(char *path, char *oldpath, char *fltr)
 }
 
 void
+drawbox(void)
+{
+	Box0 = newwin(LINES, COLS / 2, 0, 0);
+	box(Box0, 0, 0);
+	Text0 = newwin(LINES - 2, (COLS / 2) - 2, 1, 1);
+	wrefresh(Box0);
+	wrefresh(Text0);
+
+	Box1 = newwin(LINES, COLS / 2, 0, COLS / 2);
+	box(Box1, 0, 0);
+	Text1 = newwin(LINES - 2, (COLS / 2) - 2, 1, (COLS / 2) + 1);
+	wrefresh(Box1);
+	wrefresh(Text1);
+}
+
+void
+peek(char* path)
+{
+	char cwd[PATH_MAX], newpath[PATH_MAX];
+	struct stat sb;
+	int r, fd;
+
+	mkpath(cwd, dents[cur].name, newpath, sizeof(newpath));
+	DPRINTF_S(newpath);
+
+	/* Get path info */
+	fd = open(newpath, O_RDONLY | O_NONBLOCK);
+	if (fd == -1) {
+		warn("open");
+	}
+	r = fstat(fd, &sb);
+	if (r == -1) {
+		warn("fstat");
+		close(fd);
+	}
+	close(fd);
+	DPRINTF_U(sb.st_mode);
+
+	switch (sb.st_mode & S_IFMT) {
+		case S_IFDIR:
+			if (canopendir(newpath) == 0) {
+				warn("canopendir");
+			}
+			wprintw(Text1, CWD "%s\n", newpath);
+
+		case S_IFREG:
+			wprintw(Text1, CWD "%s\n", newpath);
+		default:
+			info("Unsupported file");
+	}
+}
+
+void
 redraw(char *path)
 {
 	char cwd[PATH_MAX], cwdresolved[PATH_MAX];
@@ -528,10 +588,10 @@ redraw(char *path)
 	int nlines, odd;
 	int i;
 
-	nlines = MIN(LINES - 4, ndents);
+	nlines = MIN(LINES - 5, ndents);
 
-	/* Clean screen */
-	erase();
+	/* Set up screen */
+	drawbox();
 
 	/* Strip trailing slashes */
 	for (i = strlen(path) - 1; i > 0; i--)
@@ -544,28 +604,34 @@ redraw(char *path)
 	DPRINTF_S(path);
 
 	/* No text wrapping in cwd line */
-	ncols = COLS;
+	ncols = (COLS / 2) - 4;
 	if (ncols > PATH_MAX)
 		ncols = PATH_MAX;
 	strlcpy(cwd, path, ncols);
 	cwd[ncols - strlen(CWD) - 1] = '\0';
 	realpath(cwd, cwdresolved);
 
-	printw(CWD "%s\n\n", cwdresolved);
+	wprintw(Text0, CWD "%s\n\n", cwdresolved);
 
 	/* Print listing */
 	odd = ISODD(nlines);
 	if (cur < nlines / 2) {
 		for (i = 0; i < nlines; i++)
-			printent(&dents[i], i == cur);
+			printent(&dents[i], i == cur, 0);
 	} else if (cur >= ndents - nlines / 2) {
 		for (i = ndents - nlines; i < ndents; i++)
-			printent(&dents[i], i == cur);
+			printent(&dents[i], i == cur, 0);
 	} else {
 		for (i = cur - nlines / 2;
 		     i < cur + nlines / 2 + odd; i++)
-			printent(&dents[i], i == cur);
+			printent(&dents[i], i == cur, 0);
 	}
+	wrefresh(Text0);
+	
+	//for (i = 0; i < nlines; i++)
+		//printent(&dents[i], 0, 1);
+	peek(path);
+	wrefresh(Text1);
 }
 
 void
