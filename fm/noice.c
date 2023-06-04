@@ -267,7 +267,7 @@ warn(char *fmt, ...)
 	vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
 	move(LINES - 2, 0);
-	wprintw(Text0, "%s: %s\n", buf, strerror(errno));
+	wprintw(Text0, "\n%s: %s\n", buf, strerror(errno));
 	wrefresh(Text0);
 }
 
