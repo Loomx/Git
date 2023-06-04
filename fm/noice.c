@@ -92,10 +92,6 @@ int idle;
  * '------
  */
 
-void info(char *, ...);
-void warn(char *, ...);
-void fatal(char *, ...);
-
 size_t
 strlcat(char *dst, const char *src, size_t dsize)
 {
@@ -149,6 +145,68 @@ strlcpy(char *dst, const char *src, size_t dsize)
 	return(src - osrc - 1);	/* count does not include NUL */
 }
 
+void
+initcurses(void)
+{
+	char *term;
+	int i;
+
+	if (initscr() == NULL) {
+		term = getenv("TERM");
+		if (term != NULL)
+			fprintf(stderr, "error opening terminal: %s\n", term);
+		else
+			fprintf(stderr, "failed to initialize curses\n");
+		exit(1);
+	}
+	if (usecolor && has_colors()) {
+		start_color();
+		use_default_colors();
+		for (i = 1; i < LEN(pairs); i++)
+			init_pair(i, pairs[i].fg, pairs[i].bg);
+	}
+	cbreak();
+	noecho();
+	nonl();
+	intrflush(stdscr, FALSE);
+	keypad(stdscr, TRUE);
+	curs_set(FALSE); /* Hide cursor */
+	timeout(1000); /* One second */
+}
+
+void
+exitcurses(void)
+{
+	endwin(); /* Restore terminal */
+}
+
+/* Messages show up at the bottom */
+void
+info(char *msg)
+{
+	move(LINES - 2, 0);
+	wprintw(Text0, "%s\n", msg);
+	wrefresh(Text0);
+}
+
+/* Display warning as a message */
+void
+warn(char *msg)
+{
+	wclear(Text1);
+	wprintw(Text1, "  %s: %s\n", msg, strerror(errno));
+	wrefresh(Text1);
+}
+
+/* Kill curses and display error before exiting */
+void
+fatal(char *msg)
+{
+	exitcurses();
+	fprintf(stderr, "%s: %s\n", msg, strerror(errno));
+	exit(1);
+}
+
 void *
 xrealloc(void *p, size_t size)
 {
@@ -198,16 +256,10 @@ setfilter(regex_t *regex, char *filter)
 		if (len > sizeof(errbuf))
 			len = sizeof(errbuf);
 		regerror(r, regex, errbuf, len);
-		info("%s", errbuf);
+		info(errbuf);
 	}
 	return r;
 }
-
-//void
-//freefilter(regex_t *regex)
-//{
-//	regfree(regex);
-//}
 
 void
 initfilter(int dot, char **ifilter)
@@ -251,92 +303,6 @@ entrycmp(const void *va, const void *vb)
 	return strcmp(a->name, b->name);
 }
 
-void
-initcolor(void)
-{
-	int i;
-
-	start_color();
-	use_default_colors();
-	for (i = 1; i < LEN(pairs); i++)
-		init_pair(i, pairs[i].fg, pairs[i].bg);
-}
-
-void
-initcurses(void)
-{
-	char *term;
-
-	if (initscr() == NULL) {
-		term = getenv("TERM");
-		if (term != NULL)
-			fprintf(stderr, "error opening terminal: %s\n", term);
-		else
-			fprintf(stderr, "failed to initialize curses\n");
-		exit(1);
-	}
-	if (usecolor && has_colors())
-		initcolor();
-	cbreak();
-	noecho();
-	nonl();
-	intrflush(stdscr, FALSE);
-	keypad(stdscr, TRUE);
-	curs_set(FALSE); /* Hide cursor */
-	timeout(1000); /* One second */
-}
-
-void
-exitcurses(void)
-{
-	endwin(); /* Restore terminal */
-}
-
-/* Messages show up at the bottom */
-void
-info(char *fmt, ...)
-{
-	char buf[LINE_MAX];
-	va_list ap;
-
-	va_start(ap, fmt);
-	vsnprintf(buf, sizeof(buf), fmt, ap);
-	va_end(ap);
-	move(LINES - 2, 0);
-	wprintw(Text0, "%s\n", buf);
-	wrefresh(Text0);
-}
-
-/* Display warning as a message */
-void
-warn(char *fmt, ...)
-{
-	char buf[LINE_MAX];
-	va_list ap;
-
-	va_start(ap, fmt);
-	vsnprintf(buf, sizeof(buf), fmt, ap);
-	va_end(ap);
-	move(LINES - 2, 0);
-	wclear(Text1);
-	wprintw(Text1, "  %s: %s\n", buf, strerror(errno));
-	wrefresh(Text1);
-}
-
-/* Kill curses and display error before exiting */
-void
-fatal(char *fmt, ...)
-{
-	va_list ap;
-
-	exitcurses();
-	va_start(ap, fmt);
-	vfprintf(stderr, fmt, ap);
-	fprintf(stderr, ": %s\n", strerror(errno));
-	va_end(ap);
-	exit(1);
-}
-
 /* Clear the last line */
 void
 clearprompt(void)
@@ -349,7 +315,7 @@ void
 printprompt(char *str)
 {
 	clearprompt();
-	info("%s", str);
+	info(str);
 }
 
 int
