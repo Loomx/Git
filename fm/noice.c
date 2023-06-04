@@ -18,8 +18,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "util.h"
-
 #undef MIN
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define LEN(x) (sizeof(x) / sizeof(*(x)))
@@ -98,6 +96,59 @@ void info(char *, ...);
 void warn(char *, ...);
 void fatal(char *, ...);
 
+size_t
+strlcat(char *dst, const char *src, size_t dsize)
+{
+	const char *odst = dst;
+	const char *osrc = src;
+	size_t n = dsize;
+	size_t dlen;
+
+	/* Find the end of dst and adjust bytes left but don't go past end. */
+	while (n-- != 0 && *dst != '\0')
+		dst++;
+	dlen = dst - odst;
+	n = dsize - dlen;
+
+	if (n-- == 0)
+		return(dlen + strlen(src));
+	while (*src != '\0') {
+		if (n != 0) {
+			*dst++ = *src;
+			n--;
+		}
+		src++;
+	}
+	*dst = '\0';
+
+	return(dlen + (src - osrc));	/* count does not include NUL */
+}
+
+size_t
+strlcpy(char *dst, const char *src, size_t dsize)
+{
+	const char *osrc = src;
+	size_t nleft = dsize;
+
+	/* Copy as many bytes as will fit. */
+	if (nleft != 0) {
+		while (--nleft != 0) {
+			if ((*dst++ = *src++) == '\0')
+				break;
+		}
+	}
+
+	/* Not enough room in dst, add NUL and traverse rest of src. */
+	if (nleft == 0) {
+		if (dsize != 0)
+			*dst = '\0';		/* NUL-terminate dst */
+		while (*src++)
+			;
+	}
+
+	return(src - osrc - 1);	/* count does not include NUL */
+}
+
 void *
 xrealloc(void *p, size_t size)
 {
@@ -152,11 +203,11 @@ setfilter(regex_t *regex, char *filter)
 	return r;
 }
 
-void
-freefilter(regex_t *regex)
-{
-	regfree(regex);
-}
+//void
+//freefilter(regex_t *regex)
+//{
+//	regfree(regex);
+//}
 
 void
 initfilter(int dot, char **ifilter)
@@ -490,10 +541,34 @@ dentfind(struct entry *dents, int n, char *cwd, char *path)
 		return 0;
 	for (i = 0; i < n; i++) {
 		mkpath(cwd, dents[i].name, tmp, sizeof(tmp));
-		DPRINTF_S(path);
-		DPRINTF_S(tmp);
 		if (strcmp(tmp, path) == 0)
 			return i;
+	}
+	return 0;
+}
+
+int
+spawnlp(char *dir, char *file, char *argv0, char *argv1, char *junk)
+{
+	pid_t pid;
+	int status, r;
+
+	pid = fork();
+	switch (pid) {
+	case -1:
+		return -1;
+	case 0:
+		if (dir != NULL && chdir(dir) == -1)
+			exit(1);
+		execlp(file, argv0, argv1, (char *) NULL);
+		_exit(1);
+	default:
+		while ((r = waitpid(pid, &status, 0)) == -1 && errno == EINTR)
+			continue;
+		if (r == -1)
+			return -1;
+		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+			return -1;
 	}
 	return 0;
 }
@@ -519,7 +594,7 @@ populate(char *path, char *oldpath, char *fltr)
 	dents = NULL;
 
 	ndents = dentfill(path, &dents, visible, &re, 0);
-	freefilter(&re);
+	regfree(&re);
 	if (ndents == 0)
 		return 0; /* Empty result */
 
@@ -547,7 +622,7 @@ ppopulate(char *path)
 	pdents = NULL;
 
 	npdents = dentfill(path, &pdents, visible, &re, 1);
-	freefilter(&re);
+	regfree(&re);
 	if (npdents == 0)
 		return 0; /* Empty result */
 
@@ -588,8 +663,6 @@ redraw(char *path)
 		else
 			break;
 
-	DPRINTF_D(cur);
-	DPRINTF_S(path);
 
 	/* No text wrapping in cwd line */
 	ncols = (COLS / 2) - 4;
@@ -727,7 +800,6 @@ nochange:
 				goto nochange;
 
 			mkpath(path, dents[cur].name, newpath, sizeof(newpath));
-			DPRINTF_S(newpath);
 
 			/* Get path info */
 			fd = open(newpath, O_RDONLY | O_NONBLOCK);
@@ -742,7 +814,6 @@ nochange:
 				goto nochange;
 			}
 			close(fd);
-			DPRINTF_U(sb.st_mode);
 
 			switch (sb.st_mode & S_IFMT) {
 			case S_IFDIR:
@@ -778,9 +849,8 @@ nochange:
 			r = setfilter(&re, tmp);
 			if (r != 0)
 				goto nochange;
-			freefilter(&re);
+			regfree(&re);
 			strlcpy(fltr, tmp, sizeof(fltr));
-			DPRINTF_S(fltr);
 			/* Save current */
 			if (ndents > 0)
 				mkpath(path, dents[cur].name, oldpath, sizeof(oldpath));
@@ -823,7 +893,6 @@ nochange:
 			strlcpy(path, newpath, sizeof(path));
 			/* Reset filter */
 			strlcpy(fltr, ifilter, sizeof(fltr));
-			DPRINTF_S(path);
 			goto begin;
 		case SEL_CDHOME:
 			tmp = getenv("HOME");
@@ -838,7 +907,6 @@ nochange:
 			strlcpy(path, tmp, sizeof(path));
 			/* Reset filter */
 			strlcpy(fltr, ifilter, sizeof(fltr));
-			DPRINTF_S(path);
 			goto begin;
 		case SEL_TOGGLEDOT:
 			showhidden ^= 1;
@@ -888,32 +956,6 @@ nochange:
 			goto begin;
 		}
 	}
-}
-
-int
-spawnlp(char *dir, char *file, char *argv0, char *argv1, char *junk)
-{
-	pid_t pid;
-	int status, r;
-
-	pid = fork();
-	switch (pid) {
-	case -1:
-		return -1;
-	case 0:
-		if (dir != NULL && chdir(dir) == -1)
-			exit(1);
-		execlp(file, argv0, argv1, (char *) NULL);
-		_exit(1);
-	default:
-		while ((r = waitpid(pid, &status, 0)) == -1 && errno == EINTR)
-			continue;
-		if (r == -1)
-			return -1;
-		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-			return -1;
-	}
-	return 0;
 }
 
 int

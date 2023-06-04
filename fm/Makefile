@@ -1,9 +1,9 @@
-VERSION = 0.8-custom
+VERSION = 1.0
 PREFIX = /usr/local
 MANPREFIX = $(PREFIX)/man
 
 NOICELDLIBS = -lcurses
-NOICEOBJ = noice.o strlcat.o strlcpy.o
+NOICEOBJ = noice.o
 BIN = noice
 MAN = noice.1
 
@@ -14,9 +14,7 @@ all: $(BIN)
 noice: $(NOICEOBJ)
 	$(CC) $(CFLAGS) -o $@ $(NOICEOBJ) $(LDFLAGS) $(NOICELDLIBS)
 
-noice.o: noiceconf.h util.h
-strlcat.o: util.h
-strlcpy.o: util.h
+noice.o: noiceconf.h
 
 noiceconf.h:
 	cp noiceconf.def.h $@
