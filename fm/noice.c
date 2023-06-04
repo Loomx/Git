@@ -252,8 +252,8 @@ info(char *fmt, ...)
 	vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
 	move(LINES - 2, 0);
-	wprintw(Text1, "%s\n", buf);
-	wrefresh(Text1);
+	wprintw(Text0, "%s\n", buf);
+	wrefresh(Text0);
 }
 
 /* Display warning as a message */
@@ -267,8 +267,8 @@ warn(char *fmt, ...)
 	vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
 	move(LINES - 2, 0);
-	wprintw(Text1, "%s: %s\n", buf, strerror(errno));
-	wrefresh(Text1);
+	wprintw(Text0, "%s: %s\n", buf, strerror(errno));
+	wrefresh(Text0);
 }
 
 /* Kill curses and display error before exiting */
@@ -451,10 +451,8 @@ dentfill(char *path, struct entry **dents,
 		if (strcmp(dp->d_name, ".") == 0 ||
 		    strcmp(dp->d_name, "..") == 0)
 			continue;
-//		if (win == 0) {
-			if (filter(re, dp->d_name) == 0)
-				continue;
-//		}
+		if (filter(re, dp->d_name) == 0)
+			continue;
 		*dents = xrealloc(*dents, (n + 1) * sizeof(**dents));
 		strlcpy((*dents)[n].name, dp->d_name, sizeof((*dents)[n].name));
 		/* Get mode flags */
@@ -603,6 +601,8 @@ redraw(char *path)
 	wprintw(Text0, CWD " %s\n\n", cwdresolved);
 
 	/* Print listing */
+	if (ndents == 0)
+		return;
 	odd = ISODD(nlines);
 	if (cur < nlines / 2) {
 		for (i = 0; i < nlines; i++)
@@ -657,7 +657,6 @@ redraw(char *path)
 		break;
 		
 	case S_IFREG:
-		//wprintw(Text1, CWD " File: %s\n\n", newpath);
 		fp = fopen(newpath, "r");
 		for (i = 0; i < LINES - 3; i++) {
 			if (!(fgets(line, COLS / 2 - 2, fp)))
