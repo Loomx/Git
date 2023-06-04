@@ -267,8 +267,9 @@ warn(char *fmt, ...)
 	vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
 	move(LINES - 2, 0);
-	wprintw(Text0, "\n%s: %s\n", buf, strerror(errno));
-	wrefresh(Text0);
+	wclear(Text1);
+	wprintw(Text1, "  %s: %s\n", buf, strerror(errno));
+	wrefresh(Text1);
 }
 
 /* Kill curses and display error before exiting */
