@@ -427,7 +427,7 @@ printent(struct entry *ent, int active, int win)
 		wattroff(Text0, attr);
 	} else {
 		wattron(Text1, attr);
-		wprintw(Text1, "%s%s\n", EMPTY, name);
+		wprintw(Text1, "  %s\n", name);
 		wattroff(Text1, attr);
 	}
 }
@@ -653,7 +653,7 @@ redraw(char *path)
 		for (i = 0; i < nplines; i++)
 			printent(&pdents[i], 0, 1);
 		if (npdents > LINES - 3)
-			wprintw(Text1, "   %s\n", "...");
+			wprintw(Text1, "  %s\n", "...");
 		break;
 		
 	case S_IFREG:
@@ -663,6 +663,8 @@ redraw(char *path)
 				break;
 			wprintw(Text1, "  %.*s", ncols, line);
 		}
+		if ((fgets(line, COLS / 2 - 2, fp)))
+			wprintw(Text1, "  %s\n", "...");
 		fclose(fp);
 		break;
 
