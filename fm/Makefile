@@ -1,23 +1,17 @@
+PKG = fm
+SRC = fm.c
 VERSION = 1.0
 PREFIX = /usr/local
 MANPREFIX = $(PREFIX)/man
 
-NOICELDLIBS = -lcurses
-NOICEOBJ = noice.o
-BIN = noice
-MAN = noice.1
+LDLIBS = -lcurses
+BIN = fm
+MAN = fm.1
 
-CFLAGS = -pedantic -Wall -Os -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L
+CFLAGS = -Wall -pedantic -Os -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L
 
-all: $(BIN)
-
-noice: $(NOICEOBJ)
-	$(CC) $(CFLAGS) -o $@ $(NOICEOBJ) $(LDFLAGS) $(NOICELDLIBS)
-
-noice.o: noiceconf.h
-
-noiceconf.h:
-	cp noiceconf.def.h $@
+$(PKG):
+	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) $(LDLIBS) $(SRC)
 
 install: all
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
@@ -30,10 +24,10 @@ uninstall:
 	cd $(DESTDIR)$(MANPREFIX)/man1 && rm -f $(MAN)
 
 dist: clean
-	mkdir -p noice-$(VERSION)
-	cp `find . -maxdepth 1 -type f` noice-$(VERSION)
-	tar -c noice-$(VERSION) | gzip > noice-$(VERSION).tar.gz
+	mkdir -p fm-$(VERSION)
+	cp `find . -maxdepth 1 -type f` fm-$(VERSION)
+	tar -c fm-$(VERSION) | gzip > fm-$(VERSION).tar.gz
 
 clean:
-	rm -f $(BIN) $(NOICEOBJ) noice-$(VERSION).tar.gz
-	rm -rf noice-$(VERSION)
+	rm -f $(BIN) fm-$(VERSION).tar.gz
+	rm -rf fm-$(VERSION)

@@ -1,62 +1,33 @@
-               __
-  ___     ___ /\_\    ___     __
-/' _ `\  / __`\/\ \  /'___\ /'__`\
-/\ \/\ \/\ \L\ \ \ \/\ \__//\  __/
-\ \_\ \_\ \____/\ \_\ \____\ \____\
- \/_/\/_/\/___/  \/_/\/____/\/____/
-                                    -- by lostd and sin
-=======================================================
+  ___
+/'  _\    ___  ___    
+\ \ \__ /' _ `'_  \  
+ \ \  _\/\ \/\ \/\ \
+  \ \_\ \ \_\ \_\ \_\
+   \/_/  \/_/\/_/\/_/
 
 
-What is it?
-===========
+fm
+==
 
-noice is a small curses-based file browser.
-It was first developed to be used with a TV remote control for a media
-center solution.
-
-
-Getting started
-===============
-
-Get the latest version from the git-repository; build and install it.  Run
-noice in a directory to display its content in the form of a list, where
-each line is a file or directory.  The currently selected item will be
-preceded with a " > " by default.
-
-For more information refer to the manpage.
+fm is a small curses-based file browser.
+It was first developed as `noice' by lostd and sin, originally to be
+used with a TV remote control for a media center solution.
 
 
 Building
 ========
 
-To build noice you need a curses implementation available.  In most
+To build fm you need a curses implementation available.  In most
 cases you just do:
 
     make
 
-It is known to work on OpenBSD, NetBSD, FreeBSD, DragonFly BSD, Linux, OSX,
-IRIX 6.5, Haiku and Solaris 9.  Some notes for building on certain systems
-follow.
 
- * IRIX 6.5:
-   Tested with gcc from http://freeware.sgi.com/.
+Getting started
+===============
 
-    make CC="gcc" LDLIBS="-lgen -lcurses"
+Run fm in a directory to display its contents in the form of a list,
+The currently selected item will be preceded with a " > " by default.
+The selected item will also be shown in the preview pane on the right.
 
- * Haiku:
-
-    make LDLIBS="-lncurses"
-
- * Solaris 9:
-   Tested with gcc from http://www.opencsw.org/.
-
-    export PATH=/usr/ccs/bin:/opt/csw/bin:$PATH
-    make CC="gcc"
-
-
-Contact
-=======
-
-To report bugs and/or submit patches, you can reach us through
-irc.2f30.org at #2f30.
+For more information refer to the manpage.
