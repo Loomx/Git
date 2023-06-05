@@ -13,7 +13,7 @@ CFLAGS = -Wall -pedantic -Os -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L
 $(PKG):
 	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) $(LDLIBS) $(SRC)
 
-install: all
+install: $(PKG)
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp -f $(BIN) $(DESTDIR)$(PREFIX)/bin
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
