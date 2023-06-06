@@ -73,23 +73,22 @@ WINDOW *Box0, *Box1, *Text0, *Text1;
 struct entry *dents, *pdents;
 char *argv0;
 int ndents, npdents, cur;
-int idle;
 
 /*
  * Layout:
- * .---------                .----------------.
- * | /mnt/path               |                |
- * |                         |                |
- * |    file0                |                |
- * |    file1                |                |
- * |  > file2                |                |
- * |    file3                |                |
- * |    file4                |                |
- *      ...                  |                |
- * |    filen                |                |
- * |
- * | Permission denied
- * '------
+ * .-------------------.  .-------------------.
+ * | /mnt/path         |  | file or dir       |
+ * |                   |  |   preview here    |
+ * |    file0          |  |                   |
+ * |    file1          |  |                   |
+ * |  > file2          |  |                   |
+ * |    file3          |  |                   |
+ * |    file4          |  |                   |
+ * |    ...            |  |                   |
+ * |    filen          |  |                   |
+ * |                   |  |                   |
+ * | Permission denied |  |                   |
+ * '-------------------'  '-------------------'
  */
 
 size_t
@@ -174,12 +173,6 @@ initcurses(void)
 	timeout(1000); /* One second */
 }
 
-void
-exitcurses(void)
-{
-	endwin(); /* Restore terminal */
-}
-
 /* Messages show up at the bottom */
 void
 info(char *msg)
@@ -202,7 +195,7 @@ warn(char *msg)
 void
 fatal(char *msg)
 {
-	exitcurses();
+	endwin();
 	fprintf(stderr, "%s: %s\n", msg, strerror(errno));
 	exit(1);
 }
@@ -303,34 +296,6 @@ entrycmp(const void *va, const void *vb)
 	return strcmp(a->name, b->name);
 }
 
-/* Clear the last line */
-void
-clearprompt(void)
-{
-	info("");
-}
-
-/* Print prompt on the last line */
-void
-printprompt(char *str)
-{
-	clearprompt();
-	info(str);
-}
-
-int
-xgetch(void)
-{
-	int c;
-
-	c = wgetch(Text0);
-	if (c == -1)
-		idle++;
-	else
-		idle = 0;
-	return c;
-}
-
 /* Returns SEL_* if key is bound and 0 otherwise.
  * Also modifies the run and env pointers (used on SEL_{RUN,RUNARG}) */
 int
@@ -338,9 +303,9 @@ nextsel(char **run, char **env)
 {
 	int c, i;
 
-	c = xgetch();
+	c = wgetch(Text0);
 	if (c == 033)
-		c = META(xgetch());
+		c = META(wgetch(Text0));
 
 	for (i = 0; i < LEN(bindings); i++)
 		if (c == bindings[i].sym) {
@@ -514,7 +479,7 @@ dentfind(struct entry *dents, int n, char *cwd, char *path)
 }
 
 int
-spawnlp(char *dir, char *file, char *argv0, char *argv1, char *junk)
+spawnlp(char *dir, char *file, char *argv0, char *argv1)
 {
 	pid_t pid;
 	int status, r;
@@ -792,9 +757,9 @@ nochange:
 				strlcpy(fltr, ifilter, sizeof(fltr));
 				goto begin;
 			case S_IFREG:
-				exitcurses();
+				endwin();
 				run = xgetenv("OPEN", OPEN);
-				r = spawnlp(path, run, run, newpath, (void *)0);
+				r = spawnlp(path, run, run, newpath);
 				initcurses();
 				if (r == -1) {
 					info("Failed to execute plumber");
@@ -807,7 +772,7 @@ nochange:
 			}
 		case SEL_FLTR:
 			/* Read filter */
-			printprompt("/");
+			info("/");
 			tmp = readln();
 			if (tmp == NULL)
 				tmp = ifilter;
@@ -845,10 +810,10 @@ nochange:
 			break;
 		case SEL_CD:
 			/* Read target dir */
-			printprompt("chdir: ");
+			info("chdir: ");
 			tmp = readln();
 			if (tmp == NULL) {
-				clearprompt();
+				info("");
 				goto nochange;
 			}
 			mkpath(path, tmp, newpath, sizeof(newpath));
@@ -863,7 +828,7 @@ nochange:
 		case SEL_CDHOME:
 			tmp = getenv("HOME");
 			if (tmp == NULL) {
-				clearprompt();
+				info("");
 				goto nochange;
 			}
 			if (canopendir(tmp) == 0) {
@@ -907,8 +872,8 @@ nochange:
 			if (ndents > 0)
 				mkpath(path, dents[cur].name, oldpath, sizeof(oldpath));
 			run = xgetenv(env, run);
-			exitcurses();
-			spawnlp(path, run, run, (void *)0, (void *)0);
+			endwin();
+			spawnlp(path, run, run, (void *)0);
 			initcurses();
 			goto begin;
 		case SEL_RUNARG:
@@ -916,8 +881,8 @@ nochange:
 			if (ndents > 0)
 				mkpath(path, dents[cur].name, oldpath, sizeof(oldpath));
 			run = xgetenv(env, run);
-			exitcurses();
-			spawnlp(path, run, run, dents[cur].name, (void *)0);
+			endwin();
+			spawnlp(path, run, run, dents[cur].name);
 			initcurses();
 			goto begin;
 		}
@@ -960,6 +925,6 @@ main(int argc, char *argv[])
 	setlocale(LC_ALL, "");
 	initcurses();
 	browse(ipath, ifilter);
-	exitcurses();
+	endwin();
 	exit(0);
 }
