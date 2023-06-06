@@ -10,8 +10,8 @@ MAN = fm.1
 
 CFLAGS = -Wall -pedantic -Os -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=200809L
 
-$(PKG):
-	$(CC) $(CFLAGS) -o $@ $(LDFLAGS) $(LDLIBS) $(SRC)
+$(PKG): $(SRC)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $(SRC) -o $@ 
 
 install: $(PKG)
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
