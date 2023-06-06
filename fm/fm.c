@@ -177,8 +177,7 @@ initcurses(void)
 void
 info(char *msg)
 {
-	move(LINES - 2, 0);
-	wprintw(Text0, "%s\n", msg);
+	mvwprintw(Text0, LINES - 3, 1, "%s\n", msg);
 	wrefresh(Text0);
 }
 
