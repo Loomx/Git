@@ -199,15 +199,6 @@ fatal(char *msg)
 	exit(1);
 }
 
-void *
-xrealloc(void *p, size_t size)
-{
-	p = realloc(p, size);
-	if (p == NULL)
-		fatal("realloc");
-	return p;
-}
-
 /* Some implementations of dirname(3) may modify `path' and some
  * return a pointer inside `path'. */
 char *
@@ -435,7 +426,9 @@ dentfill(char *path, struct entry **dents,
 			continue;
 		if (filter(re, dp->d_name) == 0)
 			continue;
-		*dents = xrealloc(*dents, (n + 1) * sizeof(**dents));
+		*dents = realloc(*dents, (n + 1) * sizeof(**dents));
+		if (*dents == NULL)
+			fatal("realloc");
 		strlcpy((*dents)[n].name, dp->d_name, sizeof((*dents)[n].name));
 		/* Get mode flags */
 		mkpath(path, dp->d_name, newpath, sizeof(newpath));
