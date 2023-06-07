@@ -167,8 +167,7 @@ initcurses(void)
 	cbreak();
 	noecho();
 	nonl();
-	intrflush(stdscr, FALSE);
-	keypad(stdscr, TRUE);
+	intrflush(0, FALSE);
 	curs_set(FALSE); /* Hide cursor */
 	timeout(1000); /* One second */
 }
@@ -577,6 +576,7 @@ redraw(char *path)
 	wrefresh(Box1);
 
 	Text0 = newwin(LINES - 2, (COLS / 2) - 2, 1, 1);
+	keypad(Text0, TRUE);
 	Text1 = newwin(LINES - 2, (COLS / 2) - 2, 1, (COLS / 2) + 1);
 
 	/* Strip trailing slashes */
@@ -669,7 +669,6 @@ redraw(char *path)
 		info("Unsupported file");
 		break;
 	}
-	//wprintw(Text1, CWD "%s\n\n", newpath);
 	wrefresh(Text1);
 }
 
