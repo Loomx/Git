@@ -48,13 +48,15 @@ main(int argc, char *argv[])
 	      || !strcasecmp(suffix, ".xlsx"))
 		execlp("setsid", "setsid", DOC_OPEN, argv[1], NULL);
 
-	else if (!strcasecmp(suffix, ".mp3")
-	      || !strcasecmp(suffix, ".m4a")
-	      || !strcasecmp(suffix, ".ogg")
-	      || !strcasecmp(suffix, ".mp4")
+	else if (!strcasecmp(suffix, ".mp4")
 	      || !strcasecmp(suffix, ".mov")
 	      || !strcasecmp(suffix, ".avi"))
 		execlp("setsid", "setsid", MEDIA_OPEN, argv[1], NULL);
+
+	else if (!strcasecmp(suffix, ".mp3")
+	      || !strcasecmp(suffix, ".m4a")
+	      || !strcasecmp(suffix, ".ogg"))
+		execlp("setsid", "setsid", MEDIA_OPEN, "-vo", "null", argv[1], NULL);
 
 	else
 		execlp(DEFAULT, DEFAULT, argv[1], NULL);
