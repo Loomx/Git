@@ -9,7 +9,7 @@
 fm
 ==
 
-fm is a small curses-based file browser.
+fm is a small curses-based file browser with a preview pane.
 It was first developed as `noice' by lostd and sin, originally to be
 used with a TV remote control for a media center solution.
 
