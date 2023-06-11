@@ -91,57 +91,45 @@ int ndents, npdents, cur;
  * '-------------------'  '-------------------'
  */
 
+/* strlcat from nolibc */
 size_t
-strlcat(char *dst, const char *src, size_t dsize)
+strlcat(char *dst, const char *src, size_t size)
 {
-	const char *odst = dst;
-	const char *osrc = src;
-	size_t n = dsize;
-	size_t dlen;
+	size_t len;
+	char c;
 
-	/* Find the end of dst and adjust bytes left but don't go past end. */
-	while (n-- != 0 && *dst != '\0')
-		dst++;
-	dlen = dst - odst;
-	n = dsize - dlen;
+	for (len = 0; dst[len];	len++)
+		;
 
-	if (n-- == 0)
-		return(dlen + strlen(src));
-	while (*src != '\0') {
-		if (n != 0) {
-			*dst++ = *src;
-			n--;
-		}
+	for (;;) {
+		c = *src;
+		if (len < size)
+			dst[len] = c;
+		if (!c)
+			break;
+		len++;
 		src++;
 	}
-	*dst = '\0';
 
-	return(dlen + (src - osrc));	/* count does not include NUL */
+	return len;
 }
 
+/* strlcpy from nolibc */
 size_t
-strlcpy(char *dst, const char *src, size_t dsize)
+strlcpy(char *dst, const char *src, size_t size)
 {
-	const char *osrc = src;
-	size_t nleft = dsize;
+	size_t len;
+	char c;
 
-	/* Copy as many bytes as will fit. */
-	if (nleft != 0) {
-		while (--nleft != 0) {
-			if ((*dst++ = *src++) == '\0')
-				break;
-		}
+	for (len = 0;;) {
+		c = src[len];
+		if (len < size)
+			dst[len] = c;
+		if (!c)
+			break;
+		len++;
 	}
-
-	/* Not enough room in dst, add NUL and traverse rest of src. */
-	if (nleft == 0) {
-		if (dsize != 0)
-			*dst = '\0';		/* NUL-terminate dst */
-		while (*src++)
-			;
-	}
-
-	return(src - osrc - 1);	/* count does not include NUL */
+	return len;
 }
 
 void
