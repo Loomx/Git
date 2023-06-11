@@ -1,6 +1,6 @@
 /* op
  * a simple file opener in C
- * GPL Licence
+ * GPL v2 Licence
  */
 
 #include <stdio.h>
@@ -12,6 +12,7 @@
 #define PIC_OPEN   "gthumb"
 #define DOC_OPEN   "soffice"
 #define MEDIA_OPEN "mplayer"
+#define GFX_OPEN   "lightburn"
 #define DEFAULT    "vi"
 
 int
@@ -45,7 +46,8 @@ main(int argc, char *argv[])
 	      || !strcasecmp(suffix, ".ppt")
 	      || !strcasecmp(suffix, ".pptx")
 	      || !strcasecmp(suffix, ".xls")
-	      || !strcasecmp(suffix, ".xlsx"))
+	      || !strcasecmp(suffix, ".xlsx")
+	      || !strcasecmp(suffix, ".odg"))
 		execlp("setsid", "setsid", DOC_OPEN, argv[1], NULL);
 
 	else if (!strcasecmp(suffix, ".mp4")
@@ -57,6 +59,11 @@ main(int argc, char *argv[])
 	      || !strcasecmp(suffix, ".m4a")
 	      || !strcasecmp(suffix, ".ogg"))
 		execlp("setsid", "setsid", MEDIA_OPEN, "-vo", "null", argv[1], NULL);
+
+	else if (!strcasecmp(suffix, ".lbrn")
+	      || !strcasecmp(suffix, ".lbrn2")
+	      || !strcasecmp(suffix, ".svg"))
+		execlp("setsid", "setsid", GFX_OPEN, argv[1], NULL);
 
 	else
 		execlp(DEFAULT, DEFAULT, argv[1], NULL);
