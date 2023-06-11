@@ -10,6 +10,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include <X11/Xlib.h>
+#include <sys/wait.h>
 
 #define TRACK_FILE      "/tmp/status_msg"
 #define MEM_FILE        "/proc/meminfo"
@@ -78,6 +79,7 @@ main(void) {
 				if (cpid == 0)
 					execl("/bin/sh", "sh", "-c",
 						"dmenu -c -l 3 -p 'Battery low!' <<<$'\n\n'", (char *) NULL);
+				wait(NULL);
 			}
 			str += sprintf(str, "Bat:%d  ", bat);
 		}
