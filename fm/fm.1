@@ -75,19 +75,15 @@ Quit.
 .Pp
 Backing up one directory level will set the cursor position at the
 directory you came out of.
-.Sh OPTIONS
-.Bl -tag -width "-c"
-.It Fl c
-Enable colors.
-.El
 .Sh CONFIGURATION
 .Nm
 is configured by modifying
 .Pa config.h
 and recompiling the code.
 .Pp
-.Nm
-invokes $OPEN to open a file in the user's preferred application.
+#define OPEN in
+.Pa config.h
+to set the user's preferred file opener.
 .Sh FILTERS
 Filters allow you to use regexes to display only the matched
 entries in the current directory view.
@@ -104,22 +100,15 @@ If
 is invoked as root the default filter will also match hidden files.
 .Sh ENVIRONMENT
 The
-.Ev SHELL ,
-.Ev EDITOR
+.Ev SHELL
 and
 .Ev PAGER
 environment variables take precedence when dealing with the
-.Ic \&! ,
-.Ic e
+.Ic \&!
 and
 .Ic p
 commands respectively.
 .Pp
-The
-.Ev OPEN
-environment variable can be used to specify the plumber
-program used by
-.Nm .
 .Sh ORIGINAL AUTHORS
 .An Lazaros Koromilas Aq Mt lostd@2f30.org ,
 .An Dimitris Papastamos Aq Mt sin@2f30.org .

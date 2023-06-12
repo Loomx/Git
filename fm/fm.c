@@ -49,15 +49,13 @@ enum action {
 	SEL_MTIME,
 	SEL_ICASE,
 	SEL_REDRAW,
-	SEL_RUN,
-	SEL_RUNARG
+	SEL_SHELL,
+	SEL_PAGER
 };
 
 struct key {
 	int sym;         /* Key pressed */
 	enum action act; /* Action */
-	char *run;       /* Program to run */
-	char *env;       /* Environment variable override */
 };
 
 #include "config.h"
@@ -202,17 +200,6 @@ xdirname(const char *path)
 	return out;
 }
 
-char *
-xgetenv(char *name, char *fallback)
-{
-	char *value;
-
-	if (name == NULL)
-		return fallback;
-	value = getenv(name);
-	return value && value[0] ? value : fallback;
-}
-
 int
 setfilter(regex_t *regex, char *filter)
 {
@@ -273,10 +260,9 @@ entrycmp(const void *va, const void *vb)
 	return strcmp(a->name, b->name);
 }
 
-/* Returns SEL_* if key is bound and 0 otherwise.
- * Also modifies the run and env pointers (used on SEL_{RUN,RUNARG}) */
+/* Returns SEL_* if key is bound and 0 otherwise */
 int
-nextsel(char **run, char **env)
+nextsel(void)
 {
 	int c, i;
 
@@ -285,11 +271,8 @@ nextsel(char **run, char **env)
 		c = META(wgetch(Text0));
 
 	for (i = 0; i < LEN(bindings); i++)
-		if (c == bindings[i].sym) {
-			*run = bindings[i].run;
-			*env = bindings[i].env;
+		if (c == bindings[i].sym)
 			return bindings[i].act;
-		}
 	return 0;
 }
 
@@ -665,7 +648,7 @@ browse(char *ipath, char *ifilter)
 {
 	char path[PATH_MAX], oldpath[PATH_MAX], newpath[PATH_MAX];
 	char fltr[LINE_MAX];
-	char *dir, *tmp, *run, *env;
+	char *dir, *tmp;
 	struct stat sb;
 	regex_t re;
 	int r, fd;
@@ -683,7 +666,7 @@ begin:
 	for (;;) {
 		redraw(path);
 nochange:
-		switch (nextsel(&run, &env)) {
+		switch (nextsel()) {
 		case SEL_QUIT:
 			dentfree(dents);
 			return;
@@ -737,8 +720,7 @@ nochange:
 				goto begin;
 			case S_IFREG:
 				endwin();
-				run = xgetenv("OPEN", OPEN);
-				r = spawnlp(path, run, run, newpath);
+				r = spawnlp(path, OPEN, OPEN, newpath);
 				initcurses();
 				if (r == -1) {
 					info("Failed to execute plumber");
@@ -860,22 +842,26 @@ nochange:
 			if (ndents > 0)
 				mkpath(path, dents[cur].name, oldpath, sizeof(oldpath));
 			goto begin;
-		case SEL_RUN:
+		case SEL_SHELL:
 			/* Save current */
 			if (ndents > 0)
 				mkpath(path, dents[cur].name, oldpath, sizeof(oldpath));
-			run = xgetenv(env, run);
+			tmp = getenv("SHELL");
+			if (tmp == NULL)
+				tmp = "sh";
 			endwin();
-			spawnlp(path, run, run, (void *)0);
+			spawnlp(path, tmp, tmp, (void *)0);
 			initcurses();
 			goto begin;
-		case SEL_RUNARG:
+		case SEL_PAGER:
 			/* Save current */
 			if (ndents > 0)
 				mkpath(path, dents[cur].name, oldpath, sizeof(oldpath));
-			run = xgetenv(env, run);
+			tmp = getenv("PAGER");
+			if (tmp == NULL)
+				tmp = "less";
 			endwin();
-			spawnlp(path, run, run, dents[cur].name);
+			spawnlp(path, tmp, tmp, dents[cur].name);
 			initcurses();
 			goto begin;
 		}

@@ -77,7 +77,7 @@ struct key bindings[] = {
 	{ 'i',            SEL_ICASE },
 	{ CONTROL('L'),   SEL_REDRAW },
 	/* Run command */
-	{ '!',            SEL_RUN, "sh", "SHELL" },
+	{ '!',            SEL_SHELL},
 	/* Run command with argument */
-	{ 'p',            SEL_RUNARG, "less", "PAGER" },
+	{ 'p',            SEL_PAGER},
 };
