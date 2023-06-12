@@ -766,27 +766,41 @@ nochange:
 				mkpath(path, dents[cur].name, oldpath, sizeof(oldpath));
 			goto begin;
 		case SEL_NEXT:
-			if (cur < ndents - 1)
+			if (cur < ndents - 1) {
 				cur++;
-			break;
+				break;
+			} else
+				goto nochange;
 		case SEL_PREV:
-			if (cur > 0)
+			if (cur > 0) {
 				cur--;
-			break;
+				break;
+			} else
+				goto nochange;
 		case SEL_PGDN:
-			if (cur < ndents - 1)
+			if (cur < ndents - 1) {
 				cur += MIN((LINES - 4) / 2, ndents - 1 - cur);
-			break;
+				break;
+			} else
+				goto nochange;
 		case SEL_PGUP:
-			if (cur > 0)
+			if (cur > 0) {
 				cur -= MIN((LINES - 4) / 2, cur);
-			break;
+				break;
+			} else
+				goto nochange;
 		case SEL_HOME:
-			cur = 0;
-			break;
+			if (cur > 0) {
+				cur = 0;
+				break;
+			} else
+				goto nochange;
 		case SEL_END:
-			cur = ndents - 1;
-			break;
+			if (cur < ndents - 1) {
+				cur = ndents - 1;
+				break;
+			} else
+				goto nochange;
 		case SEL_CD:
 			/* Read target dir */
 			info("chdir: ");
