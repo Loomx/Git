@@ -1,7 +1,7 @@
 PKG = fm
 SRC = fm.c
 CC  = cc
-CFLAGS = -std=c99 -pedantic -Wall -D_DEFAULT_SOURCE -lcurses
+CFLAGS = -std=c99 -pedantic -Wall -D_DEFAULT_SOURCE -lncurses
 PREFIX = /usr/local
 MANPREFIX = $(PREFIX)/man
 MAN = fm.1
