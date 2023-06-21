@@ -92,10 +92,10 @@ tao () { sed -n "/-$((RANDOM%81+1))-/,/^$/p" ~/Documents/tao.txt; }
 histfix () {
 	history -a
 	tac ~/.bash_history | awk '!x[$0]++' | tac >~/hist.tmp && \
-	mv ~/hist.tmp ~/.bash_history
+		mv ~/hist.tmp ~/.bash_history
 	history -c; history -r
 }
 
-trap histfix EXIT
+trap histfix EXIT HUP INT TERM
 
 [ -r ~/.bashrc_local ] && . ~/.bashrc_local
