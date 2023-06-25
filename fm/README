@@ -28,6 +28,12 @@ Getting started
 
 Run fm in a directory to display its contents in the form of a list,
 The currently selected item will be preceded with a " > " by default.
+
 The selected item will also be shown in the preview pane on the right.
+For pdf previews, you need pdftotxt
+For doc previews, you need antiword
+For docx previews, you need docx2txt
+For xls previews, you need xls2csv
+
 
 For more information refer to the manpage.

@@ -529,10 +529,12 @@ redraw(char *path)
 {
 	char cwd[PATH_MAX], cwdresolved[PATH_MAX]; 
 	char newpath[PATH_MAX], line[LINE_MAX];
+	char *suffix;
 	struct stat sb;
 	int ncols, nlines, nplines, odd;
 	int i;
 	int r, fd;
+	pid_t cpid;
 	FILE *fp;
 
 	nlines = MIN(LINES - 5, ndents);
@@ -625,6 +627,49 @@ redraw(char *path)
 		break;
 		
 	case S_IFREG:
+		if ((suffix = strrchr(newpath, '.'))) {
+			if ((!strcasecmp(suffix, ".pdf")) && (!access("/usr/bin/pdftotext", X_OK))) {
+				if ((cpid = fork()) == -1) {
+					warn("fork");
+					return;
+				}
+				if (cpid == 0)  /* child */
+					execlp("/usr/bin/pdftotext", "pdftotext", "-l", "20", newpath, "/tmp/fm.txt", NULL);
+				wait(NULL);
+				strlcpy(newpath, "/tmp/fm.txt", 16);
+			} else if ((!strcasecmp(suffix, ".docx")) && (!access("/usr/bin/docx2txt", X_OK))) {
+				if ((cpid = fork()) == -1) {
+					warn("fork");
+					return;
+				}
+				if (cpid == 0)  /* child */
+					execlp("/usr/bin/docx2txt", "docx2txt", newpath, "/tmp/fm.txt", NULL);
+				wait(NULL);
+				strlcpy(newpath, "/tmp/fm.txt", 16);
+			} else if ((!strcasecmp(suffix, ".doc")) && (!access("/usr/bin/antiword", X_OK))) {
+				if ((cpid = fork()) == -1) {
+					warn("fork");
+					return;
+				}
+				if (cpid == 0) {  /* child */
+					freopen("/tmp/fm.txt", "w", stdout);
+					execlp("/usr/bin/antiword", "antiword", newpath, NULL);
+				}
+				wait(NULL);
+				strlcpy(newpath, "/tmp/fm.txt", 16);
+			} else if ((!strcasecmp(suffix, ".xls")) && (!access("/usr/bin/xls2csv", X_OK))) {
+				if ((cpid = fork()) == -1) {
+					warn("fork");
+					return;
+				}
+				if (cpid == 0) {  /* child */
+					freopen("/tmp/fm.txt", "w", stdout);
+					execlp("/usr/bin/xls2csv", "xls2csv", newpath, NULL);
+				}
+				wait(NULL);
+				strlcpy(newpath, "/tmp/fm.txt", 16);
+			}
+		}
 		fp = fopen(newpath, "r");
 		for (i = 0; i < LINES - 3; i++) {
 			if (!(fgets(line, COLS / 2 - 2, fp)))
