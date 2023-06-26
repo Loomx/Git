@@ -441,7 +441,7 @@ dentfind(struct entry *dents, int n, char *cwd, char *path)
 }
 
 int
-spawnlp(char *dir, char *file, char *argv0, char *argv1)
+spawnlp(char *dir, char *argv0, char *argv1)
 {
 	pid_t pid;
 	int status, r;
@@ -453,7 +453,7 @@ spawnlp(char *dir, char *file, char *argv0, char *argv1)
 	case 0:
 		if (dir != NULL && chdir(dir) == -1)
 			exit(1);
-		execlp(file, argv0, argv1, (char *) NULL);
+		execlp(argv0, argv0, argv1, (char *) NULL);
 		_exit(1);
 	default:
 		while ((r = waitpid(pid, &status, 0)) == -1 && errno == EINTR)
@@ -765,7 +765,7 @@ nochange:
 				goto begin;
 			case S_IFREG:
 				endwin();
-				r = spawnlp(path, OPEN, OPEN, newpath);
+				r = spawnlp(path, OPEN, newpath);
 				initcurses();
 				if (r == -1) {
 					info("Failed to execute plumber");
@@ -895,7 +895,7 @@ nochange:
 			if (tmp == NULL)
 				tmp = "sh";
 			endwin();
-			spawnlp(path, tmp, tmp, (void *)0);
+			spawnlp(path, tmp, (char *) NULL);
 			initcurses();
 			goto begin;
 		case SEL_PAGER:
@@ -906,7 +906,7 @@ nochange:
 			if (tmp == NULL)
 				tmp = "less";
 			endwin();
-			spawnlp(path, tmp, tmp, dents[cur].name);
+			spawnlp(path, tmp, dents[cur].name);
 			initcurses();
 			goto begin;
 		}
