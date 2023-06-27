@@ -33,7 +33,7 @@ The selected item will also be shown in the preview pane on the right.
 For pdf previews, you need pdftotxt
 For doc previews, you need antiword
 For docx previews, you need docx2txt
-For xls previews, you need xls2csv
+For xls previews, you need xls2csv (comes with `catdoc')
 
 
 For more information refer to the manpage.
