@@ -4,8 +4,8 @@
 # based on https://github.com/ivandavidov/minimal-linux-script/blob/master/minimal.sh
 # and Slackware's huge kernel config
 
-KERNEL=5.15.80
-BUSYBOX=1.36.0
+KERNEL=5.15.117
+BUSYBOX=1.36.1
 
 set -xe
 
