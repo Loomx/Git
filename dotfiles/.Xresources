@@ -31,10 +31,11 @@
 *pointerColorBackground:  #586e75
 *pointerColorForeground:  #93a1a1
 
-xterm*font:     -*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*
+xterm*font:     -*-terminus-medium-r-*-*-20-*-*-*-*-*-*-*
 xterm*background:         #002b36
 xterm*foreground:         #839496
 xterm*titeInhibit:        true
 xterm*tiXtraScroll:       true
 xterm*metaSendsEscape:    true
 xterm*decTerminalID	:     vt340
+xterm*forceBoxChars:      true
