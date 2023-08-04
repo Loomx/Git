@@ -17,6 +17,8 @@ xcape
 
 dstatus &
 
+export GTK_OVERLAY_SCROLLING=0
+
 if [ -z "$DBUS_SESSION_BUS_ADDRESS"]; then
 	eval $(dbus-launch --sh-syntax --exit-with-session)
 fi
