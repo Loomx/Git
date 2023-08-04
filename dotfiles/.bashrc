@@ -98,6 +98,4 @@ histfix () {
 
 trap histfix EXIT HUP INT TERM
 
-export GTK_OVERLAY_SCROLLING=0
-
 [ -r ~/.bashrc_local ] && . ~/.bashrc_local
