@@ -668,6 +668,18 @@ redraw(char *path)
 				}
 				wait(NULL);
 				strlcpy(newpath, "/tmp/fm.txt", 16);
+			} else if (((!strcasecmp(suffix, ".jpg")) || (!strcasecmp(suffix, ".png"))) && (!access("/usr/local/bin/timg", X_OK))) {
+				if ((cpid = fork()) == -1) {
+					warn("fork");
+					return;
+				}
+				if (cpid == 0) {  /* child */
+					sprintf(line, "%i,%i,%i", COLS / 2 + 2, 1, COLS / 2 - 4);
+					execlp("/usr/local/bin/timg", "timg", "show", "-p", line, newpath, NULL);
+					_exit(0);
+				}
+				wait(NULL);
+				return;
 			}
 		}
 		fp = fopen(newpath, "r");
