@@ -12,11 +12,11 @@ display -window root Git/dotfiles/wallpaper.jpg
 
 setxkbmap -option ctrl:nocaps,compose:prsc
 
+xrdb ~/.Xresources
+
 xcape
 
 dstatus &
-
-xrdb ~/.Xresources
 
 export GTK_OVERLAY_SCROLLING=0
 
