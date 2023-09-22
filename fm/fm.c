@@ -674,7 +674,8 @@ redraw(char *path)
 					return;
 				}
 				if (cpid == 0) {  /* child */
-					sprintf(line, "%i,%i,%i", COLS / 2 + 2, 1, COLS / 2 - 4);
+					//sprintf(line, "%i,%i,%i", COLS / 2 + 2, 1, COLS / 2 - 4);  // full width, may overflow height
+					sprintf(line, "%i,%i,%i", COLS / 2 + 2, 1, COLS / 4);  // smaller, faster, safer
 					execlp("/usr/local/bin/timg", "timg", "show", "-p", line, newpath, NULL);
 					_exit(0);
 				}
