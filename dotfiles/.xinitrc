@@ -9,13 +9,14 @@
 
 display -window root Git/dotfiles/wallpaper.jpg
 #xrandr --output eDP-1 --auto --gamma 1:1:0.75
-#redshift -l -43.5:172.6 &
 
 setxkbmap -option ctrl:nocaps,compose:prsc
 
 xcape
 
 dstatus &
+
+xrdb ~/.Xresources
 
 export GTK_OVERLAY_SCROLLING=0
 
