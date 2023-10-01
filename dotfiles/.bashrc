@@ -25,7 +25,7 @@ bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
 bind '"\C-f":forward-search-history'
 bind '"\C-]":insert-last-argument'
-bind '"\C-k":kill-line'
+bind '"\C-g":shell-expand-line'
 bind '"\C-l":"for i in $(seq 1 $(tput lines)); do echo; done; clear; histfix; l\n"'
 
 l () { ls --color --group-directories-first "$@"; }
