@@ -14,10 +14,11 @@ printf "\n################################################################\n\n"
 printf "#### Starting rbackup script - $(date) ####\n\n"
 
 printf "Checking DATA drive is mounted... "
-ssh $Server mkdir -p $Drive 
-ssh $Server mount $Drive
-ssh $Server mountpoint -q $Drive && printf "done\n" || \
-	{ printf "DATA drive not accessible - exiting\n\n"; exit 1; }
+ssh $Server "
+	mkdir -p $Drive 
+	mount $Drive
+	mountpoint -q $Drive && printf \"done\n\" " || \
+		{ printf "DATA drive not accessible - exiting\n\n"; exit 1; }
 
 printf "#### Making rbackup snapshot $Hostname-$Date ####\n\n"
 rsync -aHxv --delete-after \
@@ -35,8 +36,9 @@ ssh $Server "
 		printf \"Linking snapshot $Hostname-$Date failed\n\n\" "
 
 printf "\nUnmounting DATA drive... "
-ssh $Server umount $Drive
-ssh $Server rmdir $Drive && printf "done\n" 
+ssh $Server "
+	umount $Drive
+	rmdir $Drive && printf \"done\n\" "
 
 printf "\nEnd rbackup script - $(date) ####\n"
 sleep 1
