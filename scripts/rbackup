@@ -25,6 +25,7 @@ rsync -aHxv --delete-after \
 	--exclude=.cache/ \
 	--exclude=.mozilla/ \
 	--exclude=.thunderbird/Profiles/$USER.default/ImapMail/ \
+	--exclude=Git/ \
 	--exclude=TV/ \
 	--link-dest=../$Hostname \
 	~/ $Server:$Drive/$Hostname-$Date
