@@ -104,8 +104,12 @@ upgrade_all () {
 	read -p "Install upgrades? Or (e)dit upgrade list (Y/n/e) "
 	printf "\n"
 	[ "$REPLY" = n ] && exit 9
+	printf "\n\n====================" >>$Workdir/upgrades
+	printf "\nCurrently installed:\n\n" >>$Workdir/upgrades
+	ls /var/log/packages | grep -F SBo \
+		| rev | cut -d- -f3- | rev >>$Workdir/upgrades
 	[ "$REPLY" = e ] && ${EDITOR:-vi} $Workdir/upgrades
-	install $(cat $Workdir/upgrades)
+	install $(head -n1 $Workdir/upgrades)
 	rm -f $Workdir/upgrades
 }
 
